@@ -1,0 +1,230 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="1020" viewBox="0 0 1160 1020" font-family="Helvetica, Arial, sans-serif">
+  <style>
+    .ns-label { font-size: 12px; font-weight: bold; fill: #475569; }
+    .cls-name { font-size: 12.5px; font-weight: bold; fill: #111827; }
+    .stereo   { font-size: 11px; font-style: italic; fill: #374151; }
+    .m        { font-size: 11px; font-family: "SF Mono", Menlo, Consolas, monospace; }
+    .caller   { fill: #1d4ed8; }
+    .config   { fill: #0f766e; }
+    .check    { fill: #b45309; }
+    .kit      { fill: #6d28d9; }
+    .fix      { fill: #be185d; }
+    .internal { fill: #6b7280; }
+    .edge     { stroke: #475569; stroke-width: 1.3; fill: none; }
+    .dep      { stroke: #475569; stroke-width: 1.3; fill: none; stroke-dasharray: 5 4; }
+    .elabel   { font-size: 10.5px; fill: #475569; }
+    .legend   { font-size: 11px; fill: #374151; }
+    .box      { fill: #ffffff; stroke: #334155; stroke-width: 1; }
+  </style>
+  <defs>
+    <marker id="arr" markerWidth="9" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L9,4 L0,8 z" fill="#475569"/>
+    </marker>
+    <marker id="tri" markerWidth="14" markerHeight="12" refX="13" refY="6" orient="auto">
+      <path d="M0,0 L13,6 L0,12 z" fill="#ffffff" stroke="#475569" stroke-width="1.2"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1160" height="1020" fill="#ffffff"/>
+  <text x="20" y="30" font-size="16" font-weight="bold" fill="#111827">phi-guardrails — object diagram &amp; surface map (spec ch. 0 §0.1 · D-48/D-49)</text>
+
+  <!-- namespace: Gate -->
+  <rect x="20" y="50" width="260" height="420" rx="8" fill="#f0f6ff" stroke="#94a3b8" stroke-dasharray="3 3"/>
+  <text x="32" y="70" class="ns-label">Gate — Phi-Guardrails-Gate</text>
+
+  <g><!-- PGRGate -->
+    <rect x="40" y="85" width="220" height="122" class="box"/>
+    <rect x="40" y="85" width="220" height="22" fill="#dbeafe" stroke="#334155"/>
+    <text x="150" y="100" text-anchor="middle" class="cls-name">PGRGate</text>
+    <text x="48" y="123" class="m caller">+forConfiguration:(config) $</text>
+    <text x="48" y="141" class="m caller">+onVerdict:(sink)</text>
+    <text x="48" y="159" class="m caller">+run() → PGRReport</text>
+    <text x="48" y="177" class="m caller">+runHeadless:(path) $</text>
+    <text x="48" y="195" class="m caller">+runHeadless:on:(p, strm) $</text>
+  </g>
+  <g><!-- PGRReport -->
+    <rect x="40" y="250" width="220" height="122" class="box"/>
+    <rect x="40" y="250" width="220" height="22" fill="#dbeafe" stroke="#334155"/>
+    <text x="150" y="265" text-anchor="middle" class="cls-name">PGRReport</text>
+    <text x="48" y="288" class="m caller">+verdicts</text>
+    <text x="48" y="306" class="m caller">+isClean</text>
+    <text x="48" y="324" class="m caller">+exitCode</text>
+    <text x="48" y="342" class="m caller">+blockingVerdicts</text>
+    <text x="48" y="360" class="m caller">+advisories</text>
+  </g>
+
+  <!-- namespace: Core (engine) -->
+  <rect x="310" y="50" width="265" height="790" rx="8" fill="#fafaf7" stroke="#94a3b8" stroke-dasharray="3 3"/>
+  <text x="322" y="70" class="ns-label">Core — engine</text>
+
+  <!-- namespace: SDK (published boundary) -->
+  <rect x="585" y="50" width="275" height="790" rx="8" fill="#f0fdf4" stroke="#94a3b8" stroke-dasharray="3 3"/>
+  <text x="597" y="70" class="ns-label">SDK — Phi-Guardrails-SDK (published boundary)</text>
+
+  <g><!-- PGRConfiguration -->
+    <rect x="330" y="85" width="235" height="140" class="box"/>
+    <rect x="330" y="85" width="235" height="22" fill="#e5e7eb" stroke="#334155"/>
+    <text x="447" y="100" text-anchor="middle" class="cls-name">PGRConfiguration</text>
+    <text x="338" y="123" class="m caller">+fromFile:(path) $</text>
+    <text x="338" y="141" class="m caller">+fromString:(ston) $</text>
+    <text x="338" y="159" class="m internal">~project  ~kitClasses</text>
+    <text x="338" y="177" class="m internal">~kitBlocks (handed to kits)</text>
+    <text x="338" y="195" class="m internal">(run-time only — D-53)</text>
+  </g>
+  <g><!-- PGRRegistry -->
+    <rect x="330" y="265" width="235" height="68" class="box"/>
+    <rect x="330" y="265" width="235" height="22" fill="#e5e7eb" stroke="#334155"/>
+    <text x="447" y="280" text-anchor="middle" class="cls-name">PGRRegistry</text>
+    <text x="338" y="303" class="m internal">~fromConfiguration:(config) $</text>
+    <text x="338" y="321" class="m internal">~registrations</text>
+  </g>
+  <g><!-- PGRRegistration -->
+    <rect x="330" y="373" width="235" height="158" class="box"/>
+    <rect x="330" y="373" width="235" height="22" fill="#e5e7eb" stroke="#334155"/>
+    <text x="447" y="388" text-anchor="middle" class="cls-name">PGRRegistration</text>
+    <text x="338" y="411" class="m internal">~fromSpec:(spec) $ — D-54</text>
+    <text x="338" y="429" class="m internal">~name  ~kind</text>
+    <text x="338" y="447" class="m internal">~isResolved</text>
+    <text x="338" y="465" class="m internal">~run() → PGRVerdict</text>
+    <text x="338" y="483" class="m internal">(fully engine-internal)</text>
+  </g>
+  <g><!-- PGRConfigurationDraft -->
+    <rect x="330" y="571" width="235" height="68" class="box"/>
+    <rect x="330" y="571" width="235" height="22" fill="#e5e7eb" stroke="#334155"/>
+    <text x="447" y="586" text-anchor="middle" class="cls-name">PGRConfigurationDraft</text>
+    <text x="338" y="609" class="m config">+draftFor:(baseline) $</text>
+    <text x="338" y="627" class="m internal">(authoring-time init tool, D-53)</text>
+  </g>
+
+  <g><!-- PGRCheck -->
+    <rect x="610" y="85" width="230" height="108" class="box"/>
+    <rect x="610" y="85" width="230" height="22" fill="#d1fae5" stroke="#334155"/>
+    <text x="725" y="100" text-anchor="middle" class="cls-name">PGRCheck</text>
+    <text x="725" y="118" text-anchor="middle" class="stereo">«skeleton — check protocol»</text>
+    <text x="618" y="139" class="m check">+run() → PGRVerdict</text>
+    <text x="618" y="157" class="m check">+kind</text>
+    <text x="618" y="175" class="m check">+canFix (false) · +fixCommandOn:</text>
+  </g>
+  <g><!-- PGRVerdict -->
+    <rect x="610" y="209" width="230" height="176" class="box"/>
+    <rect x="610" y="209" width="230" height="22" fill="#d1fae5" stroke="#334155"/>
+    <text x="725" y="224" text-anchor="middle" class="cls-name">PGRVerdict «value»</text>
+    <text x="618" y="247" class="m check">+green() $</text>
+    <text x="618" y="265" class="m check">+greenAdvisories:() $</text>
+    <text x="618" y="283" class="m check">+redFindings:() $</text>
+    <text x="618" y="301" class="m check">+missingReason:() $</text>
+    <text x="618" y="319" class="m caller">+status  +isGreen</text>
+    <text x="618" y="337" class="m caller">+registrationName</text>
+    <text x="618" y="355" class="m caller">+findings</text>
+  </g>
+  <g><!-- PGRFinding -->
+    <rect x="610" y="425" width="230" height="122" class="box"/>
+    <rect x="610" y="425" width="230" height="22" fill="#d1fae5" stroke="#334155"/>
+    <text x="725" y="440" text-anchor="middle" class="cls-name">PGRFinding «value»</text>
+    <text x="618" y="463" class="m check">+target:message: $</text>
+    <text x="618" y="481" class="m check">+target:message:rationale: $</text>
+    <text x="618" y="499" class="m caller">+target  +message</text>
+    <text x="618" y="517" class="m caller">+rationale</text>
+  </g>
+  <g><!-- PGRKit -->
+    <rect x="610" y="587" width="230" height="120" class="box"/>
+    <rect x="610" y="587" width="230" height="22" fill="#d1fae5" stroke="#334155"/>
+    <text x="725" y="602" text-anchor="middle" class="cls-name">PGRKit</text>
+    <text x="725" y="620" text-anchor="middle" class="stereo">«skeleton — kit protocol»</text>
+    <text x="618" y="641" class="m kit">+kitName() $</text>
+    <text x="618" y="659" class="m kit">+registrationsFrom:production-</text>
+    <text x="618" y="677" class="m kit">  Packages:testsPackages: $</text>
+    <text x="618" y="695" class="m kit">+recommendedBlock() $</text>
+  </g>
+  <g><!-- PGRRegistrationSpec (SDK vocabulary, D-54) -->
+    <rect x="610" y="771" width="230" height="68" class="box"/>
+    <rect x="610" y="771" width="230" height="22" fill="#d1fae5" stroke="#334155"/>
+    <text x="725" y="786" text-anchor="middle" class="cls-name">PGRRegistrationSpec «value»</text>
+    <text x="618" y="809" class="m kit">+name:kind:check: $</text>
+    <text x="618" y="827" class="m kit">+missing:kind:reason: $</text>
+  </g>
+  <g><!-- PGRConfigurationError (SDK vocabulary) -->
+    <rect x="610" y="717" width="230" height="46" class="box"/>
+    <rect x="610" y="717" width="230" height="22" fill="#d1fae5" stroke="#334155"/>
+    <text x="725" y="732" text-anchor="middle" class="cls-name">PGRConfigurationError «value»</text>
+    <text x="618" y="754" class="m caller">«Error» caller-catchable by class</text>
+  </g>
+
+  <!-- namespace: CodingKit -->
+  <rect x="890" y="50" width="255" height="790" rx="8" fill="#fdf5f9" stroke="#94a3b8" stroke-dasharray="3 3"/>
+  <text x="902" y="70" class="ns-label">Coding kit — Phi-Guardrails-Coding-*</text>
+
+  <g><!-- PGRFixCommand -->
+    <rect x="905" y="373" width="222" height="104" class="box"/>
+    <rect x="905" y="373" width="222" height="22" fill="#fce7f3" stroke="#334155"/>
+    <text x="1016" y="388" text-anchor="middle" class="cls-name">PGRFixCommand</text>
+    <text x="913" y="411" class="m fix">+rule:packages: $</text>
+    <text x="913" y="429" class="m fix">+previewOn:(stream)</text>
+    <text x="913" y="447" class="m fix">+apply()   +changes</text>
+    <text x="913" y="465" class="m fix" font-style="italic">implements the SDK fix protocol</text>
+  </g>
+  <g><!-- PGRCodingKit -->
+    <rect x="905" y="620" width="222" height="46" class="box"/>
+    <rect x="905" y="620" width="222" height="22" fill="#fce7f3" stroke="#334155"/>
+    <text x="1016" y="635" text-anchor="middle" class="cls-name">PGRCodingKit</text>
+    <text x="913" y="656" class="m internal">(implements the kit protocol)</text>
+  </g>
+
+  <!-- edges -->
+  <path class="edge" d="M260,120 L326,120" marker-end="url(#arr)"/>
+  <text x="266" y="113" class="elabel">consumes</text>
+
+  <path class="edge" d="M260,175 C300,190 305,260 326,285" marker-end="url(#arr)"/>
+  <text x="264" y="235" class="elabel">builds eagerly</text>
+
+  <path class="edge" d="M150,207 L150,246" marker-end="url(#arr)"/>
+  <text x="157" y="232" class="elabel">answers</text>
+
+  <path class="edge" d="M447,333 L447,369" marker-end="url(#arr)"/>
+  <text x="454" y="356" class="elabel">1..*</text>
+
+  <!-- Registration wraps Check : up the widened gap -->
+  <path class="edge" d="M565,400 C588,330 592,220 608,145" marker-end="url(#arr)"/>
+  <text x="578" y="278" class="elabel" transform="rotate(-78 578 278)">wraps (resolved)</text>
+
+  <!-- Registration run answers Verdict -->
+  <path class="edge" d="M565,455 C588,430 596,370 606,325" marker-end="url(#arr)"/>
+  <text x="586" y="415" class="elabel" transform="rotate(-55 586 415)">run answers</text>
+
+  <!-- Registry resolves kits : down the gap to PGRKit top -->
+  <path class="dep" d="M565,318 C596,420 596,510 628,583" marker-end="url(#arr)"/>
+  <text x="604" y="500" class="elabel" transform="rotate(70 604 500)">hands block + role lists</text>
+
+  <path class="edge" d="M725,385 L725,421" marker-end="url(#arr)"/>
+  <text x="732" y="408" class="elabel">1..*</text>
+
+  <!-- CodingKit is-a Kit -->
+  <path class="edge" d="M905,643 L856,643" marker-end="url(#tri)"/>
+  <text x="848" y="634" class="elabel">conforms</text>
+
+  <!-- CodingKit answers specs (D-54) -->
+  <path class="dep" d="M1000,666 C995,740 910,795 844,805" marker-end="url(#arr)"/>
+  <text x="856" y="732" class="elabel">answers specs</text>
+
+  <!-- engine wraps specs into internal registrations (D-54) -->
+  <path class="dep" d="M610,805 C578,770 572,660 556,540" marker-end="url(#arr)"/>
+  <text x="566" y="672" class="elabel" transform="rotate(-83 566 672)">engine wraps (D-54)</text>
+
+  <!-- Configuration signals error : down Core's left margin, along the bottom to SDK -->
+  <path class="dep" d="M340,225 C295,320 295,760 606,740" marker-end="url(#arr)"/>
+  <text x="296" y="430" class="elabel" transform="rotate(-90 296 430)">signals on defect</text>
+
+  <!-- legend -->
+  <rect x="20" y="855" width="1120" height="145" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="34" y="877" class="legend" font-weight="bold">Audience color coding (the D-48/D-49 surface map, SDK framing D-53/D-54)</text>
+  <rect x="34"  y="888" width="12" height="12" fill="#1d4ed8"/><text x="52"  y="898" class="legend">caller</text>
+  <rect x="120" y="888" width="12" height="12" fill="#0f766e"/><text x="138" y="898" class="legend">config author</text>
+  <rect x="248" y="888" width="12" height="12" fill="#b45309"/><text x="266" y="898" class="legend">check author</text>
+  <rect x="372" y="888" width="12" height="12" fill="#6d28d9"/><text x="390" y="898" class="legend">kit author</text>
+  <rect x="482" y="888" width="12" height="12" fill="#be185d"/><text x="500" y="898" class="legend">fix invoker</text>
+  <rect x="592" y="888" width="12" height="12" fill="#6b7280"/><text x="610" y="898" class="legend">internal (~ — may change without notice)</text>
+  <text x="34" y="924" class="legend">+ public (on its SDK, D-53) · ~ internal · $ class-side · «skeleton» optional superclass (conformance, not ancestry, is what registration requires) · «value» frozen SDK vocabulary · hollow triangle = conforms · dashed = builds/signals</text>
+  <text x="34" y="944" class="legend">PGRFixCommand is outside the gate's call graph by construction (P-FIX-GATE-WALL) — no arrow from Gate may ever reach it. Kits answer PGRRegistrationSpec values; PGRRegistration is engine-internal (D-54).</text>
+  <text x="34" y="964" class="legend">Elided for size: PGRVerdict kind/durationMillis/advisories (caller; scope removed with the two-scope model, D-51) · PGRConfiguration role-package accessors (kit author) · PGRCheck's fixCommandOn: takes a scope ·</text>
+  <text x="34" y="982" class="legend">PGRVerdict class>>skipped — exists (§1.3) but check authors must never emit it (D-21/D-32) · PGRFixCommand's errors: PGRNotAutofixable (renamed generic, D-54), PGRFixNotPreviewed, PGRFixStale.</text>
+</svg>
