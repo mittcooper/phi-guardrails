@@ -2001,3 +2001,121 @@ selector checked against §0.3, clean; guide 1's four registrations reconcile).*
    implies (`#architectureChecks` → `#architecture`); mismatch is a configuration
    error naming the registration, both kinds, and the class (G-6's rule, stated for
    the likelier tripper).
+
+---
+
+## D-61 · Gate-3 remediation slate: the roadmap validator's six findings ruled and applied
+
+- **From:** roadmap validation report (fresh-session validator, verdict reject,
+  six findings) + owner remediation notice of 2026-07-22 · **Ruled by:** human —
+  binding; veto-open only where marked · **Date:** 2026-07-22 · Amends
+  `plan/03-roadmap.md` in place; amends the method's placement check as applied
+  to this project.
+- **Rulings (a–f):**
+  - **a · Placement-annotation law (F-1).** Annotated splitting is legal: a v1
+    requirement lands in exactly one epic, **or** in several iff *every*
+    occurrence carries a scope annotation naming the part that epic owes; a bare
+    occurrence of a multi-placed ID is a finding. Applied: the six bare
+    occurrences annotated (R-06/E05 verdict half · R-12/E08 invocation half ·
+    R-32/E14 demonstration half · R-36/E01 framework + kit families · R-38/E09
+    M1 form · R-47/E09 self-adoption proof); R-15's three "halves" re-cut into
+    three named parts — the rule (E06) / the autofix (E08) / the self-hosting
+    (E09). *(Agent extension, veto-open: R-05 and R-47 carried the same defect —
+    three-way splits with two "half" annotations. Re-cut on this ruling's own
+    rationale ("three halves is not a partition"): R-05 → the configuration
+    statement (E03) / machine enforcement (E09) / the stand-in client (E12);
+    R-47 → the schema (E03) / the invocation contract (E05) / the self-adoption
+    proof (E09). Strike back to the ruling's literal punch list on veto.)*
+  - **b · Flush probe to E01 (F-2, agreed as found).** Stream-flush-before-
+    `Smalltalk exit:` joins E01's probe list — a five-line headless snippet
+    writing to stdout then exiting nonzero; the result is recorded against this
+    entry at M0, and E05 consumes it rather than discovering it. B-03 stays at
+    E06 (its backlog-recorded trigger).
+  - **c · M5 row struck (F-3).** §1's milestone table loses the M5 row; §6 is
+    the sole record of M5 scope (recorded, not epic-cut; its finish line is
+    defined by a roadmap re-entry when M4 closes). The table's rule is thereby
+    absolute: every row has an executable checkpoint, no exceptions.
+  - **d · E13 merged into E12 (F-4).** The init tool folds into the toy-client
+    epic: goal, spec refs (ch. 8 §8.1 step 1 · ch. 0 §0.3), R-31 (draft half),
+    and dependencies (E03, E06/E07) join E12; merged estimate ~7 chunks.
+    Knock-ons swept: §3 DAG node and edges gone (E15 depends on E14 alone), §4
+    float note and the M4 parallel pair removed (M4 is now strictly
+    sequential), §7 item 3 rewritten. The label E13 is retired, never reused
+    (the corpus's stable-ID convention).
+  - **e · Arithmetic (F-5).** §4's headline corrected to match the table:
+    **14 epics, ~72 chunks** (the prior "~68" never matched its own rows; the
+    track sums 23/17 were correct and stand — the merge is count-neutral).
+  - **f · R-03 restored (F-6).** §6's M5 scope-on-record now holds all seven
+    v1-widen requirements; R-03 enters as documentation-tier (promotion =
+    inclusion in the kit's recommended block, per D-51).
+  - **g · R-31 annotation completed (owner ruling on the D-61 report's raised
+    question).** R-31 stays single-placed in E12; no epic is invented for the
+    adoption half. Its annotation now states the remainder instead of implying
+    one: *the adoption half is code-free post-D-45* — documented in ch. 8 §8.1,
+    exercised by guide 2's samples (E09) and the toy's extension package (E12),
+    with the cross-repo dependency proof at §8.4/M5. Exact wording agent-chosen,
+    veto-open; the four facts (code-free · §8.1 · E09/E12 exercise · §8.4/M5
+    proof) are the ruling. The sweep gains the companion assertion: no other
+    single-placed requirement carries a bare "half" annotation.
+  - **h · Post-PASS minor punch list (owner notice; one batch, no re-validation).**
+    (1) E02 gains a **Properties** line claiming P-CANFIX-DEFAULT (its test
+    subject was already in E02's goal) — every ch. 9 runtime property now has a
+    named epic owner. (2) §3's DAG parenthetical discloses **both**
+    milestone-barrier stand-in arrows — E09→E10 ("M1 complete"; true deps
+    E06/E02) beside E11→E12 ("M2 complete") — so the "arrows are true epic
+    dependencies" caption is accurate for both. Sweep companions: all 41
+    testable ch. 9 properties (42 minus process-tier P-SPELLINGS) are owned
+    under the placement law — Properties-line claims, part-annotated splits
+    legal; a property with no Properties-line claim must be named by exactly
+    one epic's body (the two such cases: P-FIX-GATE-WALL → E09's goal,
+    P-WRAPPER-GUARD → E15's goal — operationalization agent-chosen, veto-open)
+    — and both stand-in arrows are named in the parenthetical.
+  - **i · E01 "harness" disambiguated (owner ruling).** The Phi family also uses
+    "harness" for the TBD agent/orchestration harness that *invokes* the gate
+    (the P7 discussions) — explicitly not this project. E01's harness is the
+    **build/test harness**: toolchain, verify command, `.smalltalk.ston`, CI
+    step 1. Applied: E01's title, the M0 table row name, §0's closing line, and
+    the §3 DAG node label all read "build/test harness" (four occurrences). The
+    fifth occurrence — E09's risk note, "the verbatim-sample execution
+    harness" — is a third thing (test-side sample-execution machinery), judged
+    already unambiguous by its own qualifier and left as is (agent judgment,
+    veto-open: qualify it too on veto). No occurrence means the agent harness —
+    nothing scope-shaped to raise. Sweep companion: every "harness" occurrence
+    in the roadmap reads "build/test harness" or "sample execution harness";
+    a bare "harness" is a finding.
+- **Consequences:** `plan/03-roadmap.md` amended in place; its preamble carries
+  the amendment notice. The post-remediation consistency sweep asserts: no
+  surviving E13 reference outside merge notes, no M5 row in §1, every
+  multi-placed requirement ID annotated at every occurrence, totals matching the
+  epic table. Re-validation runs against the amended placement check.
+
+---
+
+## D-62 · Gate 3 closed: the roadmap is approved and frozen
+
+- **From:** owner approval notice of 2026-07-22 (Gate 3) · **Ruled by:** human —
+  binding · **Date:** 2026-07-22
+- **Ruling:** `plan/03-roadmap.md` is **approved and frozen at D-62**. The three
+  §7 items are confirmed, no vetoes:
+  1. **Milestone relabeling confirmed** — M3 retired, M4/M5 meanings preserved;
+     the D-59 guide anchors as ruled (guides 2–3 → M1, guide 1 → M4).
+  2. **Every veto-open spelling and choice closes on the D-16 precedent:** the
+     §7 item-2 roster — `packages:` + role-by-block-key + skeleton reader
+     (D-60.7) · the check-author `PGRConfigurationError` grant reading (D-60.1)
+     · `PCKKit` (D-56) · P-GUIDE-EXEC name and test shape (D-59) · the D-55
+     `printString` snippet correction — plus every veto-open accumulated in
+     D-61 a–i: the annotation wordings · the R-05/R-47 re-cuts · D-61.b as the
+     flush-probe recording anchor · the property-ownership fallback (D-61.h) ·
+     the harness allowlist and the E09 left-as-is judgment (D-61.i). **Settled
+     ground: never re-litigate.**
+  3. **Small-epic item confirmed as rewritten** — no epics outside the 3–10
+     band.
+- **Validation history:** fresh-session validation REJECT (six findings) →
+  remediation D-61 a–f → fresh-session re-validation **PASS** → post-PASS
+  owner-ruled minor rounds D-61.g–i (no re-validation required) → approval.
+- **Consequences:** the roadmap's preamble carries the frozen-at-D-62 marker
+  beside the D-61 amendment notice; §7 is retitled as ruled at gate close, its
+  items retained as the record of what was confirmed. The full D-61/D-62 sweep
+  suite re-ran clean at freeze. **The stage advances to Prompt 4 (per-epic
+  chunk work orders) with the frozen roadmap as its input; no further roadmap
+  edits without an owner notice.**
