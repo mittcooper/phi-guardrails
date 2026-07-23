@@ -130,9 +130,21 @@ prose states the same steps once, so docs and CI cannot diverge:
 
 1. Fetch a Pharo 13 headless VM and image (the toolchain the verification sessions
    used; spellings ⟨verify⟩, queued with the M0 probe list).
-2. Load the code the gate will judge, via Metacello: for the framework's own CI, the
-   baseline's `CI` group; for any other target, the framework baseline plus the
-   target project's own baseline, loaded the way that project normally loads.
+2. Load the code the gate will judge, via Metacello — the framework:
+
+   ```smalltalk
+   Metacello new
+       baseline: 'PhiGuardrails';
+       repository: 'github://<org>/phi-guardrails:main/src';
+       load.
+   ```
+
+   (placeholder URL, ⟨verify⟩ — queued with the M0 probe list) — then the target
+   project's own baseline, loaded the way that project normally loads; the
+   framework's own CI loads the baseline's `CI` group instead. The committed CI
+   workflow carries the real form of this same load expression — the executable copy,
+   so docs and CI cannot diverge on the load step either (checked when the workflow
+   lands, D-60.a).
 3. Set `$PHARO_VM` and `$IMAGE`, then invoke `./guardrails.sh <config-path>`.
 
 The wrapper treats **any exit code that is not exactly 0, 1, or 2 as failure** (D-45):

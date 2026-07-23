@@ -1970,3 +1970,34 @@ was executed; the two tables are the spellings inventory.
 - **Consequences:** the D-59 G-slate is fully dispositioned (1–7 ruled and applied,
   8 ratified); the quickstart round closes. The guides now cite only promised
   surface; P-GUIDE-EXEC's milestone tests will hold them there.
+
+**Addendum D-60.a · Walkthrough residue: the load expression, two guide polish
+items** *(owner mini-notice of 2026-07-22, after a full walkthrough — every sample
+selector checked against §0.3, clean; guide 1's four registrations reconcile).*
+
+1. **The Metacello load expression (the G-1 species, one survivor).** §7.3's recipe
+   step 2 and guide 1's step 2 named the load without making it executable. Both now
+   carry the expression verbatim (`Metacello new baseline: 'PhiGuardrails';
+   repository: 'github://<org>/phi-guardrails:main/src'; load`) — placeholder URL,
+   ⟨verify⟩-marked, queued with the M0 probe list. **Workflow confirmation deferred,
+   raised not resolved:** `.github/workflows/ci.yml` does not yet exist on disk (the
+   repo is planning-corpus only; the workflow is an M0/M4 deliverable), so "the
+   workflow contains the real form of the same expression" cannot be confirmed
+   today — it becomes a landing condition recorded here: when the workflow is first
+   committed, its load expression must be the real form of §7.3's, checked with the
+   same M0 probe pass (the docs-can't-diverge argument, extended to the load step;
+   §7.3 cites this addendum). One wrinkle for the M0 executor, named now: the
+   workflow's step 1 loads via smalltalkCI's `SCIMetacelloLoadSpec` (`#directory :
+   'src'`, the local checkout), not a `github://` URL — "the real form" is the
+   image-assembly load for step 2's gate image; equivalence is judged there, not on
+   the smalltalkCI spec. With the expression in place, guide 1's
+   "runnable-gate-from-zero on promised material alone" claim holds with no
+   prose-only steps.
+2. **Guide 3 idiom (advisory, applied):** `self class environment at:` →
+   `self environment at:` in the class-side sample — the idiomatic form for teaching
+   material; ⟨verify⟩ marking stays.
+3. **Guide 2 gains the kind↔block-key trap (advisory, applied):** one sentence after
+   the protocol paragraph — the check's `kind` must match the kind its block key
+   implies (`#architectureChecks` → `#architecture`); mismatch is a configuration
+   error naming the registration, both kinds, and the class (G-6's rule, stated for
+   the likelier tripper).

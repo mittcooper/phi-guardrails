@@ -46,7 +46,7 @@ DKKit class >> registrationsFrom: block productionPackages: prodNames testsPacka
         PGRConfigurationError signal: 'unknown key in Demo kit block: '
             , unknown anyOne printString ].
     ^ (block at: #docChecks ifAbsent: [ #() ]) collect: [ :name |
-        (self class environment at: name asSymbol ifAbsent: [ nil ])
+        (self environment at: name asSymbol ifAbsent: [ nil ])
             ifNil: [ PGRRegistrationSpec
                         missing: 'doc/' , name kind: #doc
                         reason: 'name resolves to no loaded class' ]

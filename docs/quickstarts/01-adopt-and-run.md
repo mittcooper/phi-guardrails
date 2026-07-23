@@ -63,8 +63,15 @@ is three steps (spec ch. 7 §7.3 — the framework's own CI workflow is the exec
 tested copy of the same steps): ⟨verify⟩
 
 1. Fetch a Pharo 13 headless VM and image.
-2. Load, via Metacello, the framework's baseline (`BaselineOfPhiGuardrails`) and your
-   project's own baseline, the way your project normally loads.
+2. Load the framework, then your project the way it normally loads: ⟨verify⟩
+
+   ```smalltalk
+   Metacello new
+       baseline: 'PhiGuardrails';
+       repository: 'github://<org>/phi-guardrails:main/src';
+       load.
+   ```
+
 3. Point the runner at the pieces and the config:
 
 ```bash

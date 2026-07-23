@@ -13,7 +13,10 @@ target package names — everything your check knows, it was given at constructi
 `PGRVerdict`), `kind` (a `Symbol`), and `canFix` (a `Boolean`; `fixCommandOn:`
 additionally, only when `canFix` is true). Conformance is validated loudly when the
 registry is built — a registered class missing a selector is a configuration error
-naming the class and the selector, never a strange mid-run failure.
+naming the class and the selector, never a strange mid-run failure. One agreement to
+keep: the `kind` you answer must match the kind your block key implies
+(`#architectureChecks` → `#architecture`); a mismatch is a configuration error at
+registry build naming the registration, both kinds, and your class.
 
 Your only dependency is the boundary package **`Phi-Guardrails-SDK`** — never the
 engine — and it is development-scoped: your shipped product never depends on a
