@@ -81,8 +81,9 @@ comments state constraints the code cannot show, nothing else.
 
 **Mutation discipline.** The framework never mutates client code except through the
 explicit, preview-first fix command (D-06); the gate only reports. Nothing in this repo
-may write files outside `src/`, `plan/`, the root artifacts and CI workflow the
-spec names (`guardrails.ston`, `.smalltalk.ston`, `guardrails.sh`,
+may write files outside `src/`, `plan/`, `docs/` (product documentation — the
+quickstart guides), the root artifacts and CI workflow the spec names
+(`guardrails.ston`, `.smalltalk.ston`, `guardrails.sh`,
 `.github/workflows/ci.yml` — spec ch. 7), and scratch files a test creates and deletes in
 `setUp`/`tearDown` — or call the network.
 

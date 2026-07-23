@@ -76,7 +76,11 @@ coding kit's `registrationsFrom:productionPackages:testsPackages:` builds one
 `PCKSuiteRunCache` — a plain object created
 per registry construction, closed over by the behavioral registrations of that run, and
 discarded with them (this is run-scoped sharing, not global state; R-35 holds: no
-class-side variables, no lookup by name). Protocol: **one message**,
+class-side variables, no lookup by name). The kit constructs its own behavioral
+checks directly — closing them over the cache is exactly the richer kit-side wiring
+D-60 leaves to a kit's own classes; a client class named in `#metaRules` is
+instantiated via the promised `packages:` constructor with the tests-role package
+names, and reaches no cache (ch. 1 §1.4). Protocol: **one message**,
 `resultsForPackage:` — lazily runs §5.2 step 1 on first request per package and answers
 the cached `TestResult` thereafter. Correctness rests on the cache alone (D-36): suite
 registrations and the meta-rule both pull by package name, so no reader depends on what

@@ -97,13 +97,14 @@
   </g>
 
   <g><!-- PGRCheck -->
-    <rect x="610" y="85" width="230" height="108" class="box"/>
+    <rect x="610" y="85" width="230" height="122" class="box"/>
     <rect x="610" y="85" width="230" height="22" fill="#d1fae5" stroke="#334155"/>
     <text x="725" y="100" text-anchor="middle" class="cls-name">PGRCheck</text>
     <text x="725" y="118" text-anchor="middle" class="stereo">«skeleton — check protocol»</text>
-    <text x="618" y="139" class="m check">+run() → PGRVerdict</text>
-    <text x="618" y="157" class="m check">+kind</text>
-    <text x="618" y="175" class="m check">+canFix (false) · +fixCommandOn:</text>
+    <text x="618" y="139" class="m check">+packages:() $ (targets at construction, D-60)</text>
+    <text x="618" y="157" class="m check">+run() → PGRVerdict</text>
+    <text x="618" y="175" class="m check">+kind</text>
+    <text x="618" y="193" class="m check">+canFix (false) · +fixCommandOn:</text>
   </g>
   <g><!-- PGRVerdict -->
     <rect x="610" y="209" width="230" height="176" class="box"/>
@@ -127,14 +128,13 @@
     <text x="618" y="517" class="m caller">+rationale</text>
   </g>
   <g><!-- PGRKit -->
-    <rect x="610" y="587" width="230" height="120" class="box"/>
+    <rect x="610" y="587" width="230" height="104" class="box"/>
     <rect x="610" y="587" width="230" height="22" fill="#d1fae5" stroke="#334155"/>
     <text x="725" y="602" text-anchor="middle" class="cls-name">PGRKit</text>
-    <text x="725" y="620" text-anchor="middle" class="stereo">«skeleton — kit protocol»</text>
-    <text x="618" y="641" class="m kit">+kitName() $</text>
-    <text x="618" y="659" class="m kit">+registrationsFrom:</text>
-    <text x="618" y="677" class="m kit" font-size="10">  productionPackages:testsPackages: $</text>
-    <text x="618" y="695" class="m kit">+recommendedBlock() $</text>
+    <text x="725" y="620" text-anchor="middle" class="stereo">«skeleton — kit protocol, two messages (D-60)»</text>
+    <text x="618" y="641" class="m kit">+registrationsFrom:</text>
+    <text x="618" y="659" class="m kit" font-size="10">  productionPackages:testsPackages: $</text>
+    <text x="618" y="677" class="m kit">+recommendedBlock() $ → STON text</text>
   </g>
   <g><!-- PGRRegistrationSpec (SDK vocabulary, D-54) -->
     <rect x="610" y="771" width="230" height="68" class="box"/>

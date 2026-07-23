@@ -100,6 +100,7 @@ classDiagram
     namespace SDK {
         class PGRCheck {
             <<skeleton>>
+            +packages:(names)$
             +run() PGRVerdict
             +kind
             +canFix (default false)
@@ -126,7 +127,6 @@ classDiagram
         }
         class PGRKit {
             <<skeleton>>
-            +kitName()$
             +registrationsFrom:productionPackages:testsPackages:()$
             +recommendedBlock()$
         }
@@ -236,10 +236,10 @@ sequenceDiagram
     G->>C: fromFile: configPath
     Note over C: strict envelope validation (D-16, D-25, D-45)<br/>defect → PGRConfigurationError → exit 2
     G->>R: fromConfiguration: config
-    Note over R: blocks open here, once (D-51): each kit validates its block (D-41)<br/>+ protocol conformance of every named, loaded check class (D-53)<br/>defect → PGRConfigurationError → exit 2, before any check runs
+    Note over R: blocks open here, once (D-51): each kit validates its block (D-41)<br/>and instantiates the checks it names (the promised packages: constructor, D-60)<br/>defect → PGRConfigurationError → exit 2, before any check runs
     R->>K: registrationsFrom: block productionPackages: pp testsPackages: tp (never the config object, D-53)
     K-->>R: ordered PGRRegistrationSpec values (check | missing-reason)
-    Note over R: engine wraps each spec into its internal PGRRegistration (D-54)
+    Note over R: engine validates each resolved spec's check instance —<br/>conformance + kind agreement (specs, never block contents, D-53/D-60) —<br/>then wraps it into its internal PGRRegistration (D-54)
     loop registry order
         G->>Reg: run
         Reg-->>G: PGRVerdict (findings, advisories)
@@ -263,8 +263,8 @@ conformance before any check runs (§1.4).
 
 | SDK | Contents |
 |---|---|
-| **Check-author SDK** | the check **protocol**: `run` → verdict, `kind`, and the fix capability, two messages (D-54): `canFix` (skeleton default false) + `fixCommandOn:` (required when `canFix`; answers an object conforming to the fix-invocation protocol — spellings veto-open, shape ruled); the `PGRVerdict` constructors (`green`, `greenAdvisories:`, `redFindings:`, `missingReason:`); the `PGRFinding` constructors (`target:message:`, `target:message:rationale:`); class-side `severity` mandatory for registered lint rules (D-41); the fixture-pair requirement (R-37/R-46) |
-| **Kit-author SDK** | contains the Check-author SDK, **plus** the kit **protocol**, three messages (D-53/D-54) — `kitName` · `registrationsFrom:productionPackages:testsPackages:` (its verbatim block + the resolved role package lists; **never the configuration object** — over-reach is impossible, not caught) answering **`PGRRegistrationSpec`** values · `recommendedBlock` (the published stanza, single-sourced on the class; the init tool composes from it, docs quote it — self-validated by P-STANZA-VALID) — plus the `PGRRegistrationSpec` constructors (`name:kind:check:` / `missing:kind:reason:`) |
+| **Check-author SDK** | the check **protocol**: the promised class-side constructor **`packages:`** (spelling veto-open, D-60) — the kit that names a check instantiates it, handing its target package names at construction; `run` stays argument-less and a check never pulls context from anywhere — everything it knows, it was given; the skeleton carries the default implementation — then `run` → verdict, `kind`, and the fix capability, two messages (D-54): `canFix` (skeleton default false) + `fixCommandOn:` (required when `canFix`; answers an object conforming to the fix-invocation protocol — spellings veto-open, shape ruled); the `PGRVerdict` constructors (`green`, `greenAdvisories:`, `redFindings:`, `missingReason:`); the `PGRFinding` constructors (`target:message:`, `target:message:rationale:`); **`PGRConfigurationError`, signalling side** (construction-time parameter validation — the layer-map laws are the exemplar, D-60); class-side `severity` mandatory for registered lint rules (D-41); the fixture-pair requirement (R-37/R-46) |
+| **Kit-author SDK** | contains the Check-author SDK, **plus** the kit **protocol**, **two messages** (D-53/D-54 as amended by D-60 — `kitName` dropped: no consumer existed; the class name is the identity) — `registrationsFrom:productionPackages:testsPackages:` (its verbatim block + the resolved role package lists; **never the configuration object** — over-reach is impossible, not caught) answering **`PGRRegistrationSpec`** values · `recommendedBlock` (the published stanza, single-sourced on the class, answering **STON text** (D-60) — the init tool composes that text into the draft, docs quote it — self-validated by P-STANZA-VALID) — plus the `PGRRegistrationSpec` constructors (`name:kind:check:` / `missing:kind:reason:`) and **`PGRConfigurationError`, signalling side** (D-60): a kit that cannot resolve or validate its own block raises it |
 
 **Consumer side (split by mutation rights):**
 
@@ -317,9 +317,14 @@ readability of every surface — error text, findings, report — is a product r
   client never operates its own gate (P7, R-47). → P-CORE-NEUTRAL; R-47's adoption
   test (§8.4).
 - **Conformance is validated before any check runs** — registration requires protocol
-  conformance, not ancestry (D-53): a named, loaded class that does not respond to its
-  protocol is a configuration error naming the class and the missing selector, at
-  registry construction — never a strange failure mid-run. → P-CONFORMANCE.
+  conformance, not ancestry (D-53), and validation operates **on the specs kits
+  answer, never on block contents** (D-60): the core validates every resolved spec's
+  check instance — protocol conformance plus kind agreement (the spec's kind must
+  equal the check's own `kind`) — at registry construction, so blocks stay fully
+  opaque and the resident coding kit and an external kit have *identical* validation
+  paths; a failure is a configuration error naming the registration, the class, and
+  the missing selector or both kinds — never a strange failure mid-run. →
+  P-CONFORMANCE.
 - **Validation is independent of enforcement** — the tests that prove the checks work
   never run through the gate, so a gate defect cannot suppress the tests that detect
   it: CI loads committed source, meaning a changed gate is judged by the changed gate —

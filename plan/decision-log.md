@@ -1764,3 +1764,209 @@ was executed; the two tables are the spellings inventory.
 - **Consequences:** 100 replacements across all ten spec chapters + glossary + the
   SVG + requirements; short-form (`-Coding-Rules`) and regex sites hand-amended; the
   pre-D-57 package spellings in D-01…D-56 entries are append-only history and stand.
+
+---
+
+## D-58 · Bookkeeping rider recorded: D-50's constitution thread discharged; `BaselineOfToy` joins the M0 collision probe
+
+- **From:** owner rider notice of 2026-07-22 (two bookkeeping items) · **Ruled by:**
+  owner; recorded per the D-38/D-50 pattern, owner ground verified on disk before
+  recording · **Date:** 2026-07-22
+- **1 · The D-50 owner thread on the constitution's "pattern" line is discharged.**
+  D-50 flagged the stale `"'pattern' is always qualified (secret · AST)"` wording as
+  the owner's to amend; the owner amended it during the round-7 fixes — the line now
+  reads *"'pattern' means the AST sense only (the secret sense left with its check,
+  D-37)"* (verified on disk this entry, `plan/00-constitution.md` line 52). No open
+  owner-amendment thread remains from D-50.
+- **2 · The M0 collision probe (D-56 rider a) gains `BaselineOfToy`** alongside the
+  `PCK` and `Toy` class prefixes — a plausibly-colliding name in a shared image. The
+  acceptance was the owner's rider from the package round (D-57), given in review but
+  never carried into a notice, so the log's probe list did not record it until now.
+- **Consequences:** none in the spec — the probe list lives only in this log (verified
+  by sweep: no spec chapter, glossary, requirements, pack, or backlog site carries the
+  collision-probe list), so this entry is the complete record; the M0 executor reads
+  the probe as: `PCK` prefix · `Toy` prefix · `BaselineOfToy` class name, each
+  confirmed collision-free in the stock Pharo 13 image (D-31.a toolchain, D-11's house
+  style).
+
+---
+
+## D-59 · Quickstart guides: one per audience, written against the frozen surfaces — a design test wearing documentation's clothes
+
+- **From:** owner update notice of 2026-07-22 (quickstart guides) · **Ruled by:**
+  human — binding · **Date:** 2026-07-22 · Owner ground verified on disk before
+  recording (D-38 pattern): the constitution's write boundary admits `docs/`
+  ("product documentation", line 84).
+- **Ruling:** new artifact family **`docs/quickstarts/`** — three guides, one per
+  audience pairing, each writable using **only** the messages, files, and error
+  classes its audience's SDK promises (ch. 0 §0.3 + the schema). The guides execute
+  ch. 0's review-tier complete-and-minimal test (D-54.5's judgment-tier walk, now
+  performed in earnest): anything a guide needs that is unpromised is a **surface
+  gap — raised, never patched**. The guides are producer-owned, join the
+  freeze-check/validator scope, become Prompt 3's milestone anchors ("the guide's
+  sample runs end-to-end"), and script §8.4's external-adoption proof (D-45 ruling
+  5 — usable cold). Tone: a Pharo developer who has never heard of Phi; no
+  decision-log numbers in bodies (footers carry the ruling trail).
+- **Produced (this entry):** `docs/quickstarts/01-adopt-and-run.md` (config author +
+  gate caller: schema, recommended-block composition, `guardrails.sh`, exit codes
+  0/1/2/3, in-image run with caller-supplied sink, `PGRConfigurationError`, missing
+  semantics, the two likely first-run failures) ·
+  `docs/quickstarts/02-write-a-check.md` (check author: conformance-not-ancestry
+  both ways — skeleton and plain class; verdict/finding constructors; fixture pair;
+  registration; lint-rule sidebar with D-41's explicit severity; the fix capability
+  and three catchable errors) · `docs/quickstarts/03-build-a-kit.md` (kit author:
+  the three-message contract, stanza/`recommendedBlock`, answering
+  `PGRRegistrationSpec` values, block-verbatim-plus-role-lists handoff, D-57
+  symmetry law, SDK-only edge). Each carries the P5 header: samples unexecutable
+  until the guide's anchor milestone, marked ⟨verify⟩, executed verbatim by a test
+  at that milestone.
+- **Ch. 9 amendment:** §9.2 gains **P-GUIDE-EXEC** (name veto-open) — every sample
+  in `docs/quickstarts/*.md` is executed verbatim at its guide's milestone and must
+  behave as the guide states (exit codes, verdict names, signalled error *classes* —
+  never error wording, which is not an API); a sample the surface no longer
+  satisfies is a red test, not a stale document.
+- **Surface gaps found while writing (the exercise working — raised, none resolved;
+  each is marked descriptively at its site in the guide, with the footer pointing
+  here):**
+  1. **G-1 · The image-assembly recipe is promised nowhere.** Ch. 0 §0.1 ships the
+     reference runner as "`guardrails.sh` (+ image-assembly recipe, §7.3)", but §7.3
+     specifies only the invocation script. A cold adopter cannot get from zero to a
+     runnable gate (framework + target project loaded; `$PHARO_VM`/`$IMAGE`
+     contents) on promised material alone — guide 1's assembly step is an
+     inference-marked sketch.
+  2. **G-2 · Custom-check instantiation and target handoff are unspecified.** The
+     check-author SDK promises `run`/`kind`/`canFix`(+`fixCommandOn:`) but not how a
+     class named in `#architectureChecks` (§4.3, §8.1 step 3) is instantiated or
+     handed targets/parameters. The v1 checks each receive bespoke parameter keys
+     (§1.5's footnote owns that trade), but a client check author has no stated way
+     to receive the production packages — guide 2's sample hardcodes its target and
+     flags the gap.
+  3. **G-3 · Kits must raise `PGRConfigurationError` but it is not in the
+     kit-author SDK.** Ch. 1 §1.4 obliges the kit to raise configuration errors on
+     unknown block keys; §0.3 lists the class only as gate-caller-catchable
+     vocabulary. Guide 3's sample uses the inherited `Error` signalling protocol,
+     flagged as unpromised.
+  4. **G-4 · `recommendedBlock`'s answer type is unspecified** — STON text or a
+     block map? P-STANZA-VALID's "parses cleanly" suggests text; ch. 1 §1.3 is
+     silent. Guide 3 samples STON text, flagged.
+  5. **G-5 · `kitName`'s consumer is unspecified.** Block resolution uses the class
+     name (`#kit : 'PCKKit'` → loaded subclass); nothing states what reads
+     `kitName`, so a kit author cannot know what their answer affects.
+  6. **G-6 · Spec-kind vs check-kind agreement is unstated.** A
+     `PGRRegistrationSpec` carries a kind the kit supplies, and the check itself
+     answers `kind`; whether they must agree, and who checks disagreement, is
+     specified nowhere.
+  7. **G-7 · Conformance validation collides with block opacity for third-party
+     kits.** §1.1/§1.4 assign conformance validation of "every check class the
+     block names" to the construction machinery, but blocks are opaque to the core:
+     for a foreign kit's custom keys the machinery cannot enumerate named classes.
+     Either the kit carries an unpromised validation duty, or the machinery
+     validates the spec-carried check instances after the kit answers — workable,
+     but a different letter than "named … before any check runs", and it never sees
+     entries the kit already marked missing. The v1 resident kit masks this; an
+     external kit (B-08) exposes it.
+  8. **G-8 · "The error text a user actually sees" cannot be promised.** The notice
+     asks guide 1 to include it, but error wording is human-facing and explicitly
+     not an API (D-48). Resolved editorially, flagged for awareness: the guides show
+     representative text labeled illustrative, and P-GUIDE-EXEC asserts signalled
+     error classes, never wording.
+- **Veto-open choices (D-16 precedent):** the property name **P-GUIDE-EXEC** and its
+  test shape — `PGRQuickstartSamplesTest` with one method per guide
+  (`testAdoptAndRunSamples` / `testWriteACheckSamples` / `testBuildAKitSamples`),
+  home a tests-role package chosen at landing (it drives the gate only on
+  sample/scratch configurations — nests and terminates, the D-46 argument) ·
+  milestone anchors: adopt-and-run → **M4**, write-a-check and build-a-kit → **M1**
+  (working anchors from pack §8's milestone shape; Prompt 3 confirms or moves them)
+  · sample namespaces `Acme` (adopter) and `Demo-Kit`/`DK` (kit) — invented,
+  framework-neutral, disjoint from `PGR`/`PCK`/`Toy` · in-body gap markers are
+  descriptive ⟨verify — open surface item⟩ notes (no G-numbers in bodies), with
+  each guide's footer pointing at this entry.
+- **Consequences:** `docs/quickstarts/` created (three files; producer-owned;
+  freeze-check/validator scope); ch. 9 §9.2 gains P-GUIDE-EXEC; the G-1…G-8 slate
+  awaits owner disposition — G-2, G-3, G-6, and G-7 look surface-shaping (candidate
+  SDK completions, the D-48→D-49 pattern), G-4 and G-5 look one-line rulings, G-1
+  is a §7.3 addendum, G-8 is recorded as handled. No other spec file, requirement,
+  or coverage row changes under this entry. *(The slate is ruled next entry — D-60.)*
+
+---
+
+## D-60 · The G-1…G-8 slate ruled: surfaces completed, kit contract to two messages, spec-level validation — the quickstart round closes
+
+- **From:** owner update notice of 2026-07-22 (rulings on D-59's eight surface gaps)
+  · **Ruled by:** human — binding; veto-open only where marked · **Date:** 2026-07-22
+  · Amends D-53/D-54's surface tables; cites D-59.
+- **One-line rulings:**
+  1. **G-3 · `PGRConfigurationError` joins the kit-author SDK, signalling side** — a
+     kit that cannot resolve or validate its own block raises it; promised to kit
+     authors, not just callers. *(Interpretation recorded, veto-open: the notice's
+     amendment list also grants it to the **check-author** SDK, signalling side —
+     read as deliberate, with construction-time parameter validation as the consumer;
+     the layer-map laws (D-35, raised at check construction under G-2's contract)
+     are the exemplar. Both tables amended; strike the check-author half on veto.)*
+  2. **G-4 · `recommendedBlock` answers STON text** (a string): the init tool
+     composes that text into the draft, docs quote it, P-STANZA-VALID parses it.
+  3. **G-5 · `kitName` is dropped** — no consumer exists; the class name is the
+     identity (block resolution already uses it; one thing, one place). The kit
+     contract returns to **two messages**:
+     `registrationsFrom:productionPackages:testsPackages:` · `recommendedBlock`.
+  4. **G-6 · Spec kind and check kind must agree**, validated at registry
+     construction; a mismatch is a configuration error naming the registration, both
+     kinds, and the check class. Missing-specs keep their explicit kind (no check
+     exists to ask).
+  5. **G-8 · Ratified as executed:** illustrative error text stays labeled
+     illustrative; P-GUIDE-EXEC asserts error *classes* and exit codes, never
+     wording. No further action.
+- **Small design rulings:**
+  6. **G-1 · §7.3 gains the image-assembly recipe**, documented as what the committed
+     CI workflow already does — `.github/workflows/ci.yml` is the *executable copy*;
+     the prose recipe states the same steps (fetch headless Pharo 13 → Metacello-load
+     the judged code → set `$PHARO_VM`/`$IMAGE`, invoke `./guardrails.sh`) and cites
+     the workflow as the tested form, so docs and CI cannot diverge. Spellings
+     ⟨verify⟩, queued with the M0 probe list. Guide 1 quotes the recipe; "runnable
+     gate from zero" is now reachable on promised material alone.
+  7. **G-2 · The instantiation contract:** the kit that names a check instantiates
+     it, via one promised class-side constructor handing the check its targets at
+     construction; `run` remains argument-less; a check never pulls context — 
+     everything it knows, it was given. Joins the check-author SDK; the skeleton
+     carries the default implementation. **Spelling chosen, veto-open:**
+     **`packages:`** (the notice's example) — takes the target package *names*; the
+     role handed is the one the block key implies (`#architectureChecks` →
+     production-role, `#metaRules` → tests-role); the skeleton stores the list and
+     exposes it to subclasses as instance reader `packages` (agent detail). Kit-side
+     riders recorded as agent details in ch. 1 §1.4: a kit's *own* classes may use
+     richer kit-side constructors (the parameterized v1 checks, the cache-closing
+     behavioral checks); a named class answering neither path is a configuration
+     error the kit raises.
+  8. **G-7 · Conformance validation operates on the specs kits answer — never on
+     block contents.** The core validates every resolved spec's check instance
+     (conformance + G-6's kind agreement) at registry construction; blocks stay
+     fully opaque, so the resident coding kit and an external kit have *identical*
+     validation paths. The kit's stated duty: resolve names inside its own block,
+     answering missing-specs or raising `PGRConfigurationError` (per ruling 1).
+     P-CONFORMANCE reworded accordingly.
+- **Amendments applied (this entry):** ch. 0 §0.3 (check-author gains `packages:` +
+  the error; kit-author two messages, STON text, the error), §0.4 conformance
+  invariant, §0.2 sequence-diagram notes, **both** object-diagram views (mermaid +
+  SVG: `kitName` gone, constructor added, kit header "two messages", STON-text
+  arrow) · ch. 1 §1.1 (two-stage paragraph → spec-level validation), §1.3
+  (`PGRCheck` constructor row, `PGRKit` two-message row, `PGRConfigurationError`
+  signalling surfaces), §1.4 step 2 (kit duty, instantiation law, spec-level
+  conformance + kind agreement) · ch. 2 §2.3, ch. 4 §4.3, ch. 5 §5.4 (instantiation
+  made explicit where implicit) · ch. 7 §7.3 (assembly recipe) · ch. 9
+  (P-CONFORMANCE reworded + `>>#testSpecKindMismatchSignals`; P-SURFACE-CONFORMS
+  roster note; P-STANZA-VALID STON text) · glossary (*check* + constructor; *kit* →
+  two messages, STON text; *published stanza* → STON text) · the three guides:
+  **zero gap markers remain** — guide 1 quotes the §7.3 recipe, guide 2's samples
+  use `packages:`/`self packages`, guide 3 is two-message with the kind-agreement
+  rule; footers extend the trail to D-60. Requirements, coverage, and backlog:
+  verified by sweep — no site names `kitName` or the kit-contract message count, so
+  no row changes (per convention, nothing to annotate).
+- **Veto-open (agent calls, recorded):** the constructor spelling `packages:` +
+  role-by-block-key semantics + skeleton instance reader `packages` (ruling 7) · the
+  check-author reading of ruling 1's error grant (item 1 above) · the
+  named-class-answering-neither-path error and richer-kit-side-constructor riders
+  (§1.4) · the plain-class sample's `setPackages:` setter spelling (guide 2 —
+  illustrative, the author's own class).
+- **Consequences:** the D-59 G-slate is fully dispositioned (1–7 ruled and applied,
+  8 ratified); the quickstart round closes. The guides now cite only promised
+  surface; P-GUIDE-EXEC's milestone tests will hold them there.

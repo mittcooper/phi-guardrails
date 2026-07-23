@@ -84,6 +84,20 @@ closed; the stage is ready for Prompt 3.
 - One editor per file: the fence held in both directions (producer↔owner), catching
   drift four times.
 
+## Postscript — post-close rounds (D-55 → D-60, 2026-07-22)
+
+*Gate 2's close was followed by a validation-and-hardening arc before Prompt 3; this
+record's statements above describe the state at close and are superseded where the log
+says so.* Highlights: **D-55** no default sink (caller provides everything, incl. the
+verdict stream's destination) · **D-56/D-57** the naming split (kit classes `PCK`,
+packages `Phi-Coding-Kit-*`; toy models a real adopter: `Toy*`/`Toy-*`/`BaselineOfToy`;
+fixtures kit-side) · **D-59** the three quickstart guides (`docs/quickstarts/`,
+P-GUIDE-EXEC) — writing them surfaced eight SDK gaps · **D-60** the G-slate ruled: the
+kit contract is now **two messages** (`kitName` dropped; `recommendedBlock` answers
+STON text), checks receive targets at construction (`packages:`), conformance +
+kind-agreement validate on the **specs kits answer** (blocks stay opaque; external and
+resident kits share one validation path).
+
 ## Pipeline position
 
 Gate 2 **closed**. Next: **Prompt 3** (roadmap). Its entry check must expect: chapters

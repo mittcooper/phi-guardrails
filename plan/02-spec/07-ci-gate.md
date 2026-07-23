@@ -123,6 +123,18 @@ case "$code" in
 esac
 ```
 
+**The image-assembly recipe (D-60 — closing the cold-start gap):** how a caller gets
+from zero to a runnable gate, documented as **what the committed CI workflow already
+does** — `.github/workflows/ci.yml` is the *executable copy* of this recipe, and this
+prose states the same steps once, so docs and CI cannot diverge:
+
+1. Fetch a Pharo 13 headless VM and image (the toolchain the verification sessions
+   used; spellings ⟨verify⟩, queued with the M0 probe list).
+2. Load the code the gate will judge, via Metacello: for the framework's own CI, the
+   baseline's `CI` group; for any other target, the framework baseline plus the
+   target project's own baseline, loaded the way that project normally loads.
+3. Set `$PHARO_VM` and `$IMAGE`, then invoke `./guardrails.sh <config-path>`.
+
 The wrapper treats **any exit code that is not exactly 0, 1, or 2 as failure** (D-45):
 the image failing to load, the `PGRGate` class being absent, or the VM dying must never
 read as success. **This rule is machine-checked, not a waiver (D-49):** CI runs a

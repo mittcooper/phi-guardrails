@@ -72,17 +72,20 @@ no check ever targets it, and role validation works on baseline introspection al
 (D-25.a). A configuration error aborts the run before any check executes:
 exit nonzero, no report (a broken artifact must never look like a green build).
 
-**Two validation stages, one entry point (D-41 × D-51 × D-53, reconciled):** the list
-above is the **envelope** — validated by `fromString:`/`fromFile:`, which never open kit
-blocks (opaque to the core, D-51). **Blocks are opened exactly once, at registry
-construction** (`PGRRegistry fromConfiguration:`, reached through
+**Two validation stages, one entry point (D-41 × D-51 × D-53 × D-60, reconciled):**
+the list above is the **envelope** — validated by `fromString:`/`fromFile:`, which
+never open kit blocks (opaque to the core, D-51). **Blocks are opened exactly once, at
+registry construction** (`PGRRegistry fromConfiguration:`, reached through
 `PGRGate class>>forConfiguration:` — so still "before any check runs", D-41's letter):
 each kit strictly validates its own block there (unknown key → configuration error,
-raised by the kit); the construction machinery checks protocol conformance of every
-named, loaded check class (D-53 — the error names the class and the missing selector);
-and the coding kit enforces D-41 in the same pass — a `#lintRules` entry naming a rule
-class without its own class-side `severity` is a configuration error the *kit* raises
-(ch. 2 §2.2b). Both stages complete before any check executes.
+raised by the kit) and resolves the names inside it, answering missing-specs or
+raising `PGRConfigurationError`; the construction machinery then validates **every
+resolved spec's check instance** — protocol conformance plus kind agreement — never
+block contents (D-60; the error names the registration and the class, with the
+missing selector or both kinds); and the coding kit enforces D-41 in the same pass — a
+`#lintRules` entry naming a rule class without its own class-side `severity` is a
+configuration error the *kit* raises (ch. 2 §2.2b). Both stages complete before any
+check executes.
 
 **Complete example — the toy client's artifact** (normative for schema, and the actual
 committed toy artifact — in-repo it lives as class-side STON text, §8.2):
@@ -152,11 +155,11 @@ constructed per run, passed explicitly, inspectable (R-35).
 | `PGRRegistry` | the registrations of one run | class: `fromConfiguration:` · instance: `registrations` (ordered), `size` | internal |
 | `PGRRegistrationSpec` | what a kit answers («value», `-SDK` vocabulary, D-54): name, kind, and either a conforming check instance or a missing-reason — *the boundary carries information; the engine owns mechanism* | class: `name:kind:check:`, `missing:kind:reason:` · instance: `name`, `kind`, `check`, `missingReason` | kit author (constructors) |
 | `PGRRegistration` | one registry member (`-Core`, **fully internal** — the engine wraps each spec into one of these; residency resolved by D-54) | class: `fromSpec:` · instance: `name`, `kind`, `isResolved`, `run` → `PGRVerdict` | internal |
-| `PGRCheck` | **optional skeleton** of the check *protocol* (D-53 — conformance, not ancestry; `-SDK`) | `run` → `PGRVerdict`, `kind`, and the fix capability (D-54): `canFix` (skeleton default **false**) + `fixCommandOn:` (required when `canFix`; takes the fix target — packages, the same target language as ch. 3 §3.3 — and answers an object conforming to the fix-invocation protocol; spellings veto-open, shape ruled) | check author |
+| `PGRCheck` | **optional skeleton** of the check *protocol* (D-53 — conformance, not ancestry; `-SDK`) | class: **`packages:`** (D-60, spelling veto-open) — the promised constructor: the kit that names a check instantiates it, handing the target package names at construction; `run` stays argument-less and a check never pulls context — everything it knows, it was given; the skeleton stores the list and exposes it to subclasses (instance reader `packages`, an agent detail) · instance: `run` → `PGRVerdict`, `kind`, and the fix capability (D-54): `canFix` (skeleton default **false**) + `fixCommandOn:` (required when `canFix`; takes the fix target — packages, the same target language as ch. 3 §3.3 — and answers an object conforming to the fix-invocation protocol; spellings veto-open, shape ruled) | check author |
 | `PGRVerdict` | one registration's outcome («value», `-SDK` vocabulary) | class: `green`, `greenAdvisories:` (the sub-`#error` lint case, §2.3), `redFindings:`, `missingReason:`, `skipped` · instance: `status`, `findings`, `advisories`, `registrationName`, `kind`, `durationMillis`, `isGreen` (`scope` removed, D-51) | check author (constructors — **except `skipped`: engine-only**, partial-run report construction, D-21/D-32; deliberately absent from the Check-author SDK and both diagrams); caller (reading, D-49) |
 | `PGRFinding` | one violation / advisory («value», `-SDK` vocabulary) | class: `target:message:` , `target:message:rationale:` · instance: `target`, `message`, `rationale`, `printOn:` (rendering — human-facing text, explicitly not an API and on no surface, D-48; the freeze does not bind it) | check author (constructors); caller (reading, D-49 — `printOn:` excluded) |
-| `PGRKit` | **optional skeleton** of the kit *protocol* (all class-side; kits are stateless; `-SDK`) | `kitName` · `registrationsFrom:productionPackages:testsPackages:` (its verbatim block + the resolved role lists — **never the configuration object**, D-53) → ordered collection of `PGRRegistrationSpec` (D-54) · `recommendedBlock` (the published stanza, single-sourced on the class — the init tool composes from it, docs quote it, D-54; property P-STANZA-VALID) — the whole contract, three messages | kit author |
-| `PGRConfigurationError` | artifact defect («value», `-SDK` vocabulary) | an `Error` subclass carrying a one-line reason | caller (catchable by class, D-49); its message *text* is human-facing, not an API |
+| `PGRKit` | **optional skeleton** of the kit *protocol* (all class-side; kits are stateless; `-SDK`) | `registrationsFrom:productionPackages:testsPackages:` (its verbatim block + the resolved role lists — **never the configuration object**, D-53) → ordered collection of `PGRRegistrationSpec` (D-54) · `recommendedBlock` (the published stanza, single-sourced on the class, answering **STON text** — the init tool composes that text into the draft, docs quote it, D-54/D-60; property P-STANZA-VALID) — the whole contract, **two messages** (`kitName` dropped by D-60: no consumer existed; the class name is the identity, and block resolution already uses it) | kit author |
+| `PGRConfigurationError` | artifact defect («value», `-SDK` vocabulary) | an `Error` subclass carrying a one-line reason | caller (catchable by class, D-49); kit author and check author (signalling side, D-60 — a kit that cannot resolve or validate its own block, and a check whose construction-time parameters are invalid, raise it); its message *text* is human-facing, not an API |
 | `PGRConfigurationDraft` | the init tool (authoring-time only; `-Core`; D-53 — `PGRConfiguration` is purely run-time) | class: `draftFor:` (a baseline name) → draft STON text composing the kits' published stanzas | config author |
 
 `PGRGate` and `PGRReport` live in `Phi-Guardrails-Gate` and are specified in chapter 7.
@@ -185,19 +188,30 @@ runs only because the project's own file names it. **Registry construction**
 
 1. For each block in the artifact's `#kits` array, resolve the block's `#kit` class
    (failure → configuration error).
-2. Per block: **validate conformance first** (D-53) — every check class the block names
-   that is loaded must respond to its protocol; a nonconforming class is a
-   configuration error naming the class and the missing selector, before any check
-   runs. Then hand the block **verbatim** to its kit —
+2. Per block: hand the block **verbatim** to its kit —
    `registrationsFrom: block productionPackages: names testsPackages: names` (the
    resolved role lists the behavioral derivation needs, D-25; **kits never receive the
-   configuration object** — over-reach is impossible, not caught, D-53). The kit
-   validates its block strictly — an unknown key inside it is a configuration error the
-   *kit* raises — and answers one **`PGRRegistrationSpec`** per entry (D-54): carrying
-   a live check bound to its targets, or a missing-reason string; never fewer specs
-   than its block names. **The engine wraps each spec into its internal
-   `PGRRegistration`** — resolution state, `run`, verdict production stay engine-side,
-   unreferenced by kits.
+   configuration object** — over-reach is impossible, not caught, D-53). **The kit's
+   stated duty (D-60):** validate its block strictly — an unknown key inside it is a
+   configuration error the *kit* raises — and resolve every name inside its own
+   block, answering missing-specs for what cannot run or raising
+   `PGRConfigurationError` for what is malformed. The kit instantiates the checks it
+   names: its own classes however it likes (the parameterized v1 checks take their
+   block parameter keys, §1.5); a named class it does not own via the **promised
+   constructor** `packages:` (D-60), handing the role list its block key implies
+   (`#architectureChecks` → production-role, `#metaRules` → tests-role); a named
+   class answering neither path is a configuration error the kit raises. It answers
+   one **`PGRRegistrationSpec`** per entry (D-54): carrying a live check bound to its
+   targets, or a missing-reason string; never fewer specs than its block names.
+   **The engine then validates every resolved spec's check instance** — protocol
+   conformance (D-53: the error names the class and the missing selector) and **kind
+   agreement** (D-60: the spec's kind must equal the check's own `kind`; mismatch is
+   a configuration error naming the registration, both kinds, and the check class;
+   missing-specs keep their explicit kind — no check exists to ask) — **on specs,
+   never on block contents**, so blocks stay opaque and resident and external kits
+   share one validation path. **The engine wraps each validated spec into its
+   internal `PGRRegistration`** — resolution state, `run`, verdict production stay
+   engine-side, unreferenced by kits.
 3. Concatenate registrations in `#kits` array order; within a kit, in the kit's
    canonical order. Reject duplicate names.
 

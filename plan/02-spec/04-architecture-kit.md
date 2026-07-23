@@ -86,7 +86,10 @@ Adding an architectural constraint never edits the framework: tightening the map
 artifact edit; a genuinely new kind of constraint is a new check class in the
 client's extension package (conforming to the check protocol — the skeleton optional,
 D-53) plus one `#architectureChecks` entry in the client's kit block — promotable later
-(§1.6). The kit's engine (map parsing, reference walking) is
+(§1.6). The kit instantiates such a class via the **promised constructor**
+(`packages:`, D-60), handing it the production-role package names — the check receives
+everything it knows at construction and pulls nothing (richer constructors are the
+author's own affair, for tests). The kit's engine (map parsing, reference walking) is
 reusable by such client checks but their contract is only `PGRCheck`'s (`run` → verdict).
 
 ## 4.4 Fixture pair and self-hosting

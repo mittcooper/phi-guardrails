@@ -66,7 +66,10 @@ PCKNoIsNilIfTrueRule >> initialize
 ## 2.3 How the gate runs a lint registration
 
 `PCKLintRuleCheck` (package `Phi-Coding-Kit-Rules`; kind `#lint`) wraps one rule
-class plus the configuration's production-role packages (D-25). Its `run`:
+class plus the configuration's production-role packages (D-25) — constructed by the
+kit at registry construction (the kit's own class, so a richer kit-side constructor
+carrying the rule class is legitimate; the promised `packages:` constructor is for
+classes the kit does not own — D-60, ch. 1 §1.4). Its `run`:
 
 1. Instantiate the rule; build `ReSmalllintChecker new rule: { rule }`, with
    `environment:` a `RBPackageEnvironment` over the target packages.
