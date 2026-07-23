@@ -13,9 +13,9 @@ method names that prove it, R-37).
 
 ## 3.2 The v1 catalog — one rule (D-04, R-15)
 
-**`PGRNoIsNilIfTrueRule`** — package `Phi-Guardrails-Coding-Rules`; the recommended
+**`PCKNoIsNilIfTrueRule`** — package `Phi-Coding-Kit-Rules`; the recommended
 coding-kit block includes it (drafted into adopters' files by the init command, D-51),
-registration name `lint/PGRNoIsNilIfTrueRule`.
+registration name `lint/PCKNoIsNilIfTrueRule`.
 
 | Field | Value |
 |---|---|
@@ -23,9 +23,9 @@ registration name `lint/PGRNoIsNilIfTrueRule`.
 | Autofix | rewrite to `` `@x ifNil: [`.@block] `` (verified end-to-end in a live image, D-15) |
 | Severity | `#error` (D-20) |
 | Rationale | §2.2's text, verbatim in the class |
-| Fixture pair | `PGRNoIsNilIfTrueRuleTest>>#testFiresOnBadFixture` (rule critiques `PGRLintBadFixture>>#withIsNilIfTrue`) · `>>#testSilentOnGoodFixture` (zero critiques on `PGRLintGoodFixture`) |
+| Fixture pair | `PCKNoIsNilIfTrueRuleTest>>#testFiresOnBadFixture` (rule critiques `PCKLintBadFixture>>#withIsNilIfTrue`) · `>>#testSilentOnGoodFixture` (zero critiques on `PCKLintGoodFixture`) |
 
-Fixture classes live in `Phi-Guardrails-Tests-Coding-Rules` beside the tests — a
+Fixture classes live in `Phi-Coding-Kit-Tests-Rules` beside the tests — a
 tests-role package, which is safe because lint and architecture checks target
 **production-role** packages only (D-25; a ruled trade — D-33), and the behavioral run of a tests-role package
 executes only its `TestCase` classes, to which plain fixture classes are inert. Fixtures
@@ -48,12 +48,12 @@ registration name `lint/ReCodeCruftLeftInMethodsRule`.
 | Autofix | flag-only — the fix deletes statements, which is never a safe automatic rewrite (same reasoning that deferred no-`self halt` in D-04) |
 | Severity | `#error` (its shipped class-side value, verified D-28) — it blocks |
 | Rationale | its shipped string: "Breakpoints, logging statements, etc. should not be left in production code." |
-| Fixture pair | `PGRCodeCruftBuiltInTest>>#testFiresOnBadFixture` (fires on a fixture with a planted `self halt` and `Transcript show:`) · `>>#testSilentOnGoodFixture` — R-37 applies to registered built-ins like any catalog rule |
+| Fixture pair | `PCKCodeCruftBuiltInTest>>#testFiresOnBadFixture` — **the bad fixture pins the rule's match set (D-55 item 4)**: it contains each send form this entry claims the rule catches (`self halt`, `self haltIf:`, `Transcript show:`, `self flag:`), one asserted critique per form, so the match set is a permanent regression guard rather than a one-time probe · `>>#testSilentOnGoodFixture` — R-37 applies to registered built-ins like any catalog rule |
 
 **Severity pin (D-34):** this entry's blocking status is inherited from the image, not
 declared by our code — a Pharo upgrade could silently demote the rule to `#warning`, and
 under D-03 the gate would stop blocking on debug cruft with no signal anywhere. A third
-test beside the fixture pair, `PGRCodeCruftBuiltInTest>>#testSeverityStillBlocks`,
+test beside the fixture pair, `PCKCodeCruftBuiltInTest>>#testSeverityStillBlocks`,
 asserts the class-side `severity == #error`, turning drift into a red test. The pin is
 the pattern for registered built-ins: every built-in entering the catalog at M5 arrives
 with one (property P-BUILTIN-PINNED, ch. 9).
@@ -70,7 +70,7 @@ framework's production code (the constitution already bans the first two as idio
 
 ## 3.3 The fix command (R-12, D-06)
 
-`PGRFixCommand` — package `Phi-Guardrails-Coding-Rules` — is the **coding kit's
+`PCKFixCommand` — package `Phi-Coding-Kit-Rules` — is the **coding kit's
 implementation of the SDK's generic fix-invocation protocol** (D-53: construct →
 `previewOn:` → `apply` → `changes`, staleness detection required), realized over
 methods, the refactoring engine, and Epicea; a future kit fixes over its own medium
@@ -80,15 +80,15 @@ class. A check *declares* the capability with the two-message pair (D-54): `canF
 conforming to the fix-invocation protocol); the invocation machinery stays kit-side. It remains the **only** framework code path
 that mutates client source. The gate never invokes it — the SDK-level invariant (D-53):
 **no path from the gate-caller surface reaches fix invocation**, machine-carried by the
-framework's own layer map (`Phi-Guardrails-Gate` → `-Coding-Rules` forbidden; property
-P-FIX-GATE-WALL in ch. 9).
+framework's own layer map (`Phi-Guardrails-Gate` → `Phi-Coding-Kit-Rules` forbidden;
+property P-FIX-GATE-WALL in ch. 9).
 
 **Protocol** (frozen at M1 — the coding kit's implementation of the **Fix-invoker
 SDK**, ch. 0 §0.3/D-49/D-53: `rule:packages:`, `previewOn:`, `apply`, `changes`, plus
 the three signalled errors — `-SDK` vocabulary, catchable by class):
 
 ```smalltalk
-fix := PGRFixCommand rule: PGRNoIsNilIfTrueRule packages: #('Phi-Guardrails-Toy-Core').
+fix := PCKFixCommand rule: PCKNoIsNilIfTrueRule packages: #('Toy-Core').
 fix previewOn: aWriteStream.   "mandatory first step"
 fix apply.                     "only after a preview was emitted"
 fix changes.                   "the pending/applied change objects, inspectable"
@@ -118,17 +118,17 @@ fix changes.                   "the pending/applied change objects, inspectable"
 - One command instance is one invocation: re-running `apply` is an error; a new fix run
   is a new instance with a new preview.
 
-**Fixing the framework's own code is allowed (D-42).** `PGRFixCommand` may target
+**Fixing the framework's own code is allowed (D-42).** `PCKFixCommand` may target
 `Phi-Guardrails-*` production packages — that is self-hosting taken seriously: we apply
 the autofix we ship. Caution, stated because silence made the default "it works until it
 doesn't": **do not run a fix from inside a gate run.** Pharo permits recompiling a method
 that is currently executing, and a half-rewritten gate is a bad place to be. No runtime
 machinery enforces this and none is wanted — a "gate in progress" flag would be exactly
 the global state R-35 forbids. The condition holds structurally instead: the framework's
-own layer map forbids `Phi-Guardrails-Gate` → `-Coding-Rules` (P-FIX-GATE-WALL), so the
+own layer map forbids `Phi-Guardrails-Gate` → `Phi-Coding-Kit-Rules` (P-FIX-GATE-WALL), so the
 gate cannot invoke the fix command, and an in-image run is single-threaded, so a gate run
 and a fix command cannot interleave in one process.
 
-**Division of labor restated (D-06):** the rule carries the recipe; `PGRFixCommand`
+**Division of labor restated (D-06):** the rule carries the recipe; `PCKFixCommand`
 applies it; the invoker (human or agent) triggers and confirms; the gate only ever
 reports. A gate run mutates nothing — tested as property P-GATE-PURE (ch. 9).

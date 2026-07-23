@@ -75,12 +75,17 @@ change-log mining helpers) stacks after.
 
 ## 5 · Technology standards seed
 
-- **Naming:** packages `Phi-Guardrails-*` — neutral core (`-SDK`, `-Core`, `-Gate`;
-  `-SDK` is the published boundary authors build against) and per-kit
-  families (`-Coding-Rules`, `-Coding-Architecture`, `-Coding-Behavioral`); classes prefixed
-  `PGR` (ruled at Gate 1, decision-log D-11; supersedes the earlier `PG`).
+- **Naming:** framework packages `Phi-Guardrails-*` (`-SDK`, `-Core`, `-Gate`; `-SDK`
+  is the published boundary authors build against); **kit packages carry the kit's own
+  namespace** — the coding kit is `Phi-Coding-Kit-*` (`-Rules`, `-Architecture`,
+  `-Behavioral`); the toy's packages model a real adopter (`Toy-*`). Class
+  prefixes: framework (`-SDK`, `-Core`, `-Gate`) classes are `PGR` (D-11, Gate 1;
+  supersedes the earlier `PG`); **kit classes carry their kit's own prefix, disjoint
+  from `PGR`** — the coding kit is `PCK` (Phi Coding Kit) — and the toy models a real
+  client with no framework prefix (`Toy*`). (Gate-2 amendment to D-11.)
 - **On-disk format:** Tonel under `src/`, loaded by `BaselineOfPhiGuardrails` (Metacello).
-- **Test framework & conventions:** SUnit; `<Subject>Test` in `Phi-Guardrails-Tests-*`; a rule's
+- **Test framework & conventions:** SUnit; `<Subject>Test` in its subject family's
+  `-Tests-*` packages; a rule's
   test = it fires on a bad-code fixture and stays silent on a good one.
 - **Non-negotiables:** rules carry a `rationale` string (it doubles as agent guidance); no
   global state; the framework never mutates client code except through an explicit,
@@ -89,7 +94,8 @@ change-log mining helpers) stacks after.
 
 ## 6 · Verification
 
-- **Verify command:** `<pharo-vm> <image> test --fail-on-failure "Phi-Guardrails-Tests-.*"` (exit 0)
+- **Verify command:** `<pharo-vm> <image> test --fail-on-failure "(Phi-Guardrails|Phi-Coding-Kit)-Tests-.*"`
+  (exit 0; the alternation spelling is ⟨verify⟩ against the test CLI's regex dialect)
 - **CI (two steps):** step 1, validation — `smalltalkci -s .smalltalk.ston` (runs the
   test suites independently of the gate, D-40); step 2, enforcement — `./guardrails.sh
   guardrails.ston` (the gate headless on this repo's own artifact, P7).
@@ -120,6 +126,8 @@ change-log mining helpers) stacks after.
    withdrawal notice.*
 7. **CI gate configuration** — fails on missing/skipped/red registrations.
 8. **Client onboarding** — how a project adopts and extends the framework.
+9. **Testing properties** — every binding principle and invariant restated as ≥1 named,
+   decidable property (added at Gate 2).
 
 ### Milestone shape
 

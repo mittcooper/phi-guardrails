@@ -2,7 +2,8 @@
 
 *Produced by Prompt 1 (Consolidate). Sources: **S1** = `sources/agentic-engineering-in-pharo-v2.md`
 (build-time sections only); **Pack** = `pack.md` (§n / Pn). The pack's binding principles
-P1–P6 are the tie-breakers. Scope tags per Pack §4: `v1-skeleton` (walking skeleton of
+P1–P6 are the tie-breakers *(P7 — the project is the subject, never the operator — was
+added at Gate 2, D-45/D-50, and binds equally)*. Scope tags per Pack §4: `v1-skeleton` (walking skeleton of
 enforcement) · `v1-widen` (stacks after) · `later`.*
 
 *Kind: **F** functional · **N** non-functional · **C** constraint. `TBD → Q-nn` marks an
@@ -32,7 +33,7 @@ unfilled budget or undefined mechanism carried to `plan/01-decision-sheet.md`.*
 | R-13 | Every rule carries a **`rationale` string** that doubles as agent guidance (it is the prompt the agent reads on violation). | Pack §5; S1 Phase 6 | C | v1-skeleton |
 | R-14 | Every rule carries a **severity**; the severity taxonomy defines which criticisms block the gate. Taxonomy `TBD → Q-03`. | S1 Phase 4 (`severity ^ #error`), Phase 6/8 | F | v1-skeleton |
 | R-15 | v1 ships **one real lint rule with a working autofix**, self-hosted on the framework's own code. Rule choice `TBD → Q-04`. | Pack §4(a), §6 | F | v1-skeleton |
-| R-16 | The global catalog **widens to the playbook's Pharo targets**: no `self halt` / `Transcript show:` in committed domain code; no `perform:` with a literal selector; no `Smalltalk at:put:` global writes; no `become:` in app code; no empty `ifTrue:`/`ifNil:` blocks; no swallowed errors (empty `on:do:` handler). | S1 Phase 4 note + example; Pack §8 M5 | F | v1-widen |
+| R-16 | *(Amended by D-51: "the global catalog" reads as the kit's **recommended block** — a widened rule enters the shipped package and the block template; adopters compose it in.)* The global catalog **widens to the playbook's Pharo targets**: no `self halt` / `Transcript show:` in committed domain code; no `perform:` with a literal selector; no `Smalltalk at:put:` global writes; no `become:` in app code; no empty `ifTrue:`/`ifNil:` blocks; no swallowed errors (empty `on:do:` handler). | S1 Phase 4 note + example; Pack §8 M5 | F | v1-widen |
 | R-17 | Rules can be **scoped to authored code** via method author stamps, sparing vendored/framework code. Spelling ⟨verify⟩. | S1 Phase 4 "Scope to your own code"; Pack §4 widening | F | v1-widen |
 
 ## C · Coding kit — architecture tests
@@ -40,7 +41,7 @@ unfilled budget or undefined mechanism carried to `plan/01-decision-sheet.md`.*
 | ID | Requirement | Source | Kind | Scope |
 |---|---|---|---|---|
 | R-18 | *(capability)* Architecture constraints are enforced by **reflective queries over the loaded system** — asking the classes, never parsing files. | S1 Phase 2 | F | v1-skeleton |
-| R-19 | The engine is **generic**; the client supplies a **layer map** (layers → packages, allowed dependencies) through project-scope configuration. Format `TBD → Q-06`. | Pack §1, §4; S1 Phase 2 ("pin allowed package dependencies") | F | v1-skeleton |
+| R-19 | The engine is **generic**; the client supplies a **layer map** (layers → packages, allowed dependencies) through project-scope configuration. Format `TBD → Q-06`. *(Amended by D-51/D-53: one scope — the file; the map lives inside the coding kit's block as the `#layerMap` parameter key.)* | Pack §1, §4; S1 Phase 2 ("pin allowed package dependencies") | F | v1-skeleton |
 | R-20 | An architecture violation **names the offenders precisely** (method/class level) in its failure output. | S1 Phase 2 example (`offenders printString`) | N | v1-skeleton |
 | R-21 | Adding a new architectural constraint is **one more registration** — never a framework edit. | S1 Phase 2 ("encode prevention as one more test"); family 0 via P3 | F | v1-skeleton |
 | R-22 | Heavyweight structural analysis (cycles, layering metrics, visualization) can plug in via **Moose/FAMIX** without changing the kit's contract. | S1 Phase 2 | F | later |
@@ -55,7 +56,7 @@ unfilled budget or undefined mechanism carried to `plan/01-decision-sheet.md`.*
 | R-25 | Meta-rule **no-skips**: a skipped, disabled, or expected-failure test inside a registered package fails the gate. Detection semantics (SUnit mechanics) `TBD → Q-07`. | Pack §4(c) | F | v1-skeleton |
 | R-26 | The meta-rule catalog widens: **mirror test packages** exist for every registered production package; the **regression set stays green** (every fixed bug's test remains present and passing). | Pack §8 ch. 5; S1 Phase 3 ("turn every fixed bug into a test") | F | v1-widen |
 | R-27 | **Coverage floors** per registered package, reported and enforced by the gate. Floor values `TBD → Q-17`. | Pack §4 widening; S1 Phase 3, Phase 8 (coverage reports) | F | v1-widen |
-| R-46 | *(added at the ch. 8 review, D-44; re-anchored by D-52 after D-51 removed scope)* Meta-rule **every registered check is tested**: for each registered check class **defined in one of this project's own baseline packages** (as opposed to classes loaded from an external kit's packages), a class `FooTest` must exist in a tests-role package — the fixture-pair discipline (R-37) made machine-checkable, closing the hole where a custom rule that never fires (bad AST pattern, typo in the matcher) reports green because a rule finding nothing looks like a rule with nothing to find. Class: `PGRCheckFixturePairMetaRule`, kind `#behavioral`, registered in `#metaRules`. | ch. 8 review; R-37, R-26 | F | v1-widen |
+| R-46 | *(added at the ch. 8 review, D-44; re-anchored by D-52 after D-51 removed scope)* Meta-rule **every registered check is tested**: for each registered check class **defined in one of this project's own baseline packages** (as opposed to classes loaded from an external kit's packages), a class `FooTest` must exist in a tests-role package — the fixture-pair discipline (R-37) made machine-checkable, closing the hole where a custom rule that never fires (bad AST pattern, typo in the matcher) reports green because a rule finding nothing looks like a rule with nothing to find. Class: `PCKCheckFixturePairMetaRule`, kind `#behavioral`, registered in `#metaRules`. | ch. 8 review; R-37, R-26 | F | v1-widen |
 | R-44 | *(proof — added at Gate 1, mirroring R-43)* v1 **demonstrates behavioral enforcement end-to-end**: the toy client's tests-role suite runs in the gate (per D-25); a planted red test and a planted skip each fail it (R-23, R-25 exercised in earnest). | Pack §4(c); D-12 | F | v1-skeleton |
 
 ## E · Secrets-leak test
@@ -72,7 +73,7 @@ unfilled budget or undefined mechanism carried to `plan/01-decision-sheet.md`.*
 | R-30 | The **same checks are invocable in-image** during work (agent loop, badge) **and headless in CI** — one engine, two invocation modes, identical verdicts. | S1 Phase 6 (primary vs enforcement), Rosetta | F | v1-skeleton |
 | R-31 | A client **adopts by depending on `BaselineOfPhiGuardrails`** and declaring its configuration + extension package; a new project starts pre-hardened. *(Amended by D-45: adoption is one configuration file, R-47 — no framework dependency; the baseline dependency remains only for the optional extension package, development-scoped, never in the client's `default` group.)* | S1 Phase 8 ("ship guardrails as a package"); Pack §8 ch. 8 | F | v1-skeleton |
 | R-47 | *(acceptance — added by D-45)* A project **adopts phi-guardrails by adding one configuration file**; no change to its source, baseline, or tests is required. The project is the *subject* of the gate, never its operator: no privileged caller exists and none is required. | D-45 (Gate-2 closing ruling) | F | v1-skeleton |
-| R-32 | The walking skeleton is **demonstrated end-to-end against a toy client package**: adoption, project-scope extension, planted violations caught, gate red → green. Toy shape `TBD → Q-12`. | Pack §4 | F | v1-skeleton |
+| R-32 | The walking skeleton is **demonstrated end-to-end against a toy client package**: adoption, project-scope extension, planted violations caught, gate red → green. Toy shape `TBD → Q-12`. *(Amended by D-51: the scopes collapsed — "project-scope extension" reads as the client's own checks, registered in its kit block.)* | Pack §4 | F | v1-skeleton |
 | R-33 | **Per-package policy tiering**: critical packages can get the strictest severity and mandatory-review marking. | S1 Phase 8 (Amazon model) | F | later |
 
 ## G · Tightening loop
@@ -102,39 +103,45 @@ judge is deferred, and it will read the same logs R-34 mines.
 | ID | Requirement | Source | Kind | Scope |
 |---|---|---|---|---|
 | R-35 | **No global state**: the registry is an explicit, named, inspectable object a gate run receives — not a singleton mutated from afar. Reconciliation with family "no registries" cited in Q-01. | Pack §5; family 4 · 6 via P6 | C | v1-skeleton |
-| R-36 | **Packaging/naming** follows the naming tree below: `Phi-Guardrails-*` packages, `PGR` class prefix (ruled D-11, supersedes `PG`), Tonel under `src/`, loaded by `BaselineOfPhiGuardrails`. | Pack §5; D-11 | C | v1-skeleton |
+| R-36 | **Packaging/naming** follows the naming tree below: `Phi-Guardrails-*` packages, `PGR` class prefix (ruled D-11, supersedes `PG`), Tonel under `src/`, loaded by `BaselineOfPhiGuardrails`. *(Amended by D-56: `PGR` is the **framework** prefix only — kit classes carry their kit's own prefix, disjoint from `PGR` (coding kit `PCK`); the toy models a real client with no framework prefix (`Toy*`).)* | Pack §5; D-11 | C | v1-skeleton |
 | R-37 | Every shipped rule and meta-rule has a **bad-fixture *and* good-fixture test** (fires on bad, silent on good). | Pack §5, §8 Gate-2 extras | C | v1-skeleton |
 | R-38 | The framework **polices itself with its own rules** from the first rule onward (self-hosting). | Pack §6 | C | v1-skeleton |
 | R-39 | *(process)* No design statement depends on a **⟨verify-in-image⟩ spelling** until it is confirmed in a live Pharo 13 image. Verification pass scheduling `TBD → Q-02`. | Pack P5; S1 preamble ("the spellings you should confirm") | C | v1-skeleton |
 
-**Naming tree (R-36).** Package names `-Core`/`-Gate`/`-Coding-*` and test conventions are
-Pack §5; the `PGR` prefix is D-11; the Toy packages are D-12. Class names shown are
-illustrative (the spec assigns real ones):
+**Naming tree (R-36).** Three package families since D-57 — `Phi-Guardrails-*`
+(framework) · `Phi-Coding-Kit-*` (the kit) · `Toy-*` (the toy) — and test conventions
+are Pack §5; the prefixes are D-11 as amended by D-56; the Toy packages are D-12/D-57.
+Class names shown are illustrative (the spec assigns real ones):
 
 ```
-Phi-Guardrails-*                          the package family
+Phi-Guardrails-*                          the framework family (kit: Phi-Coding-Kit-*,
+                                          toy: Toy-* — D-57 symmetry law)
 ├── Phi-Guardrails-SDK                    published boundary: protocols, skeletons,
 │                                         vocabulary (added by D-53)
 ├── Phi-Guardrails-Core                   neutral core: registry, check kinds, verdicts
 ├── Phi-Guardrails-Gate                   the headless gate + report
-├── Phi-Guardrails-Coding                 coding kit class + global catalog (D-17; its secrets sweep withdrawn D-37)
-├── Phi-Guardrails-Coding-Rules           coding kit: lint/AST rules + Renraku/rewriter engine
-├── Phi-Guardrails-Coding-Architecture    coding kit: layer-map engine + reflective queries
-├── Phi-Guardrails-Coding-Behavioral      coding kit: suite runner + test-discipline meta-rules
-├── Phi-Guardrails-Toy-*                  demo client (D-12) — Toy/CI groups only
-├── Phi-Guardrails-Fixtures-*             fixtures containing red/skipped tests — outside the
+├── Phi-Coding-Kit                 coding kit class + its recommendedBlock stanza
+│                                         (D-17 as amended by D-51/D-54; secrets sweep withdrawn D-37)
+├── Phi-Coding-Kit-Rules           coding kit: lint/AST rules + Renraku/rewriter engine
+├── Phi-Coding-Kit-Architecture    coding kit: layer-map engine + reflective queries
+├── Phi-Coding-Kit-Behavioral      coding kit: suite runner + test-discipline meta-rules
+├── Toy-*                  demo client (D-12) — loaded by the
+│                                         Tests/Toy/CI composites (D-46)
+├── Phi-Coding-Kit-Fixtures-*             fixtures containing red/skipped tests — outside the
 │                                         test namespace so no sweep matches them (D-22)
 ├── ~~Phi-Guardrails-CI-Tests~~           retired by D-45 (no adapter, no privileged caller);
 │                                         was: gate-driving tests outside every swept namespace (D-23)
-└── Phi-Guardrails-Tests-*                SUnit tests, mirroring the packages above
-    e.g. -Tests-Core · -Tests-Gate · -Tests-Coding-Rules · -Tests-Toy (demo test, D-46) · …
+└── Phi-Guardrails-Tests-* /              SUnit tests, mirroring the packages above —
+    Phi-Coding-Kit-Tests-*                each family mirrors its own (D-57)
+    e.g. -Tests-Core · -Tests-Gate · -Tests-Toy (demo test, D-46) · Phi-Coding-Kit-Tests-Rules · …
 
-Classes   PGR prefix (D-11)               e.g. PGRRegistry, PGRGate, PGRNoIsNilIfTrueRule
+Classes   PGR = framework · PCK = coding kit · Toy = toy client (D-11 as amended by D-56)
+          e.g. PGRRegistry, PGRGate · PCKNoIsNilIfTrueRule, PCKKit · ToyWidget
 Tests     <Subject>Test                   e.g. PGRRegistryTest, in the mirroring test package
 Loading   BaselineOfPhiGuardrails         role groups production · tests · fixtures · toy
                                           (D-25; ci-tests retired by D-45) + composites
-                                          Core · Coding · Tests · Toy · CI; the toy ships
-                                          BaselineOfPhiGuardrailsToy
+                                          Core · Coding · Tests · Toy · CI · default;
+                                          the toy ships BaselineOfToy
 On disk   Tonel format under src/
 ```
 
@@ -144,10 +151,13 @@ On disk   Tonel format under src/
 |---|---|---|---|---|
 | R-40 | **Kit anatomy.** A domain kit plugs in as a loadable package family supplying five things: (i) **check-kind classes** implementing the core's check contract ("run against a target, return a verdict"); (ii) the **engines** those kinds need (for the coding kit: Renraku, the AST rewriter, the SUnit runner — kit-specific technology never enters the core); (iii) a **shipped global-catalog artifact** naming the kit's default registrations; (iv) a **config-section schema** — the sections of the project artifact the kit owns and interprets; (v) **fixture pairs** for every shipped check. *(Amended by D-51: (iii) becomes the kit's documented **recommended block** template; (iv) becomes its **block schema**, validated by the kit itself. Amended by D-53: (i)'s contract is a **protocol** — conformance, not ancestry, validated at registry construction; the kit builds against `Phi-Guardrails-SDK`, never the engine.)* | Pack §1, P3; R-04; D-01/D-07 | C | v1-skeleton |
 | R-41 | **Loading is not activation.** Loading a kit's packages activates nothing; a check runs only when a catalog or project artifact names it. Global catalogs are **per kit** and ship with the kit, so every catalog entry's class is guaranteed loadable with its kit (else it is *missing*, R-24). *(Amended by D-51: only the project artifact names checks — no catalogs ship; loadability of every named class is decided at registry construction, missing rule unchanged.)* | Pack P6; D-01, D-05 | C | v1-skeleton |
-| R-42 | **Run flow.** At gate time the core reads the project artifact, hands each kit the sections that kit owns, receives back registrations, runs them, and aggregates verdicts (green / red / skipped / missing). The core never interprets section contents — only kinds and verdicts (family 9 via P3). *(Amended by D-51: the core hands each kit its `#kits` block **verbatim**; "sections" are the block's keys, opaque to the core.)* | Pack P3, P6; D-07, D-10 | F | v1-skeleton |
-| R-45 | **Live progress.** The gate streams each registration's name and verdict as it completes (headless: stdout, so it lands in CI logs; in-image: Transcript or equivalent) — a run is never a black box, and an agent can react to the first red verdict without waiting for the full run. Distinct from the excluded cross-run observability view. | Gate-1 addition (single-run UX; supports S1 Phase 6 agent loop) | N | v1-skeleton |
+| R-42 | **Run flow.** At gate time the core reads the project artifact, hands each kit the sections that kit owns, receives back registrations, runs them, and aggregates verdicts (green / red / skipped / missing). The core never interprets section contents — only kinds and verdicts (family 9 via P3). *(Amended by D-51: the core hands each kit its `#kits` block **verbatim**; "sections" are the block's keys, opaque to the core. Amended by D-53.5/D-54.1: the block arrives with the resolved role package lists — never the configuration object — and the kit answers `PGRRegistrationSpec` values the engine wraps.)* | Pack P3, P6; D-07, D-10 | F | v1-skeleton |
+| R-45 | **Live progress.** The gate streams each registration's name and verdict as it completes (headless: stdout, so it lands in CI logs; in-image: Transcript or equivalent) — a run is never a black box, and an agent can react to the first red verdict without waiting for the full run. Distinct from the excluded cross-run observability view. *(Amended by D-55: no default sink — the gate streams only to a caller-supplied sink or stream; in-image the caller passes Transcript itself, and framework production code never references it.)* | Gate-1 addition (single-run UX; supports S1 Phase 6 agent loop) | N | v1-skeleton |
 
-**Run-flow strawman (R-42) — illustrative, non-binding; spec ch. 1 owns the real contract:**
+**Run-flow strawman (R-42) — illustrative, non-binding; spec ch. 1 owns the real
+contract.** *The strawman pre-dates D-25/D-51 (test-package patterns, per-kit global
+catalogs, "sections") — kept verbatim for the audit trail; read ch. 1 §1.4 for the
+ruled flow:*
 
 ```
 gate run

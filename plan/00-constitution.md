@@ -23,24 +23,33 @@ conflict, `plan/decision-log.md` wins.*
 - **P6 · Registration decides what runs.** The gate enforces everything in the registry —
   a registered check that is missing, skipped, or red fails the build — and the agent whose
   work is checked never chooses which checks apply to it.
+- **P7 · The project is the subject, never the operator.** The gate is a standalone
+  instrument: any caller may run it on any repo, and the only requirement is the
+  configuration artifact. A target project never depends on, invokes, or arranges for
+  its own gate — and this framework, self-hosted, claims no exception.
 
 ## 2 · Technology standards (Pharo 13 only)
 
 **Naming.**
 
 ```
-Phi-Guardrails-*
-├── -SDK · -Core · -Gate                framework (-SDK = published boundary)
-├── -Coding · -Coding-Rules ·           coding kit
-│   -Coding-Architecture · -Coding-Behavioral
+Phi-Guardrails-*                        framework
+├── -SDK · -Core · -Gate                (-SDK = published boundary)
 ├── -Tests-*                            mirroring tests
-├── -Toy-*                              demo client
 └── -Fixtures-*                         red/skipped-test fixtures — unswept (D-22)
+Phi-Coding-Kit-*                        the first kit — resident, privileged in nothing
+├── (root) · -Rules · -Architecture · -Behavioral
+└── -Tests-*                            kit tests (details: spec)
+Toy-*                                   demo client — models a real adopter
 ```
 
-Every class is prefixed `PGR` (D-11; `BaselineOf*` excepted — Metacello's convention); test classes are `<Subject>Test`. Names use glossary terms
+Framework classes (`-SDK`, `-Core`, `-Gate`) are prefixed `PGR`; kit classes carry
+their kit's own prefix, disjoint from `PGR` (coding kit: `PCK`); the toy models a real
+client and uses no framework prefix (`Toy*`). (`BaselineOf*` excepted — Metacello's
+convention; D-11 as amended at Gate 2.) Test classes are `<Subject>Test`, in their
+subject's family. Names use glossary terms
 (`plan/02-spec/glossary.md`) exactly — never a listed alias. The three that bite everywhere: gate-runnable things are **checks**
-(SUnit owns "tests"), non-blocking findings are **advisories** ("warning" = severity), and "pattern" is always qualified (secret · AST). Work orders inline any
+(SUnit owns "tests"), non-blocking findings are **advisories** ("warning" = severity), and "pattern" means the AST sense only (the secret sense left with its check, D-37). Work orders inline any
 further glossary rows their chunk needs.
 
 **On disk.** Tonel under `src/`, loaded by `BaselineOfPhiGuardrails` (groups: spec
@@ -48,8 +57,8 @@ ch. 8). Configuration artifacts are pure-data STON (D-16).
 
 **Tests.** SUnit. A rule's or check's test is a **fixture pair**: it fires on the
 bad-code fixture and stays silent on the good one (R-37) — both named, both asserted. Test methods assert behavior; a test that cannot fail is a defect. No
-`skip`/`expectedFailures` in `Phi-Guardrails-Tests-*` (machine-caught, D-08) — the rule
-is total; no test package is exempt. Red/skipped fixture tests
+`skip`/`expectedFailures` in any of this repo's tests-role packages (machine-caught,
+D-08) — the rule is total; no test package is exempt. Red/skipped fixture tests
 exist only in `-Fixtures-*`/`-Toy-*` packages,
 which the framework's artifact, verify command, and smalltalkCI never match
 (D-22; the toy's *own* artifact deliberately sweeps its suite).
@@ -85,7 +94,7 @@ spec names (`guardrails.ston`, `.smalltalk.ston`, `guardrails.sh`,
   never blow the budget.
 - **Tests first.** Fill in the work order's test skeletons, watch them fail, implement
   to green; done = the verify command exits 0, never "looks right".
-- **Verify command.** `<pharo-vm> <image> test --fail-on-failure "Phi-Guardrails-Tests-.*"`
+- **Verify command.** `<pharo-vm> <image> test --fail-on-failure "(Phi-Guardrails|Phi-Coding-Kit)-Tests-.*"`
   (exit 0; verified, D-15). CI equivalent: `smalltalkci -s .smalltalk.ston`.
   Self-hosting: from M1 the repo's own gate (`guardrails.ston`) must also pass — run
   `./guardrails.sh` alongside.
@@ -99,8 +108,8 @@ spec names (`guardrails.ston`, `.smalltalk.ston`, `guardrails.sh`,
   - Adding a dependency — package, project, or external tool — without a decision-log
     entry (v1's dependency list is empty, Pack §7).
   - Weakening, skipping, or unregistering a check to make a build pass (P6).
-  - `skip`/`expectedFailures`/empty test bodies in `Phi-Guardrails-Tests-*` (fixture
-    classes under `-Fixtures-*`/`-Toy-*` are the sanctioned exceptions, D-22).
+  - `skip`/`expectedFailures`/empty test bodies in any tests-role package (fixture
+    classes under `-Fixtures-*` and the toy are the sanctioned exceptions, D-22).
 - **Machine enforcement of the above** (P1 applied to ourselves — self-hosting, R-38): the no-skips meta-rule catches skipped/expected-failure tests; the
   repo's own layer map catches forbidden cross-layer reaches (map: spec §4.4); the
   catalog rules catch `isNil ifTrue:` and debugging leftovers incl. `flag:`

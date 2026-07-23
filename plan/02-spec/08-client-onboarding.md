@@ -42,7 +42,7 @@ change to its source, baseline, or tests:
    reports green, because a rule finding nothing looks exactly like a rule with nothing
    to find. A meta-rule making it machine-checkable by naming convention (registered
    check `Foo` ⇒ class `FooTest` in a tests-role package) is **R-46** —
-   `PGRCheckFixturePairMetaRule`, v1-widen, landing with ch. 5's mirror-test-packages
+   `PCKCheckFixturePairMetaRule`, v1-widen, landing with ch. 5's mirror-test-packages
    meta-rule at M5 (§5.5, D-44). A client check that proves generally useful is
    *promoted* by inclusion in the kit's recommended block — documentation, not
    mechanism (§1.6, D-51). This is the **one** case where a client loads the
@@ -63,10 +63,10 @@ neither kind (D-45): their `#roles` matchers can name packages and patterns dire
 
 | Group | Kind | Loads |
 |---|---|---|
-| `production` | role | `Phi-Guardrails-SDK` (D-53), `-Core`, `-Gate`, `-Coding`, `-Coding-Rules`, `-Coding-Architecture`, `-Coding-Behavioral` |
+| `production` | role | `Phi-Guardrails-SDK` (D-53), `-Core`, `-Gate` + `Phi-Coding-Kit`, `-Rules`, `-Architecture`, `-Behavioral` (D-57) |
 | `tests` | role | every `Phi-Guardrails-Tests-*` |
-| `fixtures` | role (exempt) | every `Phi-Guardrails-Fixtures-*` |
-| `toy` | role (exempt) | every `Phi-Guardrails-Toy-*` |
+| `fixtures` | role (exempt) | every `Phi-Coding-Kit-Fixtures-*` |
+| `toy` | role (exempt) | every `Toy-*` |
 | `Core` | composite | `Phi-Guardrails-Core`, `-Gate` |
 | `Coding` | composite | `production` |
 | `Tests` | composite | `production` + `tests` + `fixtures` + `toy` (the demo test in `Tests-Toy` needs the toy loaded, D-46) |
@@ -80,10 +80,10 @@ D-45 — no adapter, no privileged caller; the demo test lives in the tests-role
 
 ## 8.2 The toy client (D-12 (a); the fixture farm and living documentation)
 
-The toy ships its own **`BaselineOfPhiGuardrailsToy`**, defined *inside*
-`Phi-Guardrails-Toy-Core` (a baseline class needs its own package only when Metacello
+The toy ships its own **`BaselineOfToy`**, defined *inside*
+`Toy-Core` (a baseline class needs its own package only when Metacello
 loads it from disk by name, as the root baseline is; the toy baseline is introspected,
-never Metacello-loaded in v1 — same trick as `BaselineOfPGRFixture`, §5.5; it moves to
+never Metacello-loaded in v1 — same trick as `BaselineOfPCKFixture`, §5.5; it moves to
 its own package when the toy is copied out, §8.4). Under D-45 it declares **no role groups** —
 the toy's artifact assigns roles by matcher (§1.1's example), which lets the toy
 demonstrate R-47 exactly: adoption changed nothing in the adopted project's baseline. It
@@ -98,23 +98,23 @@ Packages, loaded (from the framework's side) by the `toy` role group via the
 
 | Package | Contents | Planted violation (R-32) |
 |---|---|---|
-| `Phi-Guardrails-Toy-Core` | mini domain logic | one `isNil ifTrue:` (global lint rule) · one `Transcript show:` (the registered built-in, §3.2b) · one `isNil ifFalse:` (the toy's own project rule) |
-| `Phi-Guardrails-Toy-UI` | mini UI layer | one direct reference to a `-Toy-Persistence` class (architecture) |
-| `Phi-Guardrails-Toy-Persistence` | mini persistence layer | — (the target of the UI plant's forbidden reference; its own secrets plant was withdrawn with the check, D-37) |
-| `Phi-Guardrails-Toy-Rules` | the toy's extension package: `PGRToyNoIsNilIfFalseRule` (a flag-only lint rule per §2.2 matching `` `@x isNil ifFalse: [`.@block] ``, severity `#error`; re-pointed from `Transcript show:` when the D-28 built-in took that ground) | — (this is the project-scope extension demo) |
-| `Phi-Guardrails-Toy-Tests` | the toy's tests-role suite | one failing test · one `skip:` test (behavioral, R-44) |
+| `Toy-Core` | mini domain logic | one `isNil ifTrue:` (the catalog rule, §3.2) · one `Transcript show:` (the registered built-in, §3.2b) · one `isNil ifFalse:` (the toy's own rule, registered in its kit block) |
+| `Toy-UI` | mini UI layer | one direct reference to a `-Toy-Persistence` class (architecture) |
+| `Toy-Persistence` | mini persistence layer | — (the target of the UI plant's forbidden reference; its own secrets plant was withdrawn with the check, D-37) |
+| `Toy-Rules` | the toy's extension package: `ToyNoIsNilIfFalseRule` (a flag-only lint rule per §2.2 matching `` `@x isNil ifFalse: [`.@block] ``, severity `#error`; re-pointed from `Transcript show:` when the D-28 built-in took that ground) | — (this is the client's-own-checks extension demo; R-32's pre-D-51 "project-scope" phrasing) |
+| `Toy-Tests` | the toy's tests-role suite | one failing test · one `skip:` test (behavioral, R-44) |
 
 The toy's artifact is §1.1's example, verbatim (it already registers
-`PGRToyNoIsNilIfFalseRule`). **In-repo embodiment:** it is committed as class-side STON
-text — `BaselineOfPhiGuardrailsToy class>>guardrailsSTON` (D-18's mechanism) — because
+`ToyNoIsNilIfFalseRule`). **In-repo embodiment:** it is committed as class-side STON
+text — `BaselineOfToy class>>guardrailsSTON` (D-18's mechanism) — because
 the repo root's `guardrails.ston` is the framework's own (§7.5) and no other committed
 file location exists inside the write boundary; the demo test reads it with
 `PGRConfiguration fromString:`. (A `fromString:` config has no directory, so the toy's
 artifact declares no `#src` and registers no dead-src check — §1.1's optional-`#src`
 rule, D-45.) It becomes a real root `guardrails.ston` file only in
 the §8.4 external copy, where it *is* the repo's artifact. The toy models the client-side fixture-pair convention
-(§8.1 step 3) on its own rule: `PGRToyNoIsNilIfFalseRuleTest>>#testFiresOnBadFixture` /
-`>>#testSilentOnGoodFixture` in `Phi-Guardrails-Toy-Tests`, against small fixture
+(§8.1 step 3) on its own rule: `ToyNoIsNilIfFalseRuleTest>>#testFiresOnBadFixture` /
+`>>#testSilentOnGoodFixture` in `Toy-Tests`, against small fixture
 classes in that same package. The toy is committed **in the red state** —
 its planted violations are real, current code; the toy is **exempt-role** in the
 *framework's* artifact (§7.5), so the framework's own gate never sweeps it while the toy
@@ -122,11 +122,11 @@ exists to go red under its own artifact.
 
 ## 8.3 The demonstration test (R-32, R-43, R-44)
 
-`PGRToyDemoTest`, in **`Phi-Guardrails-Tests-Toy`** — an ordinary tests-role package
+`ToyDemoTest`, in **`Phi-Guardrails-Tests-Toy`** — an ordinary tests-role package
 (D-46; the exempt `CI-Tests` home is retired with D-45). The placement is safe by the
 termination argument: recursion needs the *target config's* tests role to contain the
 package holding the gate-driving test, and the demo runs the gate on the **toy's**
-config, whose tests role is only `Phi-Guardrails-Toy-Tests` — the demo's own package can
+config, whose tests role is only `Toy-Tests` — the demo's own package can
 never enter that set. A framework self-hosted run therefore *nests* (outer gate →
 behavioral check runs `Tests-Toy` → demo runs an inner gate on the toy config →
 terminates); it does not recurse. The move also improves enforcement: in a tests-role
@@ -156,23 +156,24 @@ The three tests:
 
 - `testGateIsRedOnPlantedViolations` — run the gate on the toy artifact; assert the report
   is not clean and contains **exactly** the expected non-green verdicts: red
-  `lint/PGRNoIsNilIfTrueRule`, red `lint/ReCodeCruftLeftInMethodsRule` (the registered
-  built-in, §3.2b), red `lint/PGRToyNoIsNilIfFalseRule`, red
-  `architecture/PGRLayerMapCheck` (R-43), red `behavioral/Phi-Guardrails-Toy-Tests`, red
-  `behavioral/PGRNoSkippedTestsMetaRule` (R-44) — six registrations, all red — and that
+  `lint/PCKNoIsNilIfTrueRule`, red `lint/ReCodeCruftLeftInMethodsRule` (the registered
+  built-in, §3.2b), red `lint/ToyNoIsNilIfFalseRule`, red
+  `architecture/PCKLayerMapCheck` (R-43), red `behavioral/Toy-Tests`, red
+  `behavioral/PCKNoSkippedTestsMetaRule` (R-44) — six registrations, all red — and that
   each names its planted target precisely. The exact count is asserted **deliberately**:
   when the recommended block grows at M5 and the toy's artifact composes the new entries
   in, this test breaks, and that is the intended behavior — a new shipped check must
   arrive with a decision about how the toy demonstrates it, not slip in unnoticed behind
   a `>=` assertion.
-- `testLintAutofixThenGreen` — apply `PGRFixCommand` (preview, then apply) for
-  `PGRNoIsNilIfTrueRule` to `Phi-Guardrails-Toy-Core`; re-run the gate; assert that
+- `testLintAutofixThenGreen` — apply `PCKFixCommand` (preview, then apply) for
+  `PCKNoIsNilIfTrueRule` to `Toy-Core`; re-run the gate; assert that
   registration alone turned green (D-06 exercised end-to-end).
 - `testAllFixedThenClean` — fix every plant in-image (rewrite, remove the reference, the
   failing assertion, the skip); re-run; assert `report isClean` and exit code 0.
 
-This satisfies R-32's "adoption, project-scope extension, planted violations caught, gate
-red → green" against a client the framework does not know.
+This satisfies R-32 — adoption, the client's own extension checks (the requirement's
+pre-D-51 "project-scope extension" phrasing), planted violations caught, gate
+red → green — against a client the framework does not know.
 
 ## 8.4 External adoption proof (D-12 (b) — exit criterion at widening, not v1)
 

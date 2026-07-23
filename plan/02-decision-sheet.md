@@ -152,8 +152,9 @@ pages — any amendment must displace text, not add.*
 
 *The sheet was closed at Gate 2 and is **reopened** by the owner to carry the questions
 raised by the chapter-by-chapter spec review. Numbering continues (question IDs are
-history, never reused). All four were ruled by the human in the same message that
-reopened the sheet.*
+history, never reused). The first four (Q-23–Q-26) were ruled by the human in the same
+message that reopened the sheet; Q-27 and Q-28 were appended by later review rounds and
+ruled in turn.*
 
 **Q-23 · A check that crashes: the headless entry must always decide an exit code**
 *→ RULED: the review's full three-part recommendation (a)+(b)+(c); see `plan/decision-log.md` D-39.*
@@ -248,12 +249,42 @@ D-26 bought.
 · **Blocks:** ch. 8 §8.3 wording; ch. 9's demo-test properties (P-GATE-RED) inherit the
 guarantee.
 
+**Q-28 · The gate's default Transcript sink vs the registered `Transcript show:` ban**
+*→ RULED: no default sink — the gate writes only to what it is given (option (b),
+strengthened: streaming is conditional on a supplied sink, and the P5 gap routes to
+M1's match-set-pinning fixture); see `plan/decision-log.md` D-55.*
+— §7.2 mandates "the default sink writes one line per verdict to the Transcript" (R-45's
+in-image half), while the framework's own artifact registers
+`ReCodeCruftLeftInMethodsRule` over all production packages — verified to fire on
+`Transcript show:` (D-28) — and `Phi-Guardrails-Gate` is production-role, the
+constitution bans the idiom, and **D-24 forecloses exclusions**. As specified, the M4
+self-hosted gate goes red on its own streaming sink — unless the sink uses a Transcript
+spelling the built-in provably does not match, and no probe has verified the rule's
+match set beyond `show:` (a P5 gap). D-33's trade covers tests-role fixtures only;
+nothing spotlights this production-code seam, and a chunk implementer hits it cold at
+M1 (constitution idiom) or M4 (self-hosted gate).
+· **Options:** (a) probe the built-in's full match set (D-31.a toolchain) and specify a
+verified-non-matching spelling (e.g. `Transcript nextPutAll:` + `cr`) — P5-clean today
+but brittle across Pharo upgrades: the D-34 severity-pin logic cuts against resting on
+an unverified matcher boundary; (b) **the production sink never names Transcript** —
+the default verdict sink writes to an *injected* stream (headless `runHeadless:on:`
+already passes one; in-image, the invoker passes `Transcript`, documented as the
+Playground idiom in §7.2). R-45's substance (a run is never a black box) is kept,
+`Transcript` disappears from production source, the rule cannot fire, and nothing needs
+excluding — amends §7.2's letter only; (c) drop the built-in from the framework's *own*
+artifact — collides with §7.5's "we eat the explicit-composition rule" and weakens
+D-28/R-16's early arrival.
+· **Recommendation: (b)** — the structural resolution (make the violation impossible,
+not caught: the D-42/D-53 wall pattern), no probe needed, the built-in's registration
+untouched.
+· **Blocks:** ch. 7 §7.2 wording; M1/M4 implementation.
+
 ---
 
 *Sheet status: 5 Gate-2 entries **closed** — Q-18 → D-24 · Q-19 → D-26 · Q-20 closed as
-moot (D-25) · Q-21 → D-27 · Q-22 → D-25; plus 4 reopened-round entries **closed** —
-Q-23 → D-39 · Q-24 → D-40 · Q-25 → D-41 · Q-26 → D-42 · Q-27 → D-43. **Nothing open.**
-Agent-decided minor calls
+moot (D-25) · Q-21 → D-27 · Q-22 → D-25; plus 6 reopened-round entries **closed** —
+Q-23 → D-39 · Q-24 → D-40 · Q-25 → D-41 · Q-26 → D-42 · Q-27 → D-43 · Q-28 → D-55.
+**Nothing open.** Agent-decided minor calls
 — veto windows now closed by D-28: D-16, D-17, D-18, D-21 ratified; D-22 ratified (also
 via D-26); D-23 ratified (also via D-27); D-19 **revised** — the v1 global catalog
 registers `ReCodeCruftLeftInMethodsRule` (D-28). D-20 (`#error` severity for

@@ -16,7 +16,7 @@ only the gate runs rules headless.
 
 ## 2.2 Authoring contract (Pharo 13 hooks — corrected spellings, D-15)
 
-Every rule in the shipped catalog or a client extension package implements:
+Every rule in ch. 3's catalog (shipped with the kit) or a client extension package implements:
 
 | Hook | Side | Contract |
 |---|---|---|
@@ -27,8 +27,11 @@ Every rule in the shipped catalog or a client extension package implements:
 ### 2.2b Explicit severity, no default (D-41)
 
 A registered lint rule whose class does **not itself implement** class-side `severity` is
-a **configuration error**, signalled by `forConfiguration:` before any check runs (ch. 1
-§1.1). The inherited `#warning` is not a legal state for a registered rule.
+a **configuration error**, raised by the coding kit when blocks are opened at registry
+construction — inside `forConfiguration:`, so still before any check runs (D-41's
+letter, D-51's block opacity: `#lintRules` lives inside the kit's block, which only the
+kit reads; ch. 1 §1.1's two-stage statement and §1.4). The inherited `#warning` is not a
+legal state for a registered rule.
 
 The hole this closes: ch. 7 §7.1 blocks only at `#error`, so a project that registered a
 rule and forgot its severity got real violations reported as advisories and an exit 0 —
@@ -47,22 +50,22 @@ rewrite is safe). Both match AST patterns with meta-variables (`` `@x ``,
 Canonical form (this is the shipped v1 rule, catalog entry ch. 3):
 
 ```smalltalk
-ReNodeRewriteRule << #PGRNoIsNilIfTrueRule
-    package: 'Phi-Guardrails-Coding-Rules'
+ReNodeRewriteRule << #PCKNoIsNilIfTrueRule
+    package: 'Phi-Coding-Kit-Rules'
 
-PGRNoIsNilIfTrueRule class >> ruleName   ^ 'isNil ifTrue: should be ifNil:'
-PGRNoIsNilIfTrueRule class >> severity   ^ #error          "D-20"
-PGRNoIsNilIfTrueRule class >> rationale
+PCKNoIsNilIfTrueRule class >> ruleName   ^ 'isNil ifTrue: should be ifNil:'
+PCKNoIsNilIfTrueRule class >> severity   ^ #error          "D-20"
+PCKNoIsNilIfTrueRule class >> rationale
     ^ 'x isNil ifTrue: [...] re-tests a nil you already have; ifNil: is one send and
        reads as intent. The rewrite is behavior-preserving — apply the autofix.'
-PGRNoIsNilIfTrueRule >> initialize
+PCKNoIsNilIfTrueRule >> initialize
     super initialize.
     self replace: '`@x isNil ifTrue: [`.@block]' with: '`@x ifNil: [`.@block]'
 ```
 
 ## 2.3 How the gate runs a lint registration
 
-`PGRLintRuleCheck` (package `Phi-Guardrails-Coding-Rules`; kind `#lint`) wraps one rule
+`PCKLintRuleCheck` (package `Phi-Coding-Kit-Rules`; kind `#lint`) wraps one rule
 class plus the configuration's production-role packages (D-25). Its `run`:
 
 1. Instantiate the rule; build `ReSmalllintChecker new rule: { rule }`, with
@@ -76,7 +79,7 @@ class plus the configuration's production-role packages (D-25). Its `run`:
    "an `#error`-severity critique exists" and "a lint registration is red" are the same
    statement (the ch. 7 failure condition depends on this identity).
 
-The gate never applies a rule's rewrite (R-12): `PGRLintRuleCheck` reads critiques only;
+The gate never applies a rule's rewrite (R-12): `PCKLintRuleCheck` reads critiques only;
 applying changes is the fix command's monopoly (ch. 3).
 
 **Scope boundary, stated as the knowing trade it is (D-33):** lint — like architecture —
@@ -87,7 +90,7 @@ entirely. This is the trade that lets bad fixtures live beside their tests in th
 mirroring `Tests-*` packages (ch. 3 §3.2) — sweeping tests-role would redden the gate on
 its own fixtures. Partial mitigation: a `self halt` on an executed line of a test method
 errors that test headless, so the behavioral suite reddens anyway. Widening lint over
-tests-role is an M5 option and rides the fixture relocation to `Phi-Guardrails-Fixtures-*`
+tests-role is an M5 option and rides the fixture relocation to `Phi-Coding-Kit-Fixtures-*`
 (D-33).
 
 ## 2.4 Built-in Renraku rules (D-05, D-19 as revised by D-28)

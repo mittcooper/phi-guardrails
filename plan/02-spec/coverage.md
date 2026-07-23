@@ -34,16 +34,16 @@ and no superseding ruling would read **NONE — UNCOVERED**; there are none.*
 | R-31 | adoption — amended by D-45: one configuration file (R-47); baseline dependency only for the optional extension package, development-scoped | ch. 8 §8.1 |
 | R-32 | end-to-end toy demonstration, red → green | ch. 8 §8.2, §8.3 |
 | R-35 | no global state; explicit inspectable registry | ch. 0 §0.4 (runs share nothing, incl. nested); ch. 1 §1.3; ch. 5 §5.4; ch. 9 P-REG-FRESH |
-| R-36 | packaging/naming tree, PGR prefix, Tonel, baseline | ch. 1 §1.3 (packages per class table); constitution §2; D-17 (added `-Coding` package) |
+| R-36 | packaging/naming tree — three families since D-56/D-57 (`PGR`/`Phi-Guardrails-*` · `PCK`/`Phi-Coding-Kit-*` · `Toy`/`Toy-*`), Tonel, baseline | ch. 0 §0.1 (symmetry law); ch. 1 §1.3 (packages per class table); constitution §2; D-17 (added the kit package, now `Phi-Coding-Kit`) |
 | R-37 | every shipped check has bad + good fixture tests | ch. 3 §3.2; ch. 4 §4.4; ch. 5 §5.5; ch. 9 P-CAT-FIXTURES |
 | R-38 | self-hosting from the first rule | ch. 3 §3.2; ch. 7 §7.5; ch. 9 P-SELF-HOSTED |
 | R-39 | no design statement on unverified spellings | decision-log D-15 (executed pass); ch. 9 P-SPELLINGS |
-| R-40 | kit anatomy: five supplies | ch. 1 §1.4; ch. 2–6 (the coding kit instantiates each) |
+| R-40 | kit anatomy: five supplies | ch. 1 §1.4; ch. 2–5 (the coding kit instantiates each; ch. 6 is a withdrawal notice, D-37) |
 | R-41 | loading is not activation | ch. 1 §1.4; ch. 8 §8.1 step 3 (the dev-scoped extension load activates nothing) |
-| R-42 | run flow: core hands sections to kits, aggregates verdicts | ch. 1 §1.4; ch. 7 §7.2 |
+| R-42 | run flow — amended by D-51/D-54: the core hands each kit its block verbatim (+ role lists); kits answer specs; the core aggregates verdicts | ch. 1 §1.4; ch. 7 §7.2 |
 | R-43 | one working architecture test, red on toy plant | ch. 4 §4.2, §4.4; ch. 8 §8.3 |
 | R-44 | behavioral enforcement demonstrated: red test + skip each fail | ch. 5 §5.5; ch. 8 §8.2, §8.3 |
-| R-45 | gate streams verdicts live | ch. 7 §7.2 (streaming); ch. 9 P-STREAM |
+| R-45 | gate streams verdicts live — to a caller-supplied sink; no default (D-55) | ch. 7 §7.2 (streaming); ch. 9 P-STREAM, P-NO-TRANSCRIPT |
 | R-47 | adoption is one configuration file; the project is the gate's subject, never its operator (D-45, pack P7) | ch. 0 §0.2; ch. 7 §7.3; ch. 8 §8.1; ch. 9 P-NO-DEFAULT-PATH, P-ROLES-FROM-CONFIG |
 
 **v1-widen / later requirements** (not in scope for this table, recorded where the spec

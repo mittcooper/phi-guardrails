@@ -4,7 +4,8 @@
 review's major corrections (the invocation model, coupling, statefulness, the public-API
 gap) were system-level facts owned by no chapter — this document owns them. Extraction,
 not invention: every statement traces to ruled ground (pack P1–P7; D-25, D-39, D-40,
-D-41, D-45, D-46, D-47, D-48; R-04, R-05, R-35, R-47; §4.4's layer map). Section layout
+D-41, D-45, D-46, D-47, D-48, D-49, D-51, D-53, D-54, D-55; R-04, R-05, R-35, R-47;
+§4.4's layer map). Section layout
 and table shapes are agent details, veto-open (D-16 precedent).*
 
 ## 0.1 Component map
@@ -14,8 +15,8 @@ and table shapes are agent details, veto-open (D-16 precedent).*
 | **SDK** | `Phi-Guardrails-SDK` | nothing | the published boundary (D-53): protocol declarations, the two optional skeletons (`PGRCheck`, `PGRKit`), the frozen vocabulary (`PGRVerdict`, `PGRFinding`, `PGRRegistrationSpec` — D-54, `PGRConfigurationError`, the three fix-invocation errors) — no SUnit, no Renraku, no engine vocabulary (R-04) |
 | **Core** | `Phi-Guardrails-Core` | sdk | the engine: configuration parsing/validation, registry, registration machinery, the authoring-time draft tool |
 | **Gate** | `Phi-Guardrails-Gate` | core, sdk | runs a registry, aggregates the report, owns the headless entry and exit codes |
-| **Coding kit** | `Phi-Guardrails-Coding`, `-Coding-Rules`, `-Coding-Architecture`, `-Coding-Behavioral` | **sdk only — never the engine** (D-53) | check classes, their engines (Renraku, rewriter, SUnit runner, reflective queries), its published stanza (≡ recommended block, D-51) |
-| **Fixtures / toy** | `Phi-Guardrails-Fixtures-*`, `Phi-Guardrails-Toy-*` | (exempt-role demonstration matter) | committed-red fixtures and the demo client; referenced by no production package |
+| **Coding kit** | `Phi-Coding-Kit`, `-Rules`, `-Architecture`, `-Behavioral` (D-57 — the kit's own package family) | **sdk only — never the engine** (D-53) | check classes, their engines (Renraku, rewriter, SUnit runner, reflective queries), its published stanza (≡ D-51's recommended block — one concept, D-53) |
+| **Fixtures / toy** | `Phi-Coding-Kit-Fixtures-*`, `Toy-*` | (exempt-role demonstration matter) | committed-red fixtures and the demo client; referenced by no production package |
 | **Tests** | `Phi-Guardrails-Tests-*` (incl. `-Tests-Toy`, D-46) | anything they test | mirror suites and the toy demo test |
 | **Reference runner** | `guardrails.sh` (+ image-assembly recipe, §7.3) | — (outside the image) | one caller among many; must not re-privilege any caller (D-45 ruling 4) |
 
@@ -28,6 +29,48 @@ layer-map check plus P-CORE-NEUTRAL, P-FIX-GATE-WALL, P-SDK-EDGE, P-DETERMINISTI
 (ch. 9). Kits answer **`PGRRegistrationSpec`** values (SDK vocabulary) and the engine
 wraps them into its internal `PGRRegistration` — *the boundary carries information; the
 engine owns mechanism* (D-54, closing D-53's residency question).
+
+**First-kit stance (D-56):** the coding kit is the first kit — resident in this repo
+for v1 convenience, **privileged in nothing**; any kit could be extracted without
+touching core, gate, or SDK (the external-kit proof is backlogged, B-08). Its classes
+wear the kit's own prefix, **`PCK`**, never the framework's `PGR` (D-11 as amended by
+D-56); the toy models a real client and wears no framework prefix at all (`Toy*`).
+
+**Symmetry law (D-57 — the naming-boundary check's spec, B-09):** package family ⇔
+class family, in both directions: `Phi-Guardrails-*` ⇔ `PGR*` · `Phi-Coding-Kit-*` ⇔
+`PCK*` · `Toy-*` ⇔ `Toy*`.
+
+**Class inventory — every v1 production class** (the roster validators diff, like
+ch. 9's property roster; test, fixture, and toy classes follow their subject's family
+— `PCK…Test`, `Toy*` — and live in the mirroring/toy packages; the registered built-in
+`ReCodeCruftLeftInMethodsRule` ships with Pharo and is nobody's to list):
+
+| Class | Family | Kind / role | Owning chapter |
+|---|---|---|---|
+| `PGRCheck` | SDK | skeleton — check protocol | ch. 1 §1.3 |
+| `PGRKit` | SDK | skeleton — kit protocol | ch. 1 §1.3 |
+| `PGRVerdict` | SDK | value | ch. 1 §1.3 |
+| `PGRFinding` | SDK | value | ch. 1 §1.3 |
+| `PGRRegistrationSpec` | SDK | value — kit's answer | ch. 1 §1.3 |
+| `PGRConfigurationError` | SDK | value — caller-catchable error | ch. 1 §1.3 |
+| `PGRNotAutofixable` | SDK | value — fix-invocation error | ch. 3 §3.3 |
+| `PGRFixNotPreviewed` | SDK | value — fix-invocation error | ch. 3 §3.3 |
+| `PGRFixStale` | SDK | value — fix-invocation error | ch. 3 §3.3 |
+| `PGRConfiguration` | Core | engine — parsed artifact | ch. 1 §1.3 |
+| `PGRConfigurationDraft` | Core | init tool (authoring-time) | ch. 8 §8.1 |
+| `PGRRegistry` | Core | engine | ch. 1 §1.3 |
+| `PGRRegistration` | Core | engine (wraps specs) | ch. 1 §1.3 |
+| `PGRGate` | Gate | the gate | ch. 7 §7.2 |
+| `PGRReport` | Gate | the report | ch. 7 §7.2 |
+| `PCKKit` | Coding kit | the kit class | ch. 1 §1.4 |
+| `PCKLintRuleCheck` | Coding kit | check, `#lint` | ch. 2 §2.3 |
+| `PCKNoIsNilIfTrueRule` | Coding kit | catalog rule (autofix) | ch. 3 §3.2 |
+| `PCKFixCommand` | Coding kit | fix-invocation implementation | ch. 3 §3.3 |
+| `PCKLayerMapCheck` | Coding kit | check, `#architecture` | ch. 4 §4.2 |
+| `PCKSrcInventoryCheck` | Coding kit | check, `#architecture` | ch. 7 §7.5 |
+| `PCKTestSuiteCheck` | Coding kit | check, `#behavioral` | ch. 5 §5.2 |
+| `PCKNoSkippedTestsMetaRule` | Coding kit | meta-rule, `#behavioral` | ch. 5 §5.3 |
+| `PCKSuiteRunCache` | Coding kit | run cache (per-run) | ch. 5 §5.4 |
 
 **Object diagram** (verified against §1.3/§1.4/§7.2; visibility markers carry
 D-48/D-49, so this doubles as the surface map). A color-coded SVG rendering — members
@@ -60,7 +103,7 @@ classDiagram
             +run() PGRVerdict
             +kind
             +canFix (default false)
-            +fixCommandOn:(scope)
+            +fixCommandOn:(packages)
         }
         class PGRVerdict {
             <<value>>
@@ -120,14 +163,15 @@ classDiagram
         }
     }
     namespace CodingKit {
-        class PGRCodingKit
-        class PGRFixCommand {
+        class PCKKit
+        class PCKFixCommand {
             +rule:packages:()$
             +previewOn:(stream)
             +apply()
             +changes
         }
     }
+    note for PCKKit "…plus the kit's concrete checks, catalog rules, and run cache — chapter-owned; see the §0.1 inventory (D-56)"
     PGRGate --> PGRConfiguration : consumes
     PGRGate --> PGRRegistry : builds eagerly
     PGRGate --> PGRReport : answers
@@ -136,16 +180,17 @@ classDiagram
     PGRRegistration --> PGRCheck : wraps (resolved)
     PGRRegistration --> PGRVerdict : run answers
     PGRVerdict "1" --> "*" PGRFinding
-    PGRKit <|-- PGRCodingKit : conforms (skeleton optional, D-53)
-    PGRCodingKit ..> PGRRegistrationSpec : registrationsFrom answers specs (D-54)
+    PGRKit <|-- PCKKit : conforms (skeleton optional, D-53)
+    PCKKit ..> PGRRegistrationSpec : registrationsFrom answers specs (D-54)
     PGRRegistrationSpec ..> PGRRegistration : engine wraps (D-54)
     PGRConfiguration ..> PGRConfigurationError : signals on defect
 ```
 
 *Legend:* `+` public — on an audience surface per §0.3 (D-48, gaps ruled by D-49:
-construction and verdict/finding readers → caller; `PGRFixCommand` → the fifth
-audience, *fix invoker*; the role-package accessors, elided
-for size, are the kit-author reading half) · `~` internal, may change without notice ·
+construction and verdict/finding readers → caller; `PCKFixCommand` → the fifth
+audience, *fix invoker*) · `~` internal, may change without notice (the role-package
+accessors are internal since D-54 — role lists reach kits as protocol arguments, never
+via this object) ·
 `$` class-side · `«skeleton»` optional superclass — conformance, not ancestry, is what
 registration requires (D-53) · `«value»` frozen boundary vocabulary in
 `Phi-Guardrails-SDK` (the fix-invocation errors are `-SDK` vocabulary too, elided).
@@ -153,7 +198,7 @@ Verdict readers `kind`/`durationMillis` and `advisories` are
 caller-surface too, elided for size (§0.3; the `scope` field left with the two-scope
 model, D-51). `PGRVerdict class>>skipped` exists (§1.3)
 but is deliberately absent here: check authors must never emit it (D-21/D-32).
-`PGRFixCommand` is outside the gate's
+`PCKFixCommand` is outside the gate's
 call graph by construction (P-FIX-GATE-WALL) — no arrow from Gate may ever reach it.
 
 ## 0.2 The invocation model (P7, D-45)
@@ -166,8 +211,10 @@ Normative diagram: `../phi/method/guardrails-invocation-model.svg`.
 - **What a target repo contains:** one configuration file (R-47). Adoption changes
   nothing in the target's source, baseline, or tests; the config need not even live in
   the target repo (D-45 ruling 1 — no default location, explicit path always).
-- **What the gate answers:** one verdict per registration, streamed as produced (R-45);
-  one report; one exit code — `0` clean · `1` ≥1 non-green verdict · `2` configuration
+- **What the gate answers:** one verdict per registration — streamed *when the caller
+  supplies a sink or stream* (R-45 as amended by D-55: there is no default sink; even
+  the verdict stream's destination is caller-provided, one more instance of
+  caller-provides-everything); one report; one exit code — `0` clean · `1` ≥1 non-green verdict · `2` configuration
   error or any escaped exception ("the run produced no verdict", D-39). The reference
   runner's wrapper treats any exit code that is not exactly 0, 1, or 2 as failure.
 - **Residual caveat (D-45):** a swept test must not invoke the gate on its own repo's
@@ -187,10 +234,12 @@ sequenceDiagram
     participant Reg as PGRRegistration (each, in order)
     Caller->>G: runHeadless: configPath on: stream
     G->>C: fromFile: configPath
-    Note over C: strict validation (D-16, D-25, D-45)<br/>+ protocol conformance of every named check class (D-53)<br/>defect → PGRConfigurationError → exit 2
+    Note over C: strict envelope validation (D-16, D-25, D-45)<br/>defect → PGRConfigurationError → exit 2
     G->>R: fromConfiguration: config
+    Note over R: blocks open here, once (D-51): each kit validates its block (D-41)<br/>+ protocol conformance of every named, loaded check class (D-53)<br/>defect → PGRConfigurationError → exit 2, before any check runs
     R->>K: registrationsFrom: block productionPackages: pp testsPackages: tp (never the config object, D-53)
-    K-->>R: ordered registrations (resolved | missing)
+    K-->>R: ordered PGRRegistrationSpec values (check | missing-reason)
+    Note over R: engine wraps each spec into its internal PGRRegistration (D-54)
     loop registry order
         G->>Reg: run
         Reg-->>G: PGRVerdict (findings, advisories)
@@ -222,7 +271,7 @@ conformance before any check runs (§1.4).
 | SDK | Contents |
 |---|---|
 | **Gate-caller SDK** | **read-only — contains no mutating message by construction**: `PGRGate class>>runHeadless:` / `runHeadless:on:` + the exit-code contract (§7.3); in-image `forConfiguration:`, `run`, `onVerdict:`; construction `PGRConfiguration class>>fromFile:` / `fromString:`; `PGRReport>>verdicts`, `isClean`, `exitCode`, `blockingVerdicts`, `advisories`; reading `PGRVerdict>>status`, `isGreen`, `registrationName`, `kind`, `durationMillis`, `findings`, `advisories` and `PGRFinding>>target`, `message`, `rationale`; `PGRConfigurationError` catchable by class (message *text* human-facing, not an API) |
-| **Fix-invoker SDK** | **mutating, preview-first**: the generic fix-invocation protocol, hoisted to `-SDK` (D-53.4) — construct → `previewOn:` → `apply` → `changes`, staleness detection required, the three catchable errors (`PGRNotAutofixable` — renamed generic by D-54, `PGRFixNotPreviewed`, `PGRFixStale`). `PGRFixCommand` is the coding kit's *implementation* over methods/RB/Epicea; a future kit fixes over its own medium. **P-FIX-GATE-WALL, restated at SDK level: no path from the gate-caller surface reaches fix invocation** |
+| **Fix-invoker SDK** | **mutating, preview-first**: the generic fix-invocation protocol, hoisted to `-SDK` (D-53.4) — construct → `previewOn:` → `apply` → `changes`, staleness detection required, the three catchable errors (`PGRNotAutofixable` — renamed generic by D-54, `PGRFixNotPreviewed`, `PGRFixStale`). `PCKFixCommand` is the coding kit's *implementation* over methods/RB/Epicea; a future kit fixes over its own medium. **P-FIX-GATE-WALL, restated at SDK level: no path from the gate-caller surface reaches fix invocation** |
 
 **Config author** — not a code SDK: the `guardrails.ston` schema (§1.1; kit-block keys
 chs. 2–5), `#schemaVersion` + the versioning policy (ch. 1 owns it), and **the init
@@ -286,10 +335,10 @@ headers carry no back-references.
 
 | Architecture element | Implementing chapter(s) | Key properties (ch. 9) |
 |---|---|---|
-| Component map & layering (0.1) | ch. 1 §1.3; ch. 4 §4.4 | P-CORE-NEUTRAL, P-FIX-GATE-WALL, P-DETERMINISTIC |
+| Component map & layering (0.1) | ch. 1 §1.3; ch. 4 §4.4 | P-CORE-NEUTRAL, P-FIX-GATE-WALL, P-SDK-EDGE, P-DETERMINISTIC, P-NO-TRANSCRIPT (D-55) |
 | Invocation contract (0.2) | ch. 7 §7.3 | P-GATE-HEADLESS, P-NO-DEFAULT-PATH, P-NEVER-UNDECIDED, P-EXIT-CODES, P-SAME-VERDICT |
-| Configuration & registry (0.3 config author) | ch. 1 | P-CFG-STRICT, P-SCHEMA-REFUSAL, P-SCOPE-TOTAL, P-ROLES-FROM-CONFIG, P-ROLE-MISFILE, P-LOADING-INERT (P-MERGE-LAW deleted with the merge, D-51) |
-| Check kinds & engines (0.1, 0.3 check author) | chs. 2, 3, 4, 5 | P-CAT-AUTOFIX, P-CAT-FIXTURES, P-SEVERITY-EXPLICIT, P-BUILTIN-PINNED, P-FINDING-PRECISE, P-LAYERMAP-TOTAL, P-GATE-SKIP, P-SUITES-BEFORE-META |
+| Configuration & registry (0.3 config author) | ch. 1 | P-CFG-STRICT, P-SCHEMA-REFUSAL, P-SCOPE-TOTAL, P-ROLES-FROM-CONFIG, P-ROLE-MISFILE, P-LOADING-INERT, P-CONFORMANCE (D-53; P-MERGE-LAW deleted with the merge, D-51) |
+| Check kinds & engines (0.1, 0.3 check author) | chs. 2, 3, 4, 5 | P-CAT-AUTOFIX, P-CAT-FIXTURES, P-SEVERITY-EXPLICIT, P-BUILTIN-PINNED, P-FINDING-PRECISE, P-LAYERMAP-TOTAL, P-GATE-SKIP, P-SUITES-BEFORE-META, P-CANFIX-DEFAULT, P-STANZA-VALID (D-53/D-54), P-FIX-PREVIEW |
 | Run semantics: verdicts, order, streaming, error arms (0.4) | ch. 1 §1.4–§1.5; ch. 7 §7.1–§7.2 | P-GATE-COMPLETE, P-GATE-MISSING, P-ERR-IS-RED, P-STREAM, P-GATE-PURE, P-REG-FRESH |
 | Validation ∥ enforcement, two CI steps (0.4) | ch. 7 §7.4 | P-JUDGE-CONVICTS, P-SELF-HOSTED |
 | Source-inventory guard (0.1 · D-45) | ch. 7 §7.5 | P-NO-DEAD-SRC |

@@ -1003,6 +1003,10 @@ was executed; the two tables are the spellings inventory.
   explicit for Prompt-3 assembly:** the entry check must expect **36 covered + 1
   superseded (R-28 → D-37) = 37**, not "37 covered" — write that expectation into the
   entry check when Prompt 3 is assembled or it will false-fail at stage start.
+  *(Correction, freeze round: D-45 added R-47 to v1-skeleton, so the current expectation
+  is **37 covered + 1 superseded = 38** — as `coverage.md` and the requirements counts
+  already state. This seed's numbers are superseded; the principle — covered + superseded,
+  never "all covered" — stands.)*
 - **Consequences:** no spec files change under this entry (verification only); pack
   amendment subsequently delegated by the owner to the specification agent and executed
   same-day (three spots, letters kept stable — §4's "(d) withdrawn (decision-log
@@ -1502,7 +1506,11 @@ was executed; the two tables are the spellings inventory.
   exist in a tests-role package. The meta-rule's design is otherwise unchanged.
   Amended: `plan/01-requirements.md` R-46 row; ch. 5 §5.5's quotation. (Ch. 8 §8.1
   step 3 and backlog B-06 quote no scope wording — untouched; D-44's own text is
-  append-only history.) A self-hosting gain falls out: the framework's registered
+  append-only history.) *(Correction, freeze round: half of that parenthetical was
+  wrong — B-06's retained original context **does** quote "project-scope registered
+  check class"; it stands as append-only history with the live pointer re-anchored to
+  R-46, which is why no edit was or is needed. Only the §8.1 step 3 half of the claim
+  was accurate.)* A self-hosting gain falls out: the framework's registered
   checks are all defined in its own baseline packages, so when the meta-rule lands at
   M5 it machine-checks R-37 for the framework too, not only for clients.
 - **Provenance edge raised, not resolved:** baseline membership includes **exempt-role
@@ -1634,3 +1642,125 @@ was executed; the two tables are the spellings inventory.
   extended); glossary (*vocabulary* + spec; *published stanza* single-sourced); pack
   §8 line (delegated). The two-direction check re-run over the final state — result in
   the round-closing report.
+
+---
+
+## D-55 · No default sink: the gate writes only to what it is given (Q-28)
+
+- **From:** Q-28, `plan/02-decision-sheet.md` (the freeze validator's F-1 — the
+  four-way collision: §7.2/R-45's Transcript default × D-28's registered built-in over
+  production-role `-Gate` × the constitution's idiom ban × D-24's foreclosed
+  exclusions) · **Ruled by:** human · **Date:** 2026-07-22
+- **Ruling:**
+  1. **There is no default sink.** §7.2's "default sink writes to the Transcript" is
+     struck. The gate streams verdicts only to a caller-supplied sink (`onVerdict:`)
+     or stream (`runHeadless:on:`); given neither, verdicts accumulate in the report
+     and nothing streams. R-45's substance is unchanged, restated conditionally:
+     *when a sink is provided*, it receives one verdict per registration, in registry
+     order, before `run` returns.
+  2. **Framework production code never references Transcript** — not as default, not
+     as fallback, not via environment lookup (`Smalltalk at: #Transcript` is evasion
+     of our own guard and is named as such). The Playground convenience becomes
+     caller-side documentation: `gate onVerdict: [:v | Transcript crShow: v
+     reportLine]` — typed by a developer, never committed, never swept.
+     *(Correction, freeze round — agent-decided, veto-open: `reportLine` exists on no
+     surface and in no protocol (the verdict-line format is `PGRReport>>printOn:`'s,
+     explicitly not an API); the spec's snippet uses `v printString` — universal print
+     protocol, human-facing display, no surface member implied. Promoting `reportLine`
+     to the caller surface instead is a surface ruling the owner may still make.)*
+  3. **Why:** the make-it-impossible move (the D-42/D-53 pattern) — the built-in keeps
+     its full force, D-24 stays foreclosed (the framework grants itself no exception:
+     the credibility line), the constitution's ban holds without exception, and P7 is
+     honored once more: the caller provides the destination, like everything else.
+  4. **The P5 gap routes to M1, strengthened:** the built-in's match set beyond
+     `Transcript show:` is not probed now — instead §3.2b's **fixture pair must pin
+     the match set**: the bad fixture contains each send form the rule claims to
+     catch, one asserted critique each, so the answer is a permanent regression guard
+     instead of a one-time probe.
+- **Consequences:** ch. 7 §7.2 (sink contract, conditional R-45, protocol comment,
+  Playground snippet as caller docs); ch. 3 §3.2b (match-set pin note); ch. 9
+  (P-STREAM cites the amendment; new **P-NO-TRANSCRIPT** in the architecture self-test
+  family); ch. 0 §0.2 (caller-provides-everything gains this instance); requirements
+  R-45 annotated; coverage R-45 row. Q-28 closes ruled.
+
+---
+
+## D-56 · Kit prefix `PCK` (D-11 amended); first-kit stance; full object-model inventory
+
+- **From:** owner rulings, pre-Prompt-3 verification of ch. 0 (notice of 2026-07-22) ·
+  **Ruled by:** human — binding; amends D-11 · **Date:** 2026-07-22 · Owner ground
+  (pack §5, constitution §2 naming) verified aligned on disk before recording (the
+  D-38/D-50 pattern).
+- **1 · Kit classes carry their kit's own prefix.** The coding kit is a *client of the
+  SDK*, not part of the framework — its classes must not wear the framework's prefix.
+  Framework (`-SDK`, `-Core`, `-Gate`) stays `PGR`; **kit classes carry their kit's
+  prefix, regex-disjoint from `PGR`** — coding kit = **`PCK`** (`PCKLayerMapCheck`,
+  `PCKFixCommand`, `PCKNoIsNilIfTrueRule`, …); **the toy models a real client and uses
+  no framework prefix** (`ToyWidget`, `ToyNoIsNilIfFalseRule`, …). SDK vocabulary stays
+  `PGR` — including the three fix-invocation errors (boundary property, not kit
+  property). Package names unchanged (prefixes mark *class* family). Tests and
+  fixtures follow their subject's family (`PCKLayerMapCheckTest`,
+  `BaselineOfPCKFixture`, `ToyDemoTest`). Riders: (a) a one-line collision probe for
+  `PCK` and `Toy` joins the M0/M1 probe work (D-31.a toolchain — D-11's house style);
+  (b) a **naming-boundary check** (framework packages only `PGR*`, kit packages only
+  their prefix) joins the future catalog candidates.
+- **2 · First-kit stance:** ch. 0 §0.1 now states, normatively: *the coding kit is the
+  first kit — resident in this repo for v1 convenience, privileged in nothing; any kit
+  could be extracted without touching core, gate, or SDK.* The **external-kit proof**
+  is backlogged (B-08): a trivial kit built outside this repo against
+  `Phi-Guardrails-SDK` only, composed into a project — the decision point for
+  extracting the coding kit.
+- **3 · Full object-model inventory:** ch. 0 §0.1 gains the **class inventory table**
+  (24 v1 production classes: 9 SDK, 4 core, 2 gate, 9 coding-kit — the seven
+  previously absent kit classes now indexed) with the one-line disposition for
+  test/fixture/toy classes and the shipped built-in; both diagram views gain the
+  **ghost/elision note** in the CodingKit namespace ("…plus the kit's concrete checks,
+  catalog rules, and run cache — chapter-owned; see the §0.1 inventory").
+- **Agent details, veto-open:** the kit class is **`PCKKit`** (not `PCKCodingKit` —
+  the prefix already says *coding kit*; `PCKCodingKit` would stutter), and its test is
+  `PCKKitTest` · the naming-boundary rider is routed via the **backlog** (B-09, M5
+  widened-catalog candidate) rather than the widened-catalog list in ch. 3 (rule 9:
+  it blocks nothing and Prompt 3 must disposition it visibly).
+- **Consequences:** prefix sweep applied across every spec chapter, the glossary,
+  ch. 9's test names, the §1.1/§7.5 artifact examples and registration-name strings
+  (`#kit : 'PCKKit'`, `lint/PCKNoIsNilIfTrueRule`, `'ToyNoIsNilIfFalseRule'`, …), and
+  both diagram views — old spellings survive nowhere except decision-log/sheet/backlog
+  history (append-only); requirements R-36 and the naming tree annotated (D-11 as
+  amended); backlog gains B-08/B-09. The pre-D-56 spellings in D-01…D-55 entries are
+  history and stand as written.
+
+---
+
+## D-57 · Kit packages rename too: `Phi-Coding-Kit-*` and `Toy-*` (completes D-56; supersedes its "packages unchanged" line)
+
+- **From:** owner addendum to the prefix notice (2026-07-22) · **Ruled by:** human —
+  binding · **Date:** 2026-07-22 · Owner ground (pack §5 naming + verify command,
+  constitution §2 tree + verify command) verified aligned on disk before recording.
+- **Ruling:** naming's second half. (1) Coding-kit packages:
+  `Phi-Guardrails-Coding`* → **`Phi-Coding-Kit`** root + `-Rules`, `-Architecture`,
+  `-Behavioral`; kit tests `Phi-Coding-Kit-Tests-*`. (2) Toy packages:
+  `Phi-Guardrails-Toy-*` → **`Toy-*`** — the toy models a real adopter in packages as
+  in classes (restores D-01's original example shape). (3) **Symmetry law**, stated in
+  ch. 0 §0.1 as the naming-boundary check's spec (B-09): `Phi-Guardrails-*` ⇔ `PGR*` ·
+  `Phi-Coding-Kit-*` ⇔ `PCK*` · `Toy-*` ⇔ `Toy*`.
+- **Ripples swept:** baseline role groups and composites (ch. 8 §8.1) · §4.4's layer
+  map · the framework artifact's `#roles`/`#exemptNamePatterns`
+  (`'Phi-Coding-Kit-Fixtures-.*'`, `'Toy-.*'`) · `.smalltalk.ston` `#testing` now
+  lists **both tests families** · the verify-command regex is
+  `"(Phi-Guardrails|Phi-Coding-Kit)-Tests-.*"` — **alternation spelling flagged
+  ⟨verify⟩ for the M0 probe** (owner files already carry it) · ch. 0 component map +
+  class inventory + both diagram views (SVG namespace label included) · glossary and
+  every chapter's package mentions · requirements naming tree restructured (three
+  families) · backlog B-04's live fixture-family pointer.
+- **Veto-open (agent calls, recorded):** (a) the kit's behavioral red-test fixtures
+  **move kit-side** — `Phi-Coding-Kit-Fixtures-Behavioral` — family symmetry (a kit's
+  fixtures are the kit's), consistent with `BaselineOfPCKFixture`'s D-56 family;
+  D-22's mechanism survives intact: the package is exempt-role, full-matches
+  `'Phi-Coding-Kit-Fixtures-.*'` in `#exemptNamePatterns`, and matches neither tests
+  pattern. (b) One ripple beyond the notice's list: **`BaselineOfPhiGuardrailsToy` →
+  `BaselineOfToy`** — "the toy models a real adopter in packages as in classes"
+  extends naturally to its baseline's name, and the toy's `#project` display name is
+  now `'Toy'`; revert on veto.
+- **Consequences:** 100 replacements across all ten spec chapters + glossary + the
+  SVG + requirements; short-form (`-Coding-Rules`) and regex sites hand-amended; the
+  pre-D-57 package spellings in D-01…D-56 entries are append-only history and stand.

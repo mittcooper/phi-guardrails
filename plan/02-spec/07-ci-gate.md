@@ -29,7 +29,7 @@ registration's `run` are the top-level handler's business (§7.3).
 
 ```smalltalk
 gate := PGRGate forConfiguration: aPGRConfiguration.
-gate onVerdict: [ :verdict | ... ].      "optional; replaces the default sink"
+gate onVerdict: [ :verdict | ... ].      "optional; sets the verdict sink — none by default (D-55)"
 report := gate run.                       "→ PGRReport"
 ```
 
@@ -39,9 +39,19 @@ report := gate run.                       "→ PGRReport"
   it completes, answers the report. Same object, same verdicts, whether called from a
   script, an agent loop, or a Playground (R-30): invocation mode changes only who reads
   the report.
-- **Streaming (R-45):** the default sink writes one line per verdict to the Transcript;
-  `runHeadless:` (§7.3) replaces it with a stdout writer. A run is never a black box — an
-  agent watching the stream can react to the first red verdict before the run ends.
+- **Streaming (R-45, as amended by D-55): there is no default sink.** The gate streams
+  verdicts only to what the caller supplies — an `onVerdict:` sink in-image, or the
+  stream `runHeadless:on:` passes (§7.3); given neither, verdicts accumulate in the
+  report and nothing streams. *When a sink is provided*, it receives one verdict per
+  registration, in registry order, before `run` returns — a run is never a black box
+  for a caller who asked to watch, and an agent can react to the first red verdict
+  before the run ends. **Framework production code never references `Transcript`** —
+  not as default, not as fallback, not via `Smalltalk at: #Transcript` (evasion of our
+  own guard, named as such — D-55; property P-NO-TRANSCRIPT, ch. 9). The Playground
+  idiom is caller-side documentation, typed by a developer, never committed, never
+  swept: `gate onVerdict: [:v | Transcript crShow: v printString]` (human-facing display
+via universal print protocol — no surface member is implied; the verdict-line *format*
+is owned by `PGRReport>>printOn:` and is explicitly not an API).
 
 **The three run modes (D-25; the source's primary-vs-enforcement split made normative).**
 The same gate serves three moments, and only one mode produces the **verdict of record**:
@@ -68,11 +78,11 @@ carry none, ch. 4). The verdict states shown are illustrative of the format only
 are not the committed toy's actual state (which is all-red, §8.2):
 
 ```
-PGR gate · Phi-Guardrails-Toy · 6 registrations
-[ GREEN ] lint/PGRNoIsNilIfTrueRule (34ms)
-[ RED   ] architecture/PGRLayerMapCheck (12ms)
-          PGRToyWidget>>#render references PGRToyDatabase — layer 'ui' → 'persistence' is not allowed
-[MISSING] behavioral/Phi-Guardrails-Toy-Tests — tests-role package contains no tests
+PGR gate · Toy · 6 registrations
+[ GREEN ] lint/PCKNoIsNilIfTrueRule (34ms)
+[ RED   ] architecture/PCKLayerMapCheck (12ms)
+          ToyWidget>>#render references ToyDatabase — layer 'ui' → 'persistence' is not allowed
+[MISSING] behavioral/Toy-Tests — tests-role package contains no tests
           … (3 further verdict lines elided from this example)
 GATE: RED — 2 blocking of 6 · exit 1
 ```
@@ -162,7 +172,7 @@ The framework's own `.smalltalk.ston` (step 1 only):
 SmalltalkCISpec {
     #loading : [ SCIMetacelloLoadSpec {
         #baseline : 'PhiGuardrails', #directory : 'src', #load : [ 'CI' ] } ],
-    #testing : { #packages : [ 'Phi-Guardrails-Tests-.*' ],
+    #testing : { #packages : [ 'Phi-Guardrails-Tests-.*', 'Phi-Coding-Kit-Tests-.*' ],
                  #failOnZeroTests : true }
 }
 ```
@@ -188,8 +198,9 @@ CI-level echo of R-24.) One CI-service workflow file invokes **both steps** —
 — which, with `guardrails.sh` (the reference runner, §7.3), makes **two** committed
 files the framework owns outside `src/`, `plan/`, and the root artifacts (constitution
 §2's write boundary names both — owner amendment landing with D-45/D-46). The pack's verify command remains the local loop:
-`<pharo-vm> <image> test --fail-on-failure "Phi-Guardrails-Tests-.*"` — verified exit
-semantics: green 0, red 1 (D-15).
+`<pharo-vm> <image> test --fail-on-failure "(Phi-Guardrails|Phi-Coding-Kit)-Tests-.*"`
+— verified exit semantics: green 0, red 1 (D-15); the **alternation** spelling is
+flagged ⟨verify⟩ for the M0 probe (D-57 — owner files already carry it).
 
 ## 7.5 Self-hosting artifact (R-38, D-25)
 
@@ -198,14 +209,15 @@ The framework's own `guardrails.ston` (repo root — the recommended in-repo def
 directory, D-45 ruling 2) ·
 `#baseline` `'BaselineOfPhiGuardrails'` · `#roles` — `#production : [ 'production' ]`
 (the seven production packages incl. `-SDK`, §4.4's four layers), `#tests : [ 'tests' ]` (the
-mirroring `Phi-Guardrails-Tests-*` packages), `#exempt : [ 'fixtures', 'toy' ]`
+tests families, `Phi-Guardrails-Tests-*` and `Phi-Coding-Kit-Tests-*` — D-57),
+`#exempt : [ 'fixtures', 'toy' ]`
 (baseline group names used as matchers — the convenience form; D-45) ·
-`#exemptNamePatterns` `[ 'Phi-Guardrails-Fixtures-.*', 'Phi-Guardrails-Toy-.*' ]`
+`#exemptNamePatterns` `[ 'Phi-Coding-Kit-Fixtures-.*', 'Toy-.*' ]`
 (D-25 residual 1) · one coding-kit block **naming every check explicitly** (D-51 — we
 eat the explicit-composition rule ourselves): `#lintRules`
-`[ 'PGRNoIsNilIfTrueRule', 'ReCodeCruftLeftInMethodsRule' ]` ·
-`#architectureChecks` `[ 'PGRLayerMapCheck', 'PGRSrcInventoryCheck' ]` with the §4.4
-`#layerMap` · `#metaRules` `[ 'PGRNoSkippedTestsMetaRule' ]`. Nothing is automatic:
+`[ 'PCKNoIsNilIfTrueRule', 'ReCodeCruftLeftInMethodsRule' ]` ·
+`#architectureChecks` `[ 'PCKLayerMapCheck', 'PCKSrcInventoryCheck' ]` with the §4.4
+`#layerMap` · `#metaRules` `[ 'PCKNoSkippedTestsMetaRule' ]`. Nothing is automatic:
 delete a line here and that check stops running, visibly. The enforcement step (§7.4
 step 2) therefore runs the framework against
 itself on every CI run; the scope law
@@ -215,10 +227,10 @@ principle, now machine-checked); the toy has its own artifact and baseline exerc
 the demo test (ch. 8).
 
 **Dead-code guard (D-25 residual 2; a registered check since D-45):**
-**`PGRSrcInventoryCheck`** — it was a test only because tests were the invocation path;
+**`PCKSrcInventoryCheck`** — it was a test only because tests were the invocation path;
 under the invocation model it registers like everything else (kind `#architecture`, in
 the kit block's `#architectureChecks`; the framework's own artifact writes the entry —
-one scope, the file, D-51). Registration name `architecture/PGRSrcInventoryCheck`;
+one scope, the file, D-51). Registration name `architecture/PCKSrcInventoryCheck`;
 **missing** when the config declares no `#src` (the §1.5 parameter pattern). Its `run` is a **read-only walk**
 of the declared source root (R-12 holds — checks never mutate; this walk and the artifact
 read are the gate's only two file accesses, §7.6): red, with one finding per offender,
@@ -230,7 +242,7 @@ directory for Metacello to find it (§7.4's `#directory : 'src'`), and no baseli
 declares its own package — without the clause the check reds itself on day one. Code is
 therefore either in the baseline (and so in a role, and so guarded), a baseline package
 itself, or flagged as dead; there is no fourth state. Its fixture pair
-(`PGRSrcInventoryCheckTest`, in `Phi-Guardrails-Tests-Coding-Architecture`) hands the
+(`PCKSrcInventoryCheckTest`, in `Phi-Coding-Kit-Tests-Architecture`) hands the
 check a **scratch root** built and deleted by the test — never planted directories in the
 real working tree.
 
@@ -240,5 +252,5 @@ No binding wall-clock budget in v1. Working target, non-binding: full gate (fram
 toy) **< 60 s** in CI; in-image incremental run **< 10 s**. At M4, with the full gate
 running in CI, timings are measured and the budget becomes a ruled decision-log entry.
 Design consequence honored now: checks do no I/O beyond the image except the two ruled
-file accesses — the artifact read and `PGRSrcInventoryCheck`'s read-only walk of the
+file accesses — the artifact read and `PCKSrcInventoryCheck`'s read-only walk of the
 declared `#src` root (D-45) — so cost scales with loaded code size only.
