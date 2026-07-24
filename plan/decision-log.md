@@ -2173,3 +2173,111 @@ selector checked against §0.3, clean; guide 1's four registrations reconcile).*
   (C01–C04, chunk index, ledger, decision sheet) are swept to the ruled paths in
   the same notice's sweep; D-31.a's recipe is unchanged as history — its install
   target is henceforth `.build/pharo/`.
+
+---
+
+## D-63 · M0 probe record (E01)
+
+*The full record for the number reserved by the D-63 stub above (its one-line entry
+explains the log's numbering order); appended after D-65 at execution time, as the
+stub anticipates.*
+
+- **From:** E01/C01 execution — harness `tools/probe-m0.sh` over the
+  `tools/install.sh` toolchain; probe sources `plan/probes/m0-flush.st`,
+  `plan/probes/m0-regex-setup.st` · **Ruled by:** live-image evidence, recorded by
+  the implementer · **Date:** 2026-07-23
+- **Toolchain actually installed** (D-31.a recipe at the D-65 location
+  `.build/pharo/`): image `Pharo13.0-SNAPSHOT-64bit-4f7563dfe5.image`;
+  `SystemVersion current` →
+  `Pharo-13.1.0+SNAPSHOT.build.745.sha.4f7563dfe5e465d0cb0a269e3ba58a351b1a8cde (64 Bit)`.
+  **Risk line (build drift, noted per the C01 work order — not a failure):** this is
+  not the `4c3e4714cc` build (2026-07-09) the D-15/D-25.a spelling inventory was
+  verified on; the `get-files/130` channel now serves a 13.1-series snapshot under
+  the Pharo13.0 image name. Every spelling below — and every D-15 spelling it leans
+  on (`Stdio stdout`, `Smalltalk exit:`, the `test --fail-on-failure` CLI, the
+  D-15.b fluid class form) — re-executed green on `4f7563dfe5`. Recommendation, not
+  a ruling: if a later chunk hits an inventory mismatch, suspect drift first;
+  consider pinning the two zips by checksum then.
+- **Probe 1 · D-58 collision probe (stock image).** Spellings as executed:
+
+  ```smalltalk
+  (Smalltalk globals keys select: [:k | k beginsWith: 'PCK']) asSortedCollection asArray.
+  (Smalltalk globals keys select: [:k | k beginsWith: 'Toy']) asSortedCollection asArray.
+  Smalltalk globals includesKey: #BaselineOfToy.
+  ```
+
+  | question | outcome |
+  |---|---|
+  | any global with prefix `PCK`? | `#()` — none |
+  | any global with prefix `Toy`? | `#()` — none (no hits, so no class-or-not analysis needed) |
+  | exact name `BaselineOfToy` taken? | `false` |
+
+  All three names are collision-free on the stock image (analogue of D-15's `PGR`
+  survey).
+- **Probe 2 · D-61.b stream flush before `Smalltalk exit:`.** The snippet writes a
+  100 000-char payload + `END-OF-REPORT` + lf to `Stdio stdout`, then
+  `Smalltalk exit: 7` (`plan/probes/m0-flush.st`; the flush arms insert
+  `Stdio stdout flush.` before the exit line). Four arms from the shell, each
+  checked for exit code and captured-stdout completeness (100 014 bytes, ending
+  `END-OF-REPORT` + lf):
+
+  | arm | invocation | flush? | exit code | stdout complete |
+  |---|---|---|---|---|
+  | A | `st` | no | 7 | yes |
+  | B | `st` | yes | 7 | yes |
+  | C | `eval` | no | 7 | yes |
+  | D | `eval` | yes | 7 | yes |
+
+  **The sentence E05 builds on: an explicit `flush` is NOT required — stdout written
+  immediately before `Smalltalk exit:` reaches the caller intact under both `st` and
+  `eval` invocation, and the exit code is preserved exactly.** An explicit flush is
+  harmless (arms B/D byte-identical to A/C); E05 may emit one as belt-and-braces,
+  but correctness does not depend on it.
+- **Probe 3 · D-57 verify-command alternation regex.** On a scratch *copy* of the
+  stock image (`.build/scratch/probe.image`), three one-test `TestCase` subclasses
+  were created in packages `Phi-Guardrails-Tests-ProbeAlpha`,
+  `Phi-Coding-Kit-Tests-ProbeBeta`, and `XPhi-Guardrails-Tests-Gamma`
+  (`plan/probes/m0-regex-setup.st`).
+  - Class-creation spelling that worked (D-15.b fluid form, `compile:` sent to
+    `install`'s result so no statement references a just-created class name):
+
+    ```smalltalk
+    (TestCase << #ProbeAlphaTest
+        package: 'Phi-Guardrails-Tests-ProbeAlpha';
+        install) compile: 'testTruth self assert: 3 + 4 equals: 7'.
+    ```
+
+  - Image-save spelling that worked: `Smalltalk snapshot: true andQuit: true`
+    (script exited 0; the saved image carried the classes into the next run).
+  - Verify run:
+    `<vm> <scratch-image> test --fail-on-failure "(Phi-Guardrails|Phi-Coding-Kit)-Tests-.*"`
+    → **exit 0**; runner output proving the count: `Running tests in 2 Packages` …
+    `2 run, 2 passes, 0 failures, 0 errors.` — one test per alternation branch,
+    the `XPhi-…` package excluded (full-match, as D-15 predicts). **Alternation is
+    honored; the pack's verify command stands exactly as written.**
+- **Local load (D-60.a local form), appended by C02.** Work image built by
+  `tools/build-image.sh`: pristine C01 image + `.changes` copied to
+  `.build/work/phi.image`/`.changes` (sources symlinked), then, via the VM's `eval`
+  on the work image, the expression as executed (one eval string, load then save —
+  the image was saved with the same `Smalltalk snapshot: true andQuit: true`
+  spelling probe 3 verified, not an `eval --save` flag):
+
+  ```smalltalk
+  Metacello new baseline: 'PhiGuardrails';
+      repository: 'tonel:///Users/mitt/dev/projects/phi-guardrails/src';
+      load: 'CI'.
+  Smalltalk snapshot: true andQuit: true
+  ```
+
+  → **exit 0**; all 20 packages + `BaselineOfPhiGuardrails` reported
+  `MetacelloNotification: Loaded`, `...finished baseline`. No `.properties` file in
+  `src/` was needed — the bare Tonel directory tree satisfied the `tonel://` scheme.
+  Verify command against the saved image: exit 0,
+  `Running tests in 7 Packages` … `5 run, 5 passes, 0 failures, 0 errors.`
+  (the smoke suite; fixture/toy stubs contribute none, the regex excludes
+  `-Fixtures-`).
+- **Still to land here (stated stubs, per the C01 work order):**
+  - *C04 appends:* the hosted load expression
+    (`github://mittcooper/phi-guardrails:main/src`, D-64) + the real-family regex
+    confirmation on the loaded image.
+  - This entry completes at E01 acceptance.
