@@ -2391,3 +2391,32 @@ stub anticipates.*
 - **Consequences:** the E02 decomposition carries both the check chunk and the
   work-order-template amendment; the integrator's operating loop gains the
   precondition check as a deterministic-tier step once the tool exists.
+
+---
+
+## D-68 · Gate-4 spot-check rulings (E02): four agent calls confirmed
+
+- **From:** owner rulings on the E02 decomposition report (Gate-4 spot-check,
+  2026-07-23; agent calls recorded veto-open in
+  `plan/04-epics/E02-sdk-vocabulary/chunks.md`) · **Ruled by:** human — binding ·
+  **Date:** 2026-07-23
+- **1 · `missingReason` internal-only on `PGRVerdict` — confirmed.** The frozen
+  caller surface stays exactly as ch. 1 §1.3 tables it while §1.5's report
+  obligation is met engine-side — D-48's report-text-is-not-API distinction
+  applied: the report shows the reason; no caller API grows.
+- **2 · `fixCommandOn:` as a `subclassResponsibility` marker on the skeleton —
+  confirmed.** Matches D-54's contract and the ch. 0 diagram; the `canFix`-false
+  guard means the marker can never fire in a conforming kit.
+- **3 · D-67 clause (b) subsumption reading — confirmed, one-check form final.**
+  If an accepted chunk were uncommitted, the tree would not be clean-modulo-ledger,
+  so check (a) catches (b)'s violation at the next pick. The hypothetical stronger
+  check is deliberately **not** filed as a backlog item — the one-check reading
+  covers the failure mode that actually bit E01.
+- **4 · Single `PGRSdkErrorsTest` home for the four error classes — confirmed.**
+  Four one-assertion `<Subject>Test` classes would be ceremony; the E01
+  descriptive-`PGR*Test` precedent holds.
+- **Consequences:** the four rows in E02's chunk-index agent-calls section are
+  annotated "confirmed, D-68" (this entry's sweep); the remaining E02 agent calls
+  stay veto-open and close on the D-16 precedent at epic acceptance if unvetoed.
+  No work-order text changes: C06's stronger-check sentence already routes any
+  future need through a new item, which this ruling declines to pre-file.
