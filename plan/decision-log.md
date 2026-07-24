@@ -2311,3 +2311,46 @@ stub anticipates.*
     (`github://mittcooper/phi-guardrails:main/src`, D-64) + the real-family regex
     confirmation on the loaded image.
   - This entry completes at E01 acceptance.
+- **Hosted load (D-60.a hosted form), appended by C04.** In a **fresh** copy of the
+  pristine C01 image (`.build/scratch/hosted.image` — never the work image), the
+  probe `plan/probes/m0-hosted-load.st` ran §7.3 recipe step 2 with the D-64 ruled
+  coordinates. The expression as executed, which **worked** (exit 0):
+
+  ```smalltalk
+  Metacello new
+      baseline: 'PhiGuardrails';
+      repository: 'github://mittcooper/phi-guardrails:main/src';
+      load: 'CI'.
+  ```
+
+  → 21 `MetacelloNotification: Loaded` lines (`BaselineOfPhiGuardrails` + all
+  20 packages), each stamped
+  `https://github.com/mittcooper/phi-guardrails.git[main](a92faf6e043ab1d1ae04445f71907d5adb721bf3)`,
+  then `...finished baseline`. Same-session assertion: `Smalltalk globals
+  includesKey: #BaselineOfPhiGuardrails` → true, and
+  `PGRBaselineSmokeTest buildSuite run` →
+  `5 ran, 5 passed, 0 skipped, 0 expected failures, 0 failures, 0 errors, 0
+  passed unexpected` (`hasPassed`; script exits 0 only then). No credential
+  machinery needed — the repo is public per D-64. Not blocked; the E15
+  workflow-equivalence landing condition (D-60.a) remains E15's, judged against
+  these coordinates when step 2 lands.
+- **D-57 regex confirmed on the real tree, appended by C04.** C01's probe 3 proved
+  the alternation dialect on scratch packages; the same regex
+  `"(Phi-Guardrails|Phi-Coding-Kit)-Tests-.*"` now stands confirmed **on the real
+  families**: `tools/verify.sh` on the work image reports
+  `Running tests in 7 Packages` … `5 run, 5 passes, 0 failures, 0 errors.` (both
+  families' tests-role packages matched, `-Fixtures-` excluded, five smoke tests
+  named individually), re-run green at C04 on head `a92faf6`; the CI service runs
+  the same suite green (runs 30067053566 on `afb44e8`, 30067111092 on `a92faf6`).
+  `XPhi…`-style false matches are impossible by full-match, as probe 3 showed.
+- **Entry complete (C04 close-out, 2026-07-23).** All four roadmap probe bullets
+  are answered above with spellings as executed: **D-57** regex (dialect, probe 3;
+  real tree, the row above) · **D-58** collisions (probe 1: `PCK`, `Toy`,
+  `BaselineOfToy` all free) · **D-60/D-60.a** load expression (local `tonel://`
+  row + hosted `github://` row — hosted ran green, no blocker to record) ·
+  **D-61.b** stream flush (probe 2, four arms; the sentence E05 builds on). The
+  "completes at E01 acceptance" stub resolves to: complete as of C04, with the M0
+  exit checkpoint's three legs green on head `a92faf6` (recorded in
+  `plan/04-epics/E01-build-test-harness/chunks.md`). Still open **by design**, not
+  a gap here: E15's D-60.a landing condition — workflow load ≡ §7.3 real form
+  (`github://mittcooper/phi-guardrails:main/src`), checked when step 2 lands.

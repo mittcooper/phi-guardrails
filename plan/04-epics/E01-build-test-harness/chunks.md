@@ -54,7 +54,13 @@ E01 is provable by, on one head commit:
    D-60/D-60.a load expression (local + hosted-or-recorded-blocker) · D-61.b stream
    flush — each row carrying the spelling as executed.
 
-Checkpoint result (C04 fills in): _date · leg 1 · leg 2 · leg 3_
+Checkpoint result (C04 fills in): **2026-07-23, all three legs green on head
+`a92faf6`** · leg 1: `tools/build-image.sh && tools/verify.sh` exit 0 —
+`5 run, 5 passes, 0 failures, 0 errors.`, all 5 `PGRBaselineSmokeTest` tests
+named (`tools/probe-m0.sh` also ALL PASS on the same commit) · leg 2: `ci.yml`
+run 30067111092 on `a92faf6` — success · leg 3: D-63 complete, all four probe
+bullets answered with spellings as executed (hosted `github://` load ran green;
+no blocker row needed).
 
 **Frozen at acceptance:** the `src/` package inventory (21 directories) and the
 baseline's ten group names with their exact memberships. Later epics fill stub
