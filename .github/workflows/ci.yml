@@ -8,6 +8,6 @@ jobs:
       - uses: hpi-swa/setup-smalltalkCI@v1
         with:
           smalltalk-image: Pharo64-13
-      - run: smalltalkci -s .smalltalk.ston
+      - run: smalltalkci -s Pharo64-13
         shell: bash
         timeout-minutes: 30
