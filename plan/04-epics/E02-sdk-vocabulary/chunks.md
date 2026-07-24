@@ -100,7 +100,15 @@ amendments need a decision-sheet entry):**
   `PGRRegistrationSpec`s; never the configuration object) · `recommendedBlock`
   (STON text). (`PGRKit` optional.)
 
-Checkpoint result (filled at acceptance): —
+Checkpoint result (filled at acceptance): **2026-07-24, all three legs green on head
+`5f2fc60`** (orchestrator-run at epic acceptance) · leg 1: `tools/build-image.sh &&
+tools/verify.sh` exit 0 — `24 run, 24 passes, 0 failures, 0 errors.`, all six
+`Phi-Guardrails-Tests-SDK` suites listed (19 tests) plus the 5 smoke tests;
+`testCanFixDefaultsFalse` green = **P-CANFIX-DEFAULT** discharged · leg 2:
+`install.sh` double-run exit 0 with both `checksum verified (D-66)` lines and the
+tamper arm exiting nonzero naming file + both checksums; `precheck.sh` four arms
+clean→0 · ledger-only→0 · untracked→1 · modified→1 (D-67) · leg 3: CI run
+30075643532 on `5f2fc60` — `completed success`.
 
 ## Addendum — post-PASS punch list (owner notice, 2026-07-23; one batch, no ruling content, no D-number)
 

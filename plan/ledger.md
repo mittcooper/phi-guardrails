@@ -11,13 +11,13 @@ append-or-frozen.*
 | C02 | E01 | accepted | C01 | implementer-2 |
 | C03 | E01 | accepted | C02 (Q-29 ruled — D-64) | implementer-3 |
 | C04 | E01 | accepted | C03 | implementer-4 |
-| C05 | E02 | todo | — | — |
-| C06 | E02 | todo | — | — |
-| C07 | E02 | todo | — | — |
-| C08 | E02 | todo | — | — |
-| C09 | E02 | todo | C08 | — |
-| C10 | E02 | todo | — | — |
-| C11 | E02 | todo | C09 | — |
+| C05 | E02 | accepted | — | implementer-5 (picked @ 33b1145) |
+| C06 | E02 | accepted | — | implementer-6 |
+| C07 | E02 | accepted | — | implementer-7 (picked @ e975383) |
+| C08 | E02 | accepted | — | implementer-8 (picked @ fd33f41) |
+| C09 | E02 | accepted | C08 | implementer-9 (picked @ c29bd1c) |
+| C10 | E02 | accepted | — | implementer-10 (picked @ 5d9e8bf) |
+| C11 | E02 | accepted | C09 | implementer-11 (picked @ 6838e75) |
 
 ## Verify commands
 
@@ -48,6 +48,16 @@ milestone boundary by the orchestrator: `tools/verify.sh` 5/5 · `tools/probe-m0
 PASS · hosted-load probe exit 0 (5/5) · CI run 30067111092 `completed success`. Milestone
 mining swept C01–C04 reports/reviews: one repeat proposed to the backlog (B-12,
 working-tree/commit hygiene); B-10/B-11 already filed.
+
+**E02: ACCEPTED 2026-07-24.** All seven chunks accepted; exit checkpoint filled in
+(`plan/04-epics/E02-sdk-vocabulary/chunks.md`, three legs green on head `5f2fc60`:
+24/24 named suite incl. P-CANFIX-DEFAULT · D-66/D-67 infra arms · CI run 30075643532).
+E02's interface digest — the full SDK surface tabled in that file (PGRVerdict,
+PGRFinding, PGRRegistrationSpec, the four errors, the check protocol, the two-message
+kit protocol) — is hereby frozen; amendments need a decision-sheet entry. The entry
+checks of E03 and E06 can pass. Not a milestone boundary (E02 is M1's first epic) —
+formal mining deferred to the M1 close; one recurring correction filed now under
+operating rule 9 (B-13, PharoDebug.log debris).
 
 **E02 rows (C05–C11) added by the second Prompt-4 run (2026-07-23; Gate 4 approved,
 commit `3d718b4` — owner notice).** E02 `accepted` when all seven rows are `accepted`
