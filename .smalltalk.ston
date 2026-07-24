@@ -1,0 +1,6 @@
+SmalltalkCISpec {
+    #loading : [ SCIMetacelloLoadSpec {
+        #baseline : 'PhiGuardrails', #directory : 'src', #load : [ 'CI' ] } ],
+    #testing : { #packages : [ 'Phi-Guardrails-Tests-.*', 'Phi-Coding-Kit-Tests-.*' ],
+                 #failOnZeroTests : true }
+}

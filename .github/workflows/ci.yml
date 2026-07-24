@@ -1,0 +1,13 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hpi-swa/setup-smalltalkCI@v1
+        with:
+          smalltalk-image: Pharo64-13
+      - run: smalltalkci -s .smalltalk.ston
+        shell: bash
+        timeout-minutes: 30
