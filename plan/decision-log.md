@@ -2276,6 +2276,15 @@ stub anticipates.*
   `Running tests in 7 Packages` … `5 run, 5 passes, 0 failures, 0 errors.`
   (the smoke suite; fixture/toy stubs contribute none, the regex excludes
   `-Fixtures-`).
+  - *Correction (C02 reopen, after C03's CI run 30066695778):* the
+    no-`.properties` sentence above holds for the explicit `tonel://` scheme
+    only. smalltalkCI's `#directory : 'src'` loading goes through `filetree://`,
+    whose format dispatch requires `src/.properties` declaring
+    `{ #format : #tonel }` — without it, step 1 fails at `Loading project...`
+    with `NotFound: BaselineOfPhiGuardrails`. The file was added at C02 reopen
+    (emitted in the exact Iceberg `IceRepositoryProperties>>contentsString`
+    form: STON pretty-print, 3 lines); the explicit `tonel://` load above is
+    unaffected and re-verified with the file present.
 - **Still to land here (stated stubs, per the C01 work order):**
   - *C04 appends:* the hosted load expression
     (`github://mittcooper/phi-guardrails:main/src`, D-64) + the real-family regex
