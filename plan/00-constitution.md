@@ -85,7 +85,13 @@ may write files outside `src/`, `plan/`, `docs/` (product documentation — the
 quickstart guides), the root artifacts and CI workflow the spec names
 (`guardrails.ston`, `.smalltalk.ston`, `guardrails.sh`,
 `.github/workflows/ci.yml` — spec ch. 7), and scratch files a test creates and deletes in
-`setUp`/`tearDown` — or call the network.
+`setUp`/`tearDown` — or call the network. This boundary governs the **product** —
+framework, kit, and toy code and their tests at run time. Repo build infrastructure sits
+outside it (Q-30 ruling): committed harness scripts live in `tools/`; all uncommitted
+build state (toolchain binaries, work images, probe scratch) lives in the git-ignored
+`.build/`; `.gitignore` is git metadata like `.git` itself. Only toolchain bootstrap and
+the CI service touch the network — the product-side ban stays machine-enforced
+(P-DETERMINISTIC).
 
 ## 3 · Chunk discipline
 

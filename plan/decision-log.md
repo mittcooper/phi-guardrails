@@ -2119,3 +2119,57 @@ selector checked against §0.3, clean; guide 1's four registrations reconcile).*
   suite re-ran clean at freeze. **The stage advances to Prompt 4 (per-epic
   chunk work orders) with the frozen roadmap as its input; no further roadmap
   edits without an owner notice.**
+
+---
+
+## D-63 · (reserved) M0 probe record
+
+*One-line reservation stub: this number is reserved for the M0 probe record that E01/C01 creates at execution time (its deliverable in the Prompt-4 papers); it will be written after D-64/D-65 below — recorded so the log's numbering order is explained.*
+
+---
+
+## D-64 · Q-29 ruled: publish `mittcooper/phi-guardrails`, public, default branch `main`
+
+- **From:** Q-29 (`plan/04-decision-sheet.md`, raised by the Prompt-4 task-writing
+  run — the M0 checkpoint requires an actual CI run, but the repo had no remote and
+  its local branch was `master` against the spec's `:main` placeholders) · **Ruled
+  by:** human — binding, owner notice of 2026-07-23 · **Date:** 2026-07-23
+- **Ruling (as recommended):** (a) host coordinates `mittcooper/phi-guardrails` on
+  github.com; (b) visibility **public** — keeps the D-60.a hosted-load probe honest
+  (no token machinery in the image) and matches the family's open-development
+  posture; (c) rename `master` → `main` **before first push**, so the spec's
+  placeholder load form (`github://<org>/phi-guardrails:main/src`, §7.3) is the real
+  form and no remote ever carries `master`.
+- **Consequences:** C03's entry block lifts — its publishing procedure already
+  carries these as its ruled values; C04's hosted-load probe runs against
+  `github://mittcooper/phi-guardrails:main/src`. The §7.3 `<org>` placeholder stays
+  a placeholder in the frozen spec; this entry records the real coordinates, and
+  E15's D-60.a landing condition is judged against them.
+
+---
+
+## D-65 · Q-30 ruled: write-boundary reading confirmed; build-infrastructure locations amended
+
+- **From:** Q-30 (`plan/04-decision-sheet.md` — the boundary read literally forbade
+  the toolchain download and left `.gitignore` and runner scripts homeless) ·
+  **Ruled by:** human — binding, owner notice of 2026-07-23; constitution §2 amended
+  by the owner (owner ground) · **Date:** 2026-07-23
+- **Ruling:** the reading is **confirmed** — the write boundary governs the product
+  (framework, kit, and toy code and their tests at run time), not repo build
+  infrastructure — but with **amended locations** (the "name the location instead"
+  clause of Q-30):
+  - committed harness scripts live in **`tools/`** (repo root), not
+    `plan/toolchain/`;
+  - **all** uncommitted build state lives in a single git-ignored **`.build/`** —
+    toolchain at `.build/pharo/` (version-free path), work images at
+    `.build/work/`, probe scratch at `.build/scratch/` — not `pharo13/`.
+- **Rationale on record:** `src/` is the Tonel load root and the gate's subject
+  (its 21 directories are E01's frozen export, so tooling may never live there);
+  `tools/` gives operator-side machinery a named home so the directory tree mirrors
+  the subject/operator wall; one `.gitignore` line covers all transient state; no
+  version number in a path.
+- **Consequences:** constitution §2's mutation-discipline paragraph carries the
+  amended reading (owner-amended, verified on disk this entry); the E01 papers
+  (C01–C04, chunk index, ledger, decision sheet) are swept to the ruled paths in
+  the same notice's sweep; D-31.a's recipe is unchanged as history — its install
+  target is henceforth `.build/pharo/`.
