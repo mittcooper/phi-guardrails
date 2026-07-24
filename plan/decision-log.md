@@ -2354,3 +2354,40 @@ stub anticipates.*
   `plan/04-epics/E01-build-test-harness/chunks.md`). Still open **by design**, not
   a gap here: E15's D-60.a landing condition — workflow load ≡ §7.3 real form
   (`github://mittcooper/phi-guardrails:main/src`), checked when step 2 lands.
+
+---
+
+## D-66 · B-10 ruled: toolchain downloads pinned by checksum
+
+- **From:** B-10 (`plan/backlog.md` — filed at the E01/M0 milestone mining from
+  C01's completion report and review: the `get-files/130` channel demonstrably
+  drifts; it served `4f7563dfe5`, a 13.1-series snapshot under the Pharo13.0 name,
+  not the `4c3e4714cc` build the D-15/D-25.a spelling inventory was verified on) ·
+  **Ruled by:** human — binding, owner notice of 2026-07-23 · **Date:** 2026-07-23
+- **Ruling (as recommended, accepted):** pin the D-31.a toolchain downloads by
+  checksum. The pin target is the build actually installed and re-verified green —
+  **`4f7563dfe5`** (`Pharo-13.1.0+SNAPSHOT.build.745`, D-63's toolchain record) —
+  and `tools/install.sh` must **fail loudly on mismatch**, never silently install a
+  drifted build. An archived copy of the artifacts remains open as the stronger
+  later form — not ruled now.
+- **Consequences:** implementation is a small chunk cut in E02's Prompt-4
+  decomposition run — not the integrator's to build. Until it lands, D-63's risk
+  line stands (suspect drift first on any inventory mismatch).
+
+---
+
+## D-67 · B-12 ruled: machine-enforced chunk commit hygiene
+
+- **From:** B-12 (`plan/backlog.md` — the one correction that repeated across the
+  E01 milestone mining sweep: uncommitted working-tree state leaked between chunk
+  boundaries in all four chunks' reports) · **Ruled by:** human — binding, owner
+  notice of 2026-07-23 · **Date:** 2026-07-23
+- **Ruling (as recommended, accepted):** commit hygiene becomes machine-enforced
+  (P1 applied to the pipeline): a `tools/` precondition check requiring (a) a clean
+  working tree — modulo the ledger, the orchestrator's one mutable file — before an
+  implementer spawns, and (b) each accepted chunk committed before the next pick.
+  Cut as a small E02 chunk in the next Prompt-4 run. From E02 on, work orders state
+  commit expectations explicitly.
+- **Consequences:** the E02 decomposition carries both the check chunk and the
+  work-order-template amendment; the integrator's operating loop gains the
+  precondition check as a deterministic-tier step once the tool exists.
