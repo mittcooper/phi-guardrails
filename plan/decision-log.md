@@ -2285,6 +2285,27 @@ stub anticipates.*
     (emitted in the exact Iceberg `IceRepositoryProperties>>contentsString`
     form: STON pretty-print, 3 lines); the explicit `tonel://` load above is
     unaffected and re-verified with the file present.
+- **CI service (step 1), appended by C03.** Platform **`Pharo64-13`** on
+  smalltalkCI, GitHub Actions `ubuntu-latest` (repo published per D-64:
+  `mittcooper/phi-guardrails`, public, `main` only). **Green run:**
+  <https://github.com/mittcooper/phi-guardrails/actions/runs/30067053566>
+  (commit `afb44e8`) — log shows `PGRBaselineSmokeTest` ·
+  `Executed 5 Tests with 0 Failures and 0 Errors` · `(5 tests passed)`, so the
+  D-15 silence hole is excluded by reading, not just `#failOnZeroTests`. Final
+  action spellings that worked (two red iterations first: run 30066654756 —
+  `smalltalkci -s .smalltalk.ston` is wrong, `-s` takes the *platform* and the
+  config auto-detects at the repo root; run 30066695778 — the `filetree://`
+  `NotFound`, cured by the correction sub-bullet above):
+
+  ```yaml
+  - uses: actions/checkout@v4
+  - uses: hpi-swa/setup-smalltalkCI@v1
+    with:
+      smalltalk-image: Pharo64-13
+  - run: smalltalkci -s Pharo64-13
+    shell: bash
+    timeout-minutes: 30
+  ```
 - **Still to land here (stated stubs, per the C01 work order):**
   - *C04 appends:* the hosted load expression
     (`github://mittcooper/phi-guardrails:main/src`, D-64) + the real-family regex
