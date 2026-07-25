@@ -114,3 +114,34 @@ for the amendment chunk, not settled here.
 **Status:** **RULED** (owner word 2026-07-25) → **D-72**: option (a) — trait
 methods lint at each using class's package; the amendment chunk rides the next
 kit-side Prompt-4 cut; ch. 2 §2.3 gains an erratum note at the next spec pass.
+
+## Q-33 · The `isRewriteRule` guard does not capture catalog flag-only-ness
+
+Filed by the orchestrator from the E08-C02 completion report (2026-07-25;
+commit `44dee8a`). The frozen §3.3 constructor guard — and E08-C05's `canFix`,
+specified as the same probe — is mechanical: `aRuleClass new isRewriteRule`
+(instance-side; the P5-confirmed form, exactly two implementors in the live
+image: `ReAbstractRule` false · `ReNodeRewriteRule` true). But ch. 3 §3.2b
+classifies `ReCodeCruftLeftInMethodsRule` flag-only **by policy** ("the fix
+deletes statements, which is never a safe automatic rewrite"), while
+mechanically it *is* a `ReNodeRewriteRule` subclass answering `isRewriteRule`
+true (probed live at E08-C02; the work order's red-arm fixture had to be
+substituted — `ReEmptyExceptionHandlerRule` — for exactly this reason). So
+`PCKFixCommand rule: ReCodeCruftLeftInMethodsRule packages: …` constructs
+successfully, and E08-C05's check-side `canFix` would answer **true** for the
+cruft check — the gate would advertise a fix capability the catalog forbids.
+
+**To rule:** (a) accept the mechanical answer — `isRewriteRule` is the whole
+truth, and §3.2b's "flag-only" becomes an erratum; (b) add a kit-side flag-only
+classification (e.g. a catalog-owned deny-list or a per-rule `fixIsSafe`-style
+hook) that the constructor guard and the `canFix` capability both consult on
+top of the mechanical probe; or (c) amend the catalog entry so the cruft rule
+is no longer classified flag-only.
+
+**Recommendation (implementer's, orchestrator-relayed — E08-C05 is gated on
+this ruling):** (b) — the catalog's safety judgment should be machine-enforced
+(P1), not prose; (a) silently widens the fix surface past what §3.2b ruled
+safe, and (c) reverses a safety call on convenience grounds.
+
+**Status:** OPEN — blocks E08-C05 (its `canFix` arm); E08-C03/C04 proceed
+(they exercise a genuine rewrite rule).
