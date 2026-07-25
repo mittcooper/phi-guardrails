@@ -149,7 +149,21 @@ decision-sheet entry while E05 is in flight — the E03 wording):
 - A kit's `PGRConfigurationError` raised inside `registrationsFrom:…`
   propagates out of `fromConfiguration:` unhandled (E05 maps it to exit 2).
 
-Checkpoint result (filled at acceptance): —
+Checkpoint result (filled at acceptance, 2026-07-25): **PASS — all three legs
+green on head `9127e31`.** Leg 1: orchestrator-run
+`bash tools/build-image.sh && bash tools/verify.sh` → exit 0, **114 run, 114
+passes, 0 failures, 0 errors** — the 26-test named suite
+(`PGRScratchCheckFixturesTest` 7 · `PGRRegistrationTest` 6 · `PGRRegistryTest`
+13) listed by name with every previously accepted suite (floor ≥ 114 met
+exactly; no parallel-track suite had landed). Named properties discharged:
+P-CONFORMANCE (both ch.-9-named tests, C04) · P-LOADING-INERT (C05) ·
+P-REG-FRESH registry + reflective arms (C05; gate clause → E05, recorded
+split) · P-ERR-IS-RED registration arm (C02) · P-GATE-MISSING core-half
+machinery (C02) · P-CFG-STRICT duplicate-name arm (C04). Leg 2:
+`tools/precheck.sh` green at every pick (`38cbbbd` · `cda0e03` · `aa38715` ·
+`890e9b0` · `a444cd6`); all five commits carry D-73 `E04-C##:` IDs. Leg 3: CI
+run **30169997450** `completed success` on `9127e31`. One review round-trip
+this epic (E04-C05 fix 1 — inert mutation arm made failable).
 
 ## Addendum — post-PASS punch list (swept 2026-07-25; one batch, no re-validation per the validation rules)
 

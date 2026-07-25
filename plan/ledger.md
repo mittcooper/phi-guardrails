@@ -42,7 +42,7 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | E04-C02 | E04 | accepted | E04-C01 | implementer-E04-C02 (picked @ cda0e03; accepted @ 79b1839, 101 run) |
 | E04-C03 | E04 | accepted | E04-C02 | implementer-E04-C03 (picked @ aa38715; accepted @ 1843b58, 106 run; advisory: PGRRegistry comment's "before wrapping (C04)" claim to be made true by C04) |
 | E04-C04 | E04 | accepted | E04-C03 | implementer-E04-C04 (picked @ 890e9b0; accepted @ f369239, 112 run; C03 advisory discharged) |
-| E04-C05 | E04 | todo | E04-C04 | — |
+| E04-C05 | E04 | accepted | E04-C04 | implementer-E04-C05 (picked @ a444cd6; fix 1 accepted @ 9127e31, 114 run) |
 | E08-C01 | E08 | todo | — | — |
 | E08-C02 | E08 | todo | — | — |
 | E08-C03 | E08 | todo | E08-C01, E08-C02 | — |
@@ -146,6 +146,24 @@ specified-but-internal readers E04 consumes (tabled in that file) — is hereby 
 amendments need a decision-sheet entry. E04's entry check can pass. No fix round-trips
 this epic; B-14 (Symbol/String asymmetry) reached C23 unruled and remains open in the
 backlog for E04; B-15 filed at close (fromFile: encoding-error escape candidate).
+
+**E04: ACCEPTED 2026-07-25.** All five chunks accepted; exit checkpoint filled in
+(`plan/04-epics/E04-registry-kit-handoff-conformance/chunks.md`, three legs green
+on head `9127e31`: 26-test named suite within a 114/114 sweep discharging
+P-CONFORMANCE (both), P-LOADING-INERT, P-REG-FRESH (registry + reflective arms;
+gate clause → E05), P-ERR-IS-RED (registration arm), P-GATE-MISSING (core-half
+machinery), P-CFG-STRICT (duplicate-name arm) · precheck green at every pick with
+D-73-qualified commits · CI run 30169997450). Per the frozen roadmap: **no new
+frozen exports** — the engine is internal; the SDK contract it validates is
+E02's. The specified-but-internal surface E05 consumes (tabled in that file:
+`PGRRegistry fromConfiguration:`/`registrations`/`size`,
+`PGRRegistration fromSpec:`/`name`/`kind`/`isResolved`/`run` with stamped total
+verdicts, kit-raised `PGRConfigurationError` propagating unhandled) is changeable
+only via decision-sheet entry while E05 is in flight. E05's entry check can pass —
+**E05's cut is the next Prompt-4 run (owner)**. One review round-trip this epic
+(E04-C05 fix 1, inert mutation arm); the Gate-4 addendum's ADVISORY (kit-raised
+error propagation untested — obedient scratch kit) stands recorded for the E05
+cut. E04's B-17 (fuel-snapshot dirt) was filed at C01 acceptance.
 
 **E06 rows (C12–C18) added by the third Prompt-4 run (2026-07-25).** E06
 `accepted` when all seven rows are `accepted` and the exit checkpoint in
