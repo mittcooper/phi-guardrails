@@ -39,7 +39,7 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | C26 | E03 | accepted | C25 | implementer-26 (picked @ 7297ef9) |
 | C27 | E03 | accepted | C26 | implementer-27 (picked @ 0b1186c) |
 | E04-C01 | E04 | accepted | — | implementer-E04-C01 (picked @ 38cbbbd; accepted @ 3d7a477, 95 run) |
-| E04-C02 | E04 | todo | E04-C01 | — |
+| E04-C02 | E04 | accepted | E04-C01 | implementer-E04-C02 (picked @ cda0e03; accepted @ 79b1839, 101 run) |
 | E04-C03 | E04 | todo | E04-C02 | — |
 | E04-C04 | E04 | todo | E04-C03 | — |
 | E04-C05 | E04 | todo | E04-C04 | — |
