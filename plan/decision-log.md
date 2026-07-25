@@ -2461,3 +2461,48 @@ the next free number with substance unchanged — flagged to the owner at apply 
   constitution's precedence rule). If a future Pharo/Metacello release drops the
   upstream refusal, this entry is the trigger to revisit — the arm would return as
   its own amendment chunk with a synthetic version stub.
+
+---
+
+## D-71 · B-03 probed: the package-scoped lint run does NOT see trait-provided methods at the using class — escape confirmed
+
+- **From:** E06/C12 execution — backlog B-03 (the D-15.b agent note, ⟨verify at
+  M1⟩); probe `plan/probes/b03-lint-env-trait-probe.st` run 2026-07-25 on a
+  scratch copy of the `tools/build-image.sh` work image (never saved; probe
+  packages existed only inside the scratch run, D-65) · **Ruled by:** live-image
+  evidence, recorded by the implementer — the remedy is **not** ruled here
+  (decision-sheet Q-32, open) · **Date:** 2026-07-25
+- **Question.** Ch. 2 §2.3's lint run is package-filtered:
+  `ReSmalllintChecker new rule: {r}; environment: (RBPackageEnvironment
+  packageName: 'X'); run; criticsOf: r` (spelling verified, D-15). D-15.b
+  established that trait-provided methods surface in each *using* class's
+  `methods` (the architecture walk judges them there) while
+  `CompiledMethod>>package` answers the **trait's defining package**. Unknown
+  until now: which attribution the *lint environment* uses.
+- **Setup** (fixture spellings as executed, recorded in the probe file's header):
+  trait `TCruftProbe` in package `ProbeB-Traits` with method
+  `probeCruft self flag: #probe`; class `ProbeBUser` in package `ProbeB-User`
+  using the trait. Rule under test: the shipped `ReCodeCruftLeftInMethodsRule`
+  (fires on `self flag:` — verified live, D-28). The checker ran twice, once per
+  package environment, printing `criticsOf:` for each.
+- **Raw output (verbatim; probe exit 0):**
+
+  ```
+  ProbeB-User -> 0 critique(s)
+  ProbeB-Traits -> 1 critique(s)
+    TCruftProbe>>#probeCruft
+  ```
+
+- **Finding — the B-03 escape is real.** The `RBPackageEnvironment`-scoped lint
+  run attributes a trait-provided method **only to the trait's defining package**
+  (consistent with D-15.b's `CompiledMethod>>package` fact); the run scoped to
+  the using class's package sees nothing. Consequence of the hole: a trait
+  defined in an exempt-role package but used from a production class **escapes
+  lint** — the lint query and the architecture walk (which judges trait methods
+  at each using class) attribute differently.
+- **Consequences:** B-03 is answered; this entry dispositions the backlog row
+  (the orchestrator sweeps it at acceptance — `plan/backlog.md` not edited here).
+  Ch. 2 §2.3 as written carries the hole; any amendment or code response awaits a
+  ruling on decision-sheet **Q-32** (appended by this chunk — recommendation
+  only, per constitution §3). Per the roadmap E06 risk row, the lint chunks
+  C13–C18 land regardless: the entry rides, it does not block.

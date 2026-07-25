@@ -79,3 +79,37 @@ chunk with the stub design.
 **Status:** **RULED** (owner word 2026-07-25) → **D-70**: option (a) confirmed —
 the arm is vacuously satisfied (Metacello refuses the precondition upstream); C24
 stands as cut; ch. 1 §1.1 gains an erratum note at the owner's next spec pass.
+
+## Q-32 · B-03 escape confirmed: where do trait-provided methods get linted?
+
+The C12 probe (`plan/probes/b03-lint-env-trait-probe.st`, decision-log **D-71**,
+2026-07-25) confirmed the B-03 hole live: the ch. 2 §2.3 package-scoped lint run
+(`RBPackageEnvironment packageName:`) attributes a trait-provided method **only to
+the trait's defining package** — the using class's package run returns zero
+critiques. So a trait defined in an exempt-role package but used from a production
+class escapes lint entirely, and the lint query disagrees with the architecture
+walk, which judges trait methods at each using class (D-15.b). The lint chunks
+C13–C18 land regardless (roadmap E06 risk row); this question gates only the
+future amendment chunk.
+
+**To rule:** where a trait-provided method must be linted — (a) at each **using
+class's package**, by widening the per-package lint environment (e.g. the package
+environment unioned with a selector environment of the package's classes'
+trait-acquired methods), so the using package's role governs, matching the
+architecture walk's attribution; (b) at the **trait's defining package only**
+(current behavior), closing the hole by policy instead — a registry/gate check
+that a package defining traits used from stricter-role packages may not carry an
+exempt role; or (c) accept the hole, documented as a known limit in ch. 2 §2.3
+and ch. 8.
+
+**Recommendation:** (a). It matches the D-15.b precedent (the architecture walk
+already judges trait methods at every using class — one attribution story across
+both check kinds), keeps the role law meaningful ("the using package's role keeps
+it in scope"), and needs no new policy machinery; the duplication when several
+packages use one trait is the same accepted defense-in-depth D-15.b recorded.
+(b) adds a second enforcement concept for one hole; (c) leaves a real escape in a
+guardrails product. The exact environment-composition spelling is ⟨verify⟩ work
+for the amendment chunk, not settled here.
+
+**Status:** open — filed by C12 (E06); a ruling becomes a numbered decision-log
+entry.
