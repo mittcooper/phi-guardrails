@@ -140,4 +140,13 @@ amendments need a decision-sheet entry):**
   `productionPackageNames` · `testsPackageNames` · `exemptPackageNames` ·
   `srcPath`.
 
-Checkpoint result (filled at acceptance): —
+Checkpoint result (filled at acceptance): **2026-07-25, all three legs green on head
+`e26fc9c`** (orchestrator-run at epic acceptance) · leg 1: `tools/build-image.sh &&
+tools/verify.sh` exit 0 — `88 run, 88 passes, 0 failures, 0 errors.` with the full E03
+named suite listed (7 `PGRScratchFixturesTest` + 35 `PGRConfigurationTest` = 42) plus
+the 19 E02 SDK tests and 5 smoke tests (the 66-claim met inside the 88 sweep; the extra
+22 are E06's accepted kit suites); all five named properties discharged
+(P-CFG-STRICT · P-SCHEMA-REFUSAL · P-SCOPE-TOTAL · P-ROLE-MISFILE ·
+P-ROLES-FROM-CONFIG) · leg 2: `tools/precheck.sh` green at every one of the eight
+picks (shas recorded in the ledger's assignee column) · leg 3: CI run 30156668709 on
+`e26fc9c` — `completed success`.

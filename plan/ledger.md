@@ -30,9 +30,9 @@ append-or-frozen.*
 | C22 | E03 | accepted | C21 | implementer-22 (picked @ 6e8189d) |
 | C23 | E03 | accepted | C22 | implementer-23 (picked @ 6db98df) |
 | C24 | E03 | accepted | C23 (Q-31 ruled — D-70) | implementer-24 (picked @ bada692) |
-| C25 | E03 | todo | C24 | — |
-| C26 | E03 | todo | C25 | — |
-| C27 | E03 | todo | C26 | — |
+| C25 | E03 | accepted | C24 | implementer-25 (picked @ fce05ee) |
+| C26 | E03 | accepted | C25 | implementer-26 (picked @ 7297ef9) |
+| C27 | E03 | accepted | C26 | implementer-27 (picked @ 0b1186c) |
 
 ## Verify commands
 
@@ -98,6 +98,17 @@ two catalog registrations, the D-41 enforcement point (tabled in that file) — 
 hereby frozen; amendments need a decision-sheet entry. The entry checks of E07 and
 E08 can pass. One review round-trip this epic (C13 fix 1, rationale string); Q-32
 (trait-lint escape) remains open for the owner.
+
+**E03: ACCEPTED 2026-07-25.** All eight chunks accepted (C19 is a documented numbering
+gap, never a chunk); exit checkpoint filled in
+(`plan/04-epics/E03-configuration-scope-law/chunks.md`, three legs green on head
+`e26fc9c`: 42-test named suite within an 88/88 sweep with all five named properties ·
+precheck green at every pick · CI run 30156668709). E03's interface digest — the caller
+surface (`fromString:`/`fromFile:`), the version-2 artifact schema, and the eight
+specified-but-internal readers E04 consumes (tabled in that file) — is hereby frozen;
+amendments need a decision-sheet entry. E04's entry check can pass. No fix round-trips
+this epic; B-14 (Symbol/String asymmetry) reached C23 unruled and remains open in the
+backlog for E04; B-15 filed at close (fromFile: encoding-error escape candidate).
 
 **E06 rows (C12–C18) added by the third Prompt-4 run (2026-07-25).** E06
 `accepted` when all seven rows are `accepted` and the exit checkpoint in
