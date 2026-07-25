@@ -44,7 +44,7 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | E04-C04 | E04 | accepted | E04-C03 | implementer-E04-C04 (picked @ 890e9b0; accepted @ f369239, 112 run; C03 advisory discharged) |
 | E04-C05 | E04 | accepted | E04-C04 | implementer-E04-C05 (picked @ a444cd6; fix 1 accepted @ 9127e31, 114 run) |
 | E08-C01 | E08 | accepted | — | implementer-E08-C01 (picked @ 056e932; accepted @ f5680d6, 115 run; strict packageNamed: ruled in-scope by review) |
-| E08-C02 | E08 | todo | — | — |
+| E08-C02 | E08 | accepted | — | implementer-E08-C02 (picked @ 9c5af29; accepted @ 44dee8a, 123 run; Q-33 filed; advisory to C03 review: changes snapshot-vs-live-view) |
 | E08-C03 | E08 | todo | E08-C01, E08-C02 | — |
 | E08-C04 | E08 | todo | E08-C03 | — |
 | E08-C05 | E08 | todo | E08-C01, E08-C04 | — |
