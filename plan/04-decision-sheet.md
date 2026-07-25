@@ -50,3 +50,32 @@ root); all uncommitted build state in the single git-ignored `.build/` (toolchai
 `.build/pharo/`, work images `.build/work/`, probe scratch `.build/scratch/`).
 Constitution §2 amended by the owner accordingly; the E01 papers are swept to the
 ruled paths.
+
+## Q-31 · The matcher-ambiguity error arm is unconstructible — implement dead code, or record it vacuous?
+
+Spec ch. 1 §1.1 (D-45 agent detail, ratified D-47) rules: a `#roles` matcher
+string "that is both a group name and a package name is a configuration error."
+The E03 probe pass (2026-07-25, D-31.a work image — record: E03 chunks.md
+§probes) found **Metacello itself refuses the precondition**: declaring a group
+named like a declared package raises "incompatible specs
+(MetacelloGroupSpec/MetacelloPackageSpec)" when the version is built, so no real
+baseline can ever present an ambiguous string to the resolution order, and the
+ruled error arm would be a dead, untestable branch (a test that cannot fail —
+constitution §2's defect).
+
+**To rule:** (a) accept the arm as **vacuously satisfied** — the resolution order
+(group-name-first with membership pre-check, else package name, else full-match
+pattern) is total without it, C24 implements no dead branch, and ch. 1 §1.1's
+sentence gains an erratum note at the owner's next spec pass; or (b) keep the
+arm, which requires a synthetic (non-Metacello) version stub to test — machinery
+the spec nowhere else needs.
+
+**Recommendation:** (a). The ruling's intent — never a silent pick between two
+readings — is met structurally: Metacello guarantees the two namespaces cannot
+collide, so no pick ever happens. E03's C24 work order is written to this
+recommendation, flagged veto-open; a veto returns the arm as its own amendment
+chunk with the stub design.
+
+**Status:** **RULED** (owner word 2026-07-25) → **D-70**: option (a) confirmed —
+the arm is vacuously satisfied (Metacello refuses the precondition upstream); C24
+stands as cut; ch. 1 §1.1 gains an erratum note at the owner's next spec pass.

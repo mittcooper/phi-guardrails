@@ -29,7 +29,7 @@ append-or-frozen.*
 | C21 | E03 | todo | C20 | — |
 | C22 | E03 | todo | C21 | — |
 | C23 | E03 | todo | C22 | — |
-| C24 | E03 | todo | C23 (Q-31 recommendation) | — |
+| C24 | E03 | todo | C23 (Q-31 ruled — D-70) | — |
 | C25 | E03 | todo | C24 | — |
 | C26 | E03 | todo | C25 | — |
 | C27 | E03 | todo | C26 | — |

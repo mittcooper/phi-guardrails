@@ -2440,3 +2440,24 @@ the next free number with substance unchanged — flagged to the owner at apply 
 - **Consequences:** `.gitignore` now carries two deliberate lines (`.build/`,
   `PharoDebug.log`) — this entry binds the second; the D-67 precheck no longer
   trips on the debris, and implementers stop reporting its deletion as a deviation.
+
+## D-70 · Q-31 ruled: the matcher-ambiguity error arm is vacuously satisfied (option a)
+
+- **From:** Q-31 (`plan/04-decision-sheet.md` — filed by the E03 Prompt-4 cut,
+  probe-backed: Metacello refuses a baseline declaring a group named like a
+  declared package, "incompatible specs (MetacelloGroupSpec/MetacelloPackageSpec)",
+  probed 2026-07-25 on the D-31.a work image; record in E03 `chunks.md` §probes) ·
+  **Ruled by:** human — binding, owner word of 2026-07-25 · **Date:** 2026-07-25
+- **Ruling:** option (a) confirmed. Spec ch. 1 §1.1's "both a group name and a
+  package name is a configuration error" arm (D-45 detail, D-47 ratified) is
+  **vacuously satisfied**: Metacello guarantees the two namespaces cannot collide,
+  so the ambiguity can never reach the resolution order. C24 implements no dead
+  branch; the ruling's intent — never a silent pick between two readings — is met
+  structurally, upstream of our code.
+- **Consequences:** C24 (E03) stands as cut — resolution order group-name-first
+  (membership pre-checked) → package name → full-match pattern, total without the
+  arm. Ch. 1 §1.1's sentence gains an erratum note at the owner's next spec pass
+  (not edited now; the spec is frozen ground and this entry wins per the
+  constitution's precedence rule). If a future Pharo/Metacello release drops the
+  upstream refusal, this entry is the trigger to revisit — the arm would return as
+  its own amendment chunk with a synthetic version stub.
