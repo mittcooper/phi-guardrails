@@ -56,6 +56,28 @@ PGRConfigurationTest >> testMissingCoreKeySignals [
 ]
 
 { #category : 'tests' }
+PGRConfigurationTest >> testNeverShippedVersionOneSignals [
+	"P-SCHEMA-REFUSAL: version 1 is the never-shipped pre-D-51 draft - unknown, not parsed (D-51 detail 4); the refusal names both versions."
+	self
+		should: [ PGRConfiguration fromString: (self artifactWith: #schemaVersion value: 1) ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error |
+			self assert: (error messageText includesSubstring: '1').
+			self assert: (error messageText includesSubstring: '2') ]
+]
+
+{ #category : 'tests' }
+PGRConfigurationTest >> testNewerSchemaVersionSignals [
+	"P-SCHEMA-REFUSAL: a newer schema version is refused outright, never misread; the refusal names both versions, the artifact's and the gate's own (D-45 ruling 3)."
+	self
+		should: [ PGRConfiguration fromString: (self artifactWith: #schemaVersion value: 3) ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error |
+			self assert: (error messageText includesSubstring: '3').
+			self assert: (error messageText includesSubstring: '2') ]
+]
+
+{ #category : 'tests' }
 PGRConfigurationTest >> testNonMapTopLevelSignals [
 	"The envelope is one map with Symbol keys - a non-map top level and a String-keyed map are both refused."
 	self should: [ PGRConfiguration fromString: '[ 1 ]' ] raise: PGRConfigurationError.
@@ -93,6 +115,12 @@ PGRConfigurationTest >> testValidArtifactParses [
 	self assert: configuration project equals: 'Scratch'.
 	self assert: configuration kitBlocks size equals: 1.
 	self assert: (configuration kitBlocks first at: #kit) equals: 'PGRScratchKit'
+]
+
+{ #category : 'tests' }
+PGRConfigurationTest >> testVersionTwoParses [
+	"The green arm: schema version 2 - the gate's own - parses; guards against an over-eager refusal."
+	self assert: (PGRConfiguration fromString: self validArtifactString) class equals: PGRConfiguration
 ]
 
 { #category : 'fixtures' }

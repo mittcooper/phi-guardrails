@@ -1,5 +1,5 @@
 "
-The parsed, validated configuration artifact - the one scope of a gate run (spec ch. 1 par. 1.2). Class-side fromString: is the public caller surface; instance readers are internal to the framework and carry no compatibility promise. Validation is strict: malformed or unknown input signals PGRConfigurationError, never a silent default (P-CFG-STRICT). The pipeline lands across C21-C27; stages so far: 1 strict STON parse, 2 envelope shape law. Kit blocks are opaque beyond #kit and handed on verbatim (D-51).
+The parsed, validated configuration artifact - the one scope of a gate run (spec ch. 1 par. 1.2). Class-side fromString: is the public caller surface; instance readers are internal to the framework and carry no compatibility promise. Validation is strict: malformed or unknown input signals PGRConfigurationError, never a silent default (P-CFG-STRICT). The pipeline lands across C21-C27; stages so far: 1 strict STON parse, 2 envelope shape law, 3 schema-version law (parse set exactly {2}, D-45/D-51). Kit blocks are opaque beyond #kit and handed on verbatim (D-51).
 "
 Class {
 	#name : 'PGRConfiguration',
@@ -12,12 +12,19 @@ Class {
 	#package : 'Phi-Guardrails-Core'
 }
 
+{ #category : 'private' }
+PGRConfiguration class >> currentSchemaVersion [
+	"The one statement of the gate's own schema version - it writes and reads exactly 2; every schema change bumps it (D-49). Internal."
+	^ 2
+]
+
 { #category : 'instance creation' }
 PGRConfiguration class >> fromString: aString [
 	"Answer the validated configuration parsed from aString, or signal PGRConfigurationError."
 	| map |
 	map := self parsedMapFrom: aString.
 	self validateEnvelope: map.
+	self validateSchemaVersion: map.
 	^ self new
 		setProject: (map at: #project) kitBlocks: (map at: #kits);
 		yourself
@@ -76,6 +83,15 @@ PGRConfiguration class >> validateRoles: anObject [
 		(role isSymbol and: [ #( production tests exempt ) includes: role ]) ifFalse: [
 			PGRConfigurationError new signal: 'Unknown role: ' , role printString ].
 		self validateStringList: matchers for: role ]
+]
+
+{ #category : 'private' }
+PGRConfiguration class >> validateSchemaVersion: aMap [
+	"Stage 3, the schema-version law: the parse set is exactly {2}, not {1, 2} - the prior-shipped-versions set is empty at v1 because version 1 is the never-shipped pre-D-51 draft, refused as unknown like any other non-2 value (D-51 detail 4). The older-shipped arm of the D-49 policy activates only with the first post-2 bump. Every refusal names both versions, the artifact's and the gate's own (D-45 ruling 3)."
+	| version |
+	version := aMap at: #schemaVersion.
+	version = self currentSchemaVersion ifFalse: [
+		PGRConfigurationError new signal: 'artifact schema version ' , version printString , '; this gate reads version ' , self currentSchemaVersion printString ]
 ]
 
 { #category : 'private' }
