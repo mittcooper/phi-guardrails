@@ -2506,3 +2506,37 @@ the next free number with substance unchanged — flagged to the owner at apply 
   ruling on decision-sheet **Q-32** (appended by this chunk — recommendation
   only, per constitution §3). Per the roadmap E06 risk row, the lint chunks
   C13–C18 land regardless: the entry rides, it does not block.
+
+## D-72 · Q-32 ruled: trait-provided methods are linted at each using class's package (option a)
+
+- **From:** Q-32 (`plan/04-decision-sheet.md` — filed by E06/C12 after D-71
+  confirmed the B-03 escape: the `RBPackageEnvironment packageName:` lint run
+  attributes trait-provided methods only to the trait's defining package, so an
+  exempt-role trait used from production escapes lint) · **Ruled by:** human —
+  binding, owner word of 2026-07-25 · **Date:** 2026-07-25
+- **Ruling:** option (a). A trait-provided method is linted at each **using
+  class's package** — the per-package lint environment is widened so the using
+  package's role governs, matching the architecture walk's attribution (D-15.b:
+  one attribution story across both check kinds). The duplication when several
+  packages use one trait is the same accepted defense-in-depth D-15.b recorded.
+- **Consequences:** the amendment chunk (widening `PCKLintRuleCheck`'s
+  environment composition; exact spelling is ⟨verify-in-image⟩ work for that
+  chunk) rides the **next kit-side Prompt-4 cut** as owner-scheduled ground — an
+  amendment to E06's frozen surface through this decision-sheet path, not a
+  silent edit. Ch. 2 §2.3 gains its erratum note at the owner's next spec pass.
+  Nothing accepted changes until that chunk lands.
+
+## D-73 · Chunk IDs are epic-qualified from E04 onward: `E##-C##` (method amendment adopted)
+
+- **From:** the E03/E06 chunk-ID collision (both same-day Prompt-4 cuts started
+  at C12; resolved by ceding — E03 renumbered C20–C27, C19 a documented gap;
+  owner-reported by both runs) · **Ruled by:** human — binding, owner word of
+  2026-07-25; method law landed in phi `64ae795` · **Date:** 2026-07-25
+- **Ruling:** every cut from E04 onward uses epic-qualified IDs `E##-C##` — the
+  counter local to the epic, so each Prompt-4 run owns its namespace by
+  construction and concurrent cuts cannot collide. Qualified IDs appear in
+  ledger rows, commit messages (`E04-C01: <title>`), and cross-references;
+  work-order filenames stay `C##-<slug>.md` under the epic directory.
+- **Consequences:** C01–C27 are **grandfathered** — bare IDs stand as history,
+  never renamed, never reused; C19 remains a documented gap. The ledger's
+  preamble carries the convention note.

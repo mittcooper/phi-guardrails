@@ -5,6 +5,11 @@ status table + per-chunk verify list. One row per chunk: status ∈
 `todo / in-progress / review / accepted`. Everything else in `plan/` is
 append-or-frozen.*
 
+*ID convention (D-73): chunks cut from E04 onward carry epic-qualified IDs
+`E##-C##` — the counter local to the epic, so concurrent cuts cannot collide.
+C01–C27 (E01/E02/E06/E03) are grandfathered bare IDs; C19 is a documented gap
+from the collision D-73 answers. No ID is ever renamed or reused.*
+
 | ID | Epic | Status | Depends-on | Assignee |
 |---|---|---|---|---|
 | C01 | E01 | accepted | — | implementer-1 |

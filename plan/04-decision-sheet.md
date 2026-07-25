@@ -111,5 +111,6 @@ packages use one trait is the same accepted defense-in-depth D-15.b recorded.
 guardrails product. The exact environment-composition spelling is ⟨verify⟩ work
 for the amendment chunk, not settled here.
 
-**Status:** open — filed by C12 (E06); a ruling becomes a numbered decision-log
-entry.
+**Status:** **RULED** (owner word 2026-07-25) → **D-72**: option (a) — trait
+methods lint at each using class's package; the amendment chunk rides the next
+kit-side Prompt-4 cut; ch. 2 §2.3 gains an erratum note at the next spec pass.
