@@ -2420,3 +2420,23 @@ stub anticipates.*
   stay veto-open and close on the D-16 precedent at epic acceptance if unvetoed.
   No work-order text changes: C06's stronger-check sentence already routes any
   future need through a new item, which this ruling declines to pre-file.
+
+---
+
+## D-69 · B-13 ruled: `PharoDebug.log` added to `.gitignore`
+
+*Numbering note: the owner notice of 2026-07-25 designated this ruling "D-68", but
+D-68 was already assigned (Gate-4 spot-check rulings, above); recorded here under
+the next free number with substance unchanged — flagged to the owner at apply time.*
+
+- **From:** B-13 (`plan/backlog.md` — E02 execution mining under operating rule 9:
+  headless authoring/probe runs that hit a Pharo error drop `PharoDebug.log` at the
+  repo root; recurred across C03, C07, C08, C10, C11, each implementer deleting it
+  by hand to restore the D-67 clean-tree postcondition) · **Ruled by:** human —
+  binding, owner notice of 2026-07-25 · **Date:** 2026-07-25
+- **Ruling:** add `PharoDebug.log` to `.gitignore` — toolchain debris, the D-65
+  build-infrastructure category. **Exactly that one line: no wildcards** (a broad
+  `*.log` would be deny-list reflex; D-65 keeps `.gitignore` deliberate).
+- **Consequences:** `.gitignore` now carries two deliberate lines (`.build/`,
+  `PharoDebug.log`) — this entry binds the second; the D-67 precheck no longer
+  trips on the debris, and implementers stop reporting its deletion as a deviation.
