@@ -1,5 +1,5 @@
 "
-E04-C03/C04: PGRRegistry construction, the verbatim handoff, and spec-level validation. C03 arm: specs wrapped into registrations in answer order, kit answers concatenated in #kits array order, the resolved role lists (and nothing else) crossing the kit boundary (testRoleListsHandedResolved is the D-53.5 handoff witness), an empty kit answer yielding an empty registry (D-51), and registrations answering a fresh defensive copy per send (R-35). C04 arm (P-CONFORMANCE, both ch.-9-named tests): protocol conformance naming class and missing selector (D-53), kind agreement naming registration, both kinds, and check class (D-60 G-6), the canFix-true-demands-fixCommandOn: clause (P-CANFIX-DEFAULT), duplicate names across kits as a configuration error never a dedupe (P-CFG-STRICT's duplicate-name arm), the duck-typed positive arm, and the missing-spec skip. Carries its own artifact helpers - the canonical scratch envelope with a splice point for the #kits array; nothing on PGRConfigurationTest is touched.
+E04-C03/C04: PGRRegistry construction, the verbatim handoff, and spec-level validation. C03 arm: specs wrapped into registrations in answer order, kit answers concatenated in #kits array order, the resolved role lists (and nothing else) crossing the kit boundary (testRoleListsHandedResolved is the D-53.5 handoff witness), an empty kit answer yielding an empty registry (D-51), and registrations answering a fresh defensive copy per send (R-35). C04 arm (P-CONFORMANCE, both ch.-9-named tests): protocol conformance naming class and missing selector (D-53), kind agreement naming registration, both kinds, and check class (D-60 G-6), the canFix-true-demands-fixCommandOn: clause (P-CANFIX-DEFAULT), duplicate names across kits as a configuration error never a dedupe (P-CFG-STRICT's duplicate-name arm), the duck-typed positive arm, and the missing-spec skip. Carries its own artifact helpers - the canonical scratch envelope with a splice point for the #kits array; nothing on PGRConfigurationTest is touched. C05 arm (both ch.-9-named property tests): P-LOADING-INERT - a transient PGRCheck subclass installed mid-test (ensure:-removed) enters no registry, the name list staying exactly the block's #specs names in order (R-41, D-51); P-REG-FRESH - two runs over two artifacts (grouped and plain baselines) share nothing, mutating the Array a configuration reader answers affects no run, rebuilding answers fresh uncached objects, and the reflective sweep finds no class-side state in -Core/-Gate, nonzero class count asserted for -Core; the gate/report clause is E05's (recorded split). plainBaselineArtifactString is the plain-baseline variant's helper.
 "
 Class {
 	#name : 'PGRRegistryTest',
@@ -20,6 +20,21 @@ PGRRegistryTest >> artifactWithKitsFragment: aStonKitsArrayString [
 		#tests : [ ''scratch-tst'' ],
 		#exempt : [ ''scratch-ghost'' ] },
 	#kits : ' , aStonKitsArrayString , '
+}'
+]
+
+{ #category : 'fixtures' }
+PGRRegistryTest >> plainBaselineArtifactString [
+	"The second, distinct artifact for P-REG-FRESH: E03's plain baseline - no groups, so roles are assigned by exact package-name matchers - and one spec, scratch/P1. The plain baseline declares no ghost package, so no exempt role is needed."
+	^ '{
+	#schemaVersion : 2,
+	#project : ''ScratchPlain'',
+	#baseline : ''BaselineOfPGRScratchPlain'',
+	#roles : {
+		#production : [ ''Phi-Guardrails-SDK'', ''Phi-Guardrails-Core'' ],
+		#tests : [ ''Phi-Guardrails-Tests-SDK'' ] },
+	#kits : [ { #kit : ''PGRScratchSpecKit'', #specs : [
+		{ #name : ''scratch/P1'', #kind : ''scratch'', #missing : ''plain-baseline run'' } ] } ]
 }'
 ]
 
@@ -74,6 +89,25 @@ PGRRegistryTest >> testEmptyKitAnswerYieldsEmptyRegistry [
 	registry := self registryFromKitsFragment: '[ { #kit : ''PGRScratchKit'' } ]'.
 	self assert: registry size equals: 0.
 	self assertEmpty: registry registrations
+]
+
+{ #category : 'tests' }
+PGRRegistryTest >> testInstalledCheckClassRegistersNothing [
+	"Ch.-9-named, P-LOADING-INERT (R-41): loading is not activation. A fresh PGRCheck subclass named in no kit block is installed mid-test and the registry rebuilt from the same configuration - both name sequences equal exactly the block's #specs names, in order: nothing enters by presence, nothing by shipped default (D-51). Removal is ensure:-guarded; the pre-install guard covers a leftover from a crashed prior run."
+	| configuration namesBefore namesAfter |
+	configuration := PGRConfiguration fromString: (self artifactWithKitsFragment: '[ { #kit : ''PGRScratchSpecKit'', #specs : [
+		{ #name : ''scratch/G1'', #kind : ''scratch'', #check : ''PGRScratchGreenCheck'' },
+		{ #name : ''scratch/M1'', #kind : ''scratch'', #missing : ''engine absent'' } ] } ]').
+	namesBefore := (PGRRegistry fromConfiguration: configuration) registrations collect: [ :each | each name ].
+	(Smalltalk classNamed: 'PGRTransientLoadedCheck') ifNotNil: [ :leftover | leftover removeFromSystem ].
+	[
+	(PGRCheck << #PGRTransientLoadedCheck
+		package: 'Phi-Guardrails-Tests-Core';
+		install).
+	namesAfter := (PGRRegistry fromConfiguration: configuration) registrations collect: [ :each | each name ] ]
+		ensure: [ (Smalltalk classNamed: 'PGRTransientLoadedCheck') ifNotNil: [ :installed | installed removeFromSystem ] ].
+	self assert: namesBefore equals: #( 'scratch/G1' 'scratch/M1' ).
+	self assert: namesAfter equals: #( 'scratch/G1' 'scratch/M1' )
 ]
 
 { #category : 'tests' }
@@ -170,4 +204,32 @@ PGRRegistryTest >> testSpecKindMismatchSignals [
 			self assert: (error messageText includesSubstring: 'architecture').
 			self assert: (error messageText includesSubstring: 'scratch').
 			self assert: (error messageText includesSubstring: 'PGRScratchGreenCheck') ]
+]
+
+{ #category : 'tests' }
+PGRRegistryTest >> testTwoRunsShareNothing [
+	"Ch.-9-named, P-REG-FRESH (R-35): runs share nothing. Two registries over two artifacts each carry exactly their own names; mutating the Array a configuration reader answers - the only reachable handle - affects no run, the reader's fresh-copy contract asserted directly against the expansion testRoleListsHandedResolved pins; rebuilding from the same configuration answers a fresh registry with fresh registration objects, nothing cached; and the reflective sweep finds no class variables and no class-side instance variables in -Core/-Gate (nonzero class count asserted for -Core; an unknown package name signals, never passes vacuously). The gate/report clause of ch. 9's phrasing lands with E05's gate tests (recorded split)."
+	| groupedConfiguration plainConfiguration groupedRegistry plainRegistry rebuilt |
+	groupedConfiguration := PGRConfiguration fromString: (self artifactWithKitsFragment: '[ { #kit : ''PGRScratchSpecKit'', #specs : [
+		{ #name : ''scratch/G1'', #kind : ''scratch'', #check : ''PGRScratchGreenCheck'' },
+		{ #name : ''scratch/M1'', #kind : ''scratch'', #missing : ''engine absent'' } ] } ]').
+	plainConfiguration := PGRConfiguration fromString: self plainBaselineArtifactString.
+	groupedRegistry := PGRRegistry fromConfiguration: groupedConfiguration.
+	plainRegistry := PGRRegistry fromConfiguration: plainConfiguration.
+	self assert: (groupedRegistry registrations collect: [ :each | each name ]) equals: #( 'scratch/G1' 'scratch/M1' ).
+	self assert: (plainRegistry registrations collect: [ :each | each name ]) equals: #( 'scratch/P1' ).
+	groupedConfiguration productionPackageNames at: 1 put: 'Mutated-Handle'.
+	self assert: groupedConfiguration productionPackageNames equals: #( 'Phi-Guardrails-SDK' 'Phi-Guardrails-Core' ).
+	rebuilt := PGRRegistry fromConfiguration: groupedConfiguration.
+	self assert: (rebuilt registrations collect: [ :each | each name ]) equals: #( 'scratch/G1' 'scratch/M1' ).
+	self assert: (plainRegistry registrations collect: [ :each | each name ]) equals: #( 'scratch/P1' ).
+	self assert: rebuilt ~~ groupedRegistry.
+	rebuilt registrations with: groupedRegistry registrations do: [ :one :other | self assert: one ~~ other ].
+	#( 'Phi-Guardrails-Core' 'Phi-Guardrails-Gate' ) do: [ :packageName |
+		| swept |
+		swept := (PackageOrganizer default packageNamed: packageName) definedClasses.
+		packageName = 'Phi-Guardrails-Core' ifTrue: [ self deny: swept isEmpty ].
+		swept do: [ :each |
+			self assertEmpty: each classVarNames.
+			self assertEmpty: each class instVarNames ] ]
 ]
