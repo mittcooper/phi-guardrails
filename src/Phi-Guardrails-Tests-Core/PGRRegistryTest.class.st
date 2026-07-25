@@ -1,5 +1,5 @@
 "
-E04-C03: PGRRegistry construction and the verbatim handoff - specs wrapped into registrations in answer order, kit answers concatenated in #kits array order, the resolved role lists (and nothing else) crossing the kit boundary (testRoleListsHandedResolved is the D-53.5 handoff witness), an empty kit answer yielding an empty registry (what runs is exactly what the file names, D-51), and registrations answering a fresh defensive copy per send (R-35). Carries its own artifact helpers - the canonical scratch envelope with a splice point for the #kits array; nothing on PGRConfigurationTest is touched.
+E04-C03/C04: PGRRegistry construction, the verbatim handoff, and spec-level validation. C03 arm: specs wrapped into registrations in answer order, kit answers concatenated in #kits array order, the resolved role lists (and nothing else) crossing the kit boundary (testRoleListsHandedResolved is the D-53.5 handoff witness), an empty kit answer yielding an empty registry (D-51), and registrations answering a fresh defensive copy per send (R-35). C04 arm (P-CONFORMANCE, both ch.-9-named tests): protocol conformance naming class and missing selector (D-53), kind agreement naming registration, both kinds, and check class (D-60 G-6), the canFix-true-demands-fixCommandOn: clause (P-CANFIX-DEFAULT), duplicate names across kits as a configuration error never a dedupe (P-CFG-STRICT's duplicate-name arm), the duck-typed positive arm, and the missing-spec skip. Carries its own artifact helpers - the canonical scratch envelope with a splice point for the #kits array; nothing on PGRConfigurationTest is touched.
 "
 Class {
 	#name : 'PGRRegistryTest',
@@ -30,6 +30,44 @@ PGRRegistryTest >> registryFromKitsFragment: aStonKitsArrayString [
 ]
 
 { #category : 'tests' }
+PGRRegistryTest >> testCanFixTrueWithoutFixCommandSignals [
+	"P-CANFIX-DEFAULT's clause via the conformance machinery: canFix true demands fixCommandOn:."
+	self
+		should: [ self registryFromKitsFragment: '[ { #kit : ''PGRScratchSpecKit'', #specs : [
+			{ #name : ''scratch/F1'', #kind : ''scratch'', #check : ''PGRScratchClaimsFixCheck'' } ] } ]' ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error |
+			self assert: (error messageText includesSubstring: 'PGRScratchClaimsFixCheck').
+			self assert: (error messageText includesSubstring: 'fixCommandOn:') ]
+]
+
+{ #category : 'tests' }
+PGRRegistryTest >> testDuckTypedConformingCheckRegisters [
+	"P-CONFORMANCE's positive arm: a plain-Object-lineage duck type answering the whole engine-consumed protocol registers normally (D-53)."
+	| registry registration |
+	registry := self registryFromKitsFragment: '[ { #kit : ''PGRScratchSpecKit'', #specs : [
+		{ #name : ''scratch/G1'', #kind : ''scratch'', #check : ''PGRScratchGreenCheck'' } ] } ]'.
+	self assert: registry size equals: 1.
+	registration := registry registrations first.
+	self assert: registration isResolved.
+	self assert: registration run isGreen
+]
+
+{ #category : 'tests' }
+PGRRegistryTest >> testDuplicateRegistrationNameSignals [
+	"P-CFG-STRICT's duplicate-name arm, the E03-recorded handoff: the same name across two kit blocks is a configuration error naming the duplicated name - never a silent dedupe (ch. 1 par. 1.3)."
+	self
+		should: [ self registryFromKitsFragment: '[
+			{ #kit : ''PGRScratchSpecKit'', #specs : [
+				{ #name : ''scratch/G1'', #kind : ''scratch'', #check : ''PGRScratchGreenCheck'' } ] },
+			{ #kit : ''PGRScratchSpecKit'', #specs : [
+				{ #name : ''scratch/G1'', #kind : ''scratch'', #check : ''PGRScratchGreenCheck'' } ] } ]' ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error |
+			self assert: (error messageText includesSubstring: 'scratch/G1') ]
+]
+
+{ #category : 'tests' }
 PGRRegistryTest >> testEmptyKitAnswerYieldsEmptyRegistry [
 	"E03's canonical envelope verbatim: its only kit, PGRScratchKit, answers no registrations - lawful, and what runs is exactly what the file names (D-51)."
 	| registry |
@@ -51,6 +89,30 @@ PGRRegistryTest >> testKitsConcatenateInArrayOrder [
 			{ #name : ''scratch/B1'', #kind : ''scratch'', #missing : ''third block'' } ] } ]'.
 	self assert: (registry registrations collect: [ :each | each name ])
 		equals: #( 'scratch/A1' 'scratch/A2' 'scratch/B1' )
+]
+
+{ #category : 'tests' }
+PGRRegistryTest >> testMissingSpecSkipsConformance [
+	"A missing spec is skipped by both validation passes - no check exists to ask - and keeps its explicit kind (D-60)."
+	| registry registration |
+	registry := self registryFromKitsFragment: '[ { #kit : ''PGRScratchSpecKit'', #specs : [
+		{ #name : ''scratch/M1'', #kind : ''scratch'', #missing : ''engine absent'' } ] } ]'.
+	self assert: registry size equals: 1.
+	registration := registry registrations first.
+	self deny: registration isResolved.
+	self assert: registration kind equals: #scratch
+]
+
+{ #category : 'tests' }
+PGRRegistryTest >> testNonconformingCheckClassSignals [
+	"Ch.-9-named, P-CONFORMANCE: a resolved spec whose check misses an engine-consumed selector is a configuration error naming the class and the missing selector (D-53)."
+	self
+		should: [ self registryFromKitsFragment: '[ { #kit : ''PGRScratchSpecKit'', #specs : [
+			{ #name : ''scratch/N1'', #kind : ''scratch'', #check : ''PGRScratchNonconformingCheck'' } ] } ]' ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error |
+			self assert: (error messageText includesSubstring: 'PGRScratchNonconformingCheck').
+			self assert: (error messageText includesSubstring: 'run') ]
 ]
 
 { #category : 'tests' }
@@ -94,4 +156,18 @@ PGRRegistryTest >> testRoleListsHandedResolved [
 	self assert: verdict status equals: #missing.
 	self assert: verdict missingReason
 		equals: 'production: Phi-Guardrails-SDK, Phi-Guardrails-Core | tests: Phi-Guardrails-Tests-SDK'
+]
+
+{ #category : 'tests' }
+PGRRegistryTest >> testSpecKindMismatchSignals [
+	"Ch.-9-named, P-CONFORMANCE / D-60 G-6: a spec kind disagreeing with the check's own kind names the registration, both kinds, and the check class. The name kindclash/X1 keeps lowercase 'scratch' unique to the check's-own-kind clause."
+	self
+		should: [ self registryFromKitsFragment: '[ { #kit : ''PGRScratchSpecKit'', #specs : [
+			{ #name : ''kindclash/X1'', #kind : ''architecture'', #check : ''PGRScratchGreenCheck'' } ] } ]' ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error |
+			self assert: (error messageText includesSubstring: 'kindclash/X1').
+			self assert: (error messageText includesSubstring: 'architecture').
+			self assert: (error messageText includesSubstring: 'scratch').
+			self assert: (error messageText includesSubstring: 'PGRScratchGreenCheck') ]
 ]
