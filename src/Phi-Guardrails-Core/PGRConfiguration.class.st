@@ -1,5 +1,5 @@
 "
-The parsed, validated configuration artifact - the one scope of a gate run (spec ch. 1 par. 1.2). Class-side fromString: is the public caller surface; instance readers are internal to the framework and carry no compatibility promise. Validation is strict: malformed or unknown input signals PGRConfigurationError, never a silent default (P-CFG-STRICT). The pipeline lands across C21-C27; stages so far: 1 strict STON parse, 2 envelope shape law, 3 schema-version law (parse set exactly {2}, D-45/D-51), 4 kit and baseline resolution (class-side conformance for kits, never ancestry, D-53; inheritsFrom: BaselineOf for the baseline, D-25.a). Kit blocks are opaque beyond #kit and handed on verbatim (D-51).
+The parsed, validated configuration artifact - the one scope of a gate run (spec ch. 1 par. 1.2). Class-side fromString: is the public caller surface; instance readers are internal to the framework and carry no compatibility promise. Validation is strict: malformed or unknown input signals PGRConfigurationError, never a silent default (P-CFG-STRICT). The pipeline lands across C21-C27; stages so far: 1 strict STON parse, 2 envelope shape law, 3 schema-version law (parse set exactly {2}, D-45/D-51), 4 kit and baseline resolution (class-side conformance for kits, never ancestry, D-53; inheritsFrom: BaselineOf for the baseline, D-25.a), 5 role-matcher expansion over the resolved baseline (group name first - membership pre-checked - else exact package name, else full-match pattern, D-47/D-15; zero-match legal; the group-vs-package ambiguity is unconstructible, D-70). Kit blocks are opaque beyond #kit and handed on verbatim (D-51).
 "
 Class {
 	#name : 'PGRConfiguration',
@@ -8,7 +8,10 @@ Class {
 		'project',
 		'kitBlocks',
 		'kitClasses',
-		'baselineClass'
+		'baselineClass',
+		'productionPackageNames',
+		'testsPackageNames',
+		'exemptPackageNames'
 	],
 	#category : 'Phi-Guardrails-Core',
 	#package : 'Phi-Guardrails-Core'
@@ -20,18 +23,55 @@ PGRConfiguration class >> currentSchemaVersion [
 	^ 2
 ]
 
+{ #category : 'private' }
+PGRConfiguration class >> expand: aMatcher over: aVersion [
+	"Resolution order as ratified (D-47): group name first, else exact package name, else full-match pattern. The group arm pre-checks membership because packagesForSpecNamed: silently answers empty for an unknown name (the D-25.a trap); a group-vs-package name collision is unconstructible - Metacello itself refuses declaring it (D-70). Group members are answered in baseline declaration order."
+	| declaredNames groupMemberNames |
+	declaredNames := aVersion packages collect: [ :each | each name ].
+	(aVersion groups anySatisfy: [ :each | each name = aMatcher ]) ifTrue: [
+		groupMemberNames := ((aVersion packagesForSpecNamed: aMatcher) collect: [ :each | each name ]) asSet.
+		^ declaredNames select: [ :name | groupMemberNames includes: name ] ].
+	(declaredNames includes: aMatcher) ifTrue: [ ^ Array with: aMatcher ].
+	^ self select: declaredNames fullMatching: aMatcher
+]
+
+{ #category : 'private' }
+PGRConfiguration class >> expandMatchers: matcherArray over: aVersion [
+	"One role: matcher order first, baseline declaration order within one matcher, dedup within the role. A matcher expanding to zero packages is legal (D-47) - its consequences are the scope law's business (C25), not this stage's."
+	| names |
+	names := OrderedCollection new.
+	matcherArray do: [ :matcher |
+		(self expand: matcher over: aVersion) do: [ :name |
+			(names includes: name) ifFalse: [ names add: name ] ] ].
+	^ names asArray
+]
+
+{ #category : 'private' }
+PGRConfiguration class >> expandRoles: rolesMap over: aBaselineClass [
+	"Stage 5, role-matcher expansion over the resolved baseline (spec ch. 1 par. 1.1): assignment from the configuration, inventory from the baseline (D-45). Answers the three expanded package-name Arrays ordered production, tests, exempt; an absent #exempt is an empty role."
+	| version |
+	version := aBaselineClass project version.
+	^ #( production tests exempt ) collect: [ :role |
+		self expandMatchers: (rolesMap at: role ifAbsent: [ #(  ) ]) over: version ]
+]
+
 { #category : 'instance creation' }
 PGRConfiguration class >> fromString: aString [
 	"Answer the validated configuration parsed from aString, or signal PGRConfigurationError."
-	| map |
+	| map baselineClass expandedRoles |
 	map := self parsedMapFrom: aString.
 	self validateEnvelope: map.
 	self validateSchemaVersion: map.
+	baselineClass := self resolveBaselineClass: (map at: #baseline).
+	expandedRoles := self expandRoles: (map at: #roles) over: baselineClass.
 	^ self new
 		setProject: (map at: #project)
-		kitBlocks: (map at: #kits)
-		kitClasses: (self resolveKitClasses: (map at: #kits))
-		baselineClass: (self resolveBaselineClass: (map at: #baseline));
+			kitBlocks: (map at: #kits)
+			kitClasses: (self resolveKitClasses: (map at: #kits))
+			baselineClass: baselineClass;
+		setProductionPackageNames: (expandedRoles at: 1)
+			testsPackageNames: (expandedRoles at: 2)
+			exemptPackageNames: (expandedRoles at: 3);
 		yourself
 ]
 
@@ -70,6 +110,14 @@ PGRConfiguration class >> resolveKitClassNamed: aName [
 PGRConfiguration class >> resolveKitClasses: kitBlockArray [
 	"Stage 4, kit arm (spec ch. 1 par. 1.4 step 1): every block's #kit resolves to a loaded, class-side-conforming kit class. Answers the classes ordered as the blocks, parallel to kitBlocks."
 	^ kitBlockArray collect: [ :block | self resolveKitClassNamed: (block at: #kit) ]
+]
+
+{ #category : 'private' }
+PGRConfiguration class >> select: nameCollection fullMatching: aMatcher [
+	"Full-match regex semantics (D-15: 'XSUnit-Tests' matchesRegex: 'SUnit-.*' is false). A matcher the regex engine rejects is a loud configuration error naming it - no engine exception escapes fromString: (family 7)."
+	^ [ nameCollection select: [ :name | name matchesRegex: aMatcher ] ]
+		on: RegexError
+		do: [ :error | PGRConfigurationError new signal: 'Invalid role matcher regex: ' , aMatcher ]
 ]
 
 { #category : 'private' }
@@ -163,6 +211,12 @@ PGRConfiguration >> baselineClass [
 ]
 
 { #category : 'accessing' }
+PGRConfiguration >> exemptPackageNames [
+	"The #exempt role expanded to package names - derived from the baseline at validation time (spec ch. 1 par. 1.3); empty when the artifact carries no #exempt. Specified but internal; answers a fresh copy (R-35)."
+	^ exemptPackageNames copy
+]
+
+{ #category : 'accessing' }
 PGRConfiguration >> kitBlocks [
 	"The kit blocks, ordered and verbatim - opaque maps whose only common field is #kit (D-51)."
 	^ kitBlocks
@@ -175,9 +229,22 @@ PGRConfiguration >> kitClasses [
 ]
 
 { #category : 'accessing' }
+PGRConfiguration >> productionPackageNames [
+	"The #production role expanded to package names - derived from the baseline at validation time (spec ch. 1 par. 1.3). Specified but internal; answers a fresh copy (R-35)."
+	^ productionPackageNames copy
+]
+
+{ #category : 'accessing' }
 PGRConfiguration >> project [
 	"The project display name, verbatim from the artifact."
 	^ project
+]
+
+{ #category : 'private' }
+PGRConfiguration >> setProductionPackageNames: productionArray testsPackageNames: testsArray exemptPackageNames: exemptArray [
+	productionPackageNames := productionArray.
+	testsPackageNames := testsArray.
+	exemptPackageNames := exemptArray
 ]
 
 { #category : 'private' }
@@ -186,4 +253,10 @@ PGRConfiguration >> setProject: aString kitBlocks: blockArray kitClasses: classA
 	kitBlocks := blockArray.
 	kitClasses := classArray.
 	baselineClass := aClass
+]
+
+{ #category : 'accessing' }
+PGRConfiguration >> testsPackageNames [
+	"The #tests role expanded to package names - derived from the baseline at validation time (spec ch. 1 par. 1.3). Specified but internal; answers a fresh copy (R-35)."
+	^ testsPackageNames copy
 ]
