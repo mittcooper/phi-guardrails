@@ -78,10 +78,39 @@ PGRConfigurationTest >> testNewerSchemaVersionSignals [
 ]
 
 { #category : 'tests' }
+PGRConfigurationTest >> testNonBaselineClassSignals [
+	"A loaded class outside the BaselineOf hierarchy is refused as the baseline, naming it (D-25.a)."
+	self
+		should: [ PGRConfiguration fromString: (self artifactWith: #baseline value: 'PGRFinding') ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error | self assert: (error messageText includesSubstring: 'PGRFinding') ]
+]
+
+{ #category : 'tests' }
+PGRConfigurationTest >> testNonKitClassSignals [
+	"A loaded class answering neither kit-protocol selector is refused, naming the class and the missing selector (the D-53 error style); PGRFinding is the loaded non-kit."
+	self
+		should: [ PGRConfiguration fromString: (self artifactWith: #kits value: (Array with: (Dictionary with: #kit -> 'PGRFinding'))) ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error |
+			self assert: (error messageText includesSubstring: 'PGRFinding').
+			self assert: (error messageText includesSubstring: 'registrationsFrom:productionPackages:testsPackages:') ]
+]
+
+{ #category : 'tests' }
 PGRConfigurationTest >> testNonMapTopLevelSignals [
 	"The envelope is one map with Symbol keys - a non-map top level and a String-keyed map are both refused."
 	self should: [ PGRConfiguration fromString: '[ 1 ]' ] raise: PGRConfigurationError.
 	self should: [ PGRConfiguration fromString: '{ ''schemaVersion'' : 2 }' ] raise: PGRConfigurationError
+]
+
+{ #category : 'tests' }
+PGRConfigurationTest >> testResolvedKitAndBaselineReaders [
+	"Kit resolution answers the class itself via the conformance path - PGRScratchKit is duck-typed, no PGRKit ancestry (D-53); the baseline resolves to the loaded BaselineOf subclass."
+	| configuration |
+	configuration := PGRConfiguration fromString: self validArtifactString.
+	self assert: configuration kitClasses asArray equals: { PGRScratchKit }.
+	self assert: configuration baselineClass equals: BaselineOfPGRScratchGrouped
 ]
 
 { #category : 'tests' }
@@ -100,12 +129,30 @@ PGRConfigurationTest >> testRolesShapeSignals [
 ]
 
 { #category : 'tests' }
+PGRConfigurationTest >> testUnknownBaselineSignals [
+	"A baseline name resolving to no loaded class is a configuration error naming it."
+	self
+		should: [ PGRConfiguration fromString: (self artifactWith: #baseline value: 'BaselineOfPGRNoSuch') ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error | self assert: (error messageText includesSubstring: 'BaselineOfPGRNoSuch') ]
+]
+
+{ #category : 'tests' }
 PGRConfigurationTest >> testUnknownKeySignals [
 	"P-CFG-STRICT: an unknown top-level key is a configuration error naming the key (D-51)."
 	self
 		should: [ PGRConfiguration fromString: (self artifactWith: #extra value: 1) ]
 		raise: PGRConfigurationError
 		withExceptionDo: [ :error | self assert: (error messageText includesSubstring: 'extra') ]
+]
+
+{ #category : 'tests' }
+PGRConfigurationTest >> testUnknownKitClassSignals [
+	"P-CFG-STRICT, unknown-kit arm: a kit name resolving to no loaded class is a configuration error naming the kit name."
+	self
+		should: [ PGRConfiguration fromString: (self artifactWith: #kits value: (Array with: (Dictionary with: #kit -> 'PGRNoSuchKit'))) ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error | self assert: (error messageText includesSubstring: 'PGRNoSuchKit') ]
 ]
 
 { #category : 'tests' }

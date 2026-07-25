@@ -1,12 +1,14 @@
 "
-The parsed, validated configuration artifact - the one scope of a gate run (spec ch. 1 par. 1.2). Class-side fromString: is the public caller surface; instance readers are internal to the framework and carry no compatibility promise. Validation is strict: malformed or unknown input signals PGRConfigurationError, never a silent default (P-CFG-STRICT). The pipeline lands across C21-C27; stages so far: 1 strict STON parse, 2 envelope shape law, 3 schema-version law (parse set exactly {2}, D-45/D-51). Kit blocks are opaque beyond #kit and handed on verbatim (D-51).
+The parsed, validated configuration artifact - the one scope of a gate run (spec ch. 1 par. 1.2). Class-side fromString: is the public caller surface; instance readers are internal to the framework and carry no compatibility promise. Validation is strict: malformed or unknown input signals PGRConfigurationError, never a silent default (P-CFG-STRICT). The pipeline lands across C21-C27; stages so far: 1 strict STON parse, 2 envelope shape law, 3 schema-version law (parse set exactly {2}, D-45/D-51), 4 kit and baseline resolution (class-side conformance for kits, never ancestry, D-53; inheritsFrom: BaselineOf for the baseline, D-25.a). Kit blocks are opaque beyond #kit and handed on verbatim (D-51).
 "
 Class {
 	#name : 'PGRConfiguration',
 	#superclass : 'Object',
 	#instVars : [
 		'project',
-		'kitBlocks'
+		'kitBlocks',
+		'kitClasses',
+		'baselineClass'
 	],
 	#category : 'Phi-Guardrails-Core',
 	#package : 'Phi-Guardrails-Core'
@@ -26,7 +28,10 @@ PGRConfiguration class >> fromString: aString [
 	self validateEnvelope: map.
 	self validateSchemaVersion: map.
 	^ self new
-		setProject: (map at: #project) kitBlocks: (map at: #kits);
+		setProject: (map at: #project)
+		kitBlocks: (map at: #kits)
+		kitClasses: (self resolveKitClasses: (map at: #kits))
+		baselineClass: (self resolveBaselineClass: (map at: #baseline));
 		yourself
 ]
 
@@ -36,6 +41,35 @@ PGRConfiguration class >> parsedMapFrom: aString [
 	^ [ STON fromString: aString ]
 		on: STONReaderError
 		do: [ :error | PGRConfigurationError new signal: 'Malformed STON: ' , error description ]
+]
+
+{ #category : 'private' }
+PGRConfiguration class >> resolveBaselineClass: aName [
+	"Stage 4, baseline arm: the name resolves to a loaded BaselineOf subclass - inheritsFrom: is the ruled contract check here (D-25.a)."
+	| baselineClass |
+	baselineClass := Smalltalk classNamed: aName.
+	baselineClass ifNil: [ PGRConfigurationError new signal: 'Unknown baseline class: ' , aName ].
+	(baselineClass inheritsFrom: BaselineOf) ifFalse: [
+		PGRConfigurationError new signal: aName , ' is not a BaselineOf subclass' ].
+	^ baselineClass
+]
+
+{ #category : 'private' }
+PGRConfiguration class >> resolveKitClassNamed: aName [
+	"Conformance, not ancestry (D-53): the class answers respondsTo: for both frozen class-side kit-protocol selectors - never inheritsFrom: PGRKit, so a duck-typed plain class resolves fine. Resolution stops here; sending the protocol is the registry's (E04)."
+	| kitClass |
+	kitClass := Smalltalk classNamed: aName.
+	kitClass ifNil: [ PGRConfigurationError new signal: 'Unknown kit class: ' , aName ].
+	#( registrationsFrom:productionPackages:testsPackages: recommendedBlock ) do: [ :selector |
+		(kitClass respondsTo: selector) ifFalse: [
+			PGRConfigurationError new signal: aName , ' does not answer the class-side kit-protocol selector ' , selector printString ] ].
+	^ kitClass
+]
+
+{ #category : 'private' }
+PGRConfiguration class >> resolveKitClasses: kitBlockArray [
+	"Stage 4, kit arm (spec ch. 1 par. 1.4 step 1): every block's #kit resolves to a loaded, class-side-conforming kit class. Answers the classes ordered as the blocks, parallel to kitBlocks."
+	^ kitBlockArray collect: [ :block | self resolveKitClassNamed: (block at: #kit) ]
 ]
 
 { #category : 'private' }
@@ -123,9 +157,21 @@ PGRConfiguration class >> validateTopLevelMap: anObject [
 ]
 
 { #category : 'accessing' }
+PGRConfiguration >> baselineClass [
+	"The resolved BaselineOf subclass. Specified but internal - E04 consumes it."
+	^ baselineClass
+]
+
+{ #category : 'accessing' }
 PGRConfiguration >> kitBlocks [
 	"The kit blocks, ordered and verbatim - opaque maps whose only common field is #kit (D-51)."
 	^ kitBlocks
+]
+
+{ #category : 'accessing' }
+PGRConfiguration >> kitClasses [
+	"The resolved kit classes, ordered as the #kits array and parallel to kitBlocks. Specified but internal - the registry (E04) consumes them."
+	^ kitClasses
 ]
 
 { #category : 'accessing' }
@@ -135,7 +181,9 @@ PGRConfiguration >> project [
 ]
 
 { #category : 'private' }
-PGRConfiguration >> setProject: aString kitBlocks: anArray [
+PGRConfiguration >> setProject: aString kitBlocks: blockArray kitClasses: classArray baselineClass: aClass [
 	project := aString.
-	kitBlocks := anArray
+	kitBlocks := blockArray.
+	kitClasses := classArray.
+	baselineClass := aClass
 ]
