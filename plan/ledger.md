@@ -38,6 +38,22 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | C25 | E03 | accepted | C24 | implementer-25 (picked @ fce05ee) |
 | C26 | E03 | accepted | C25 | implementer-26 (picked @ 7297ef9) |
 | C27 | E03 | accepted | C26 | implementer-27 (picked @ 0b1186c) |
+| E04-C01 | E04 | todo | — | — |
+| E04-C02 | E04 | todo | E04-C01 | — |
+| E04-C03 | E04 | todo | E04-C02 | — |
+| E04-C04 | E04 | todo | E04-C03 | — |
+| E04-C05 | E04 | todo | E04-C04 | — |
+| E08-C01 | E08 | todo | — | — |
+| E08-C02 | E08 | todo | — | — |
+| E08-C03 | E08 | todo | E08-C01, E08-C02 | — |
+| E08-C04 | E08 | todo | E08-C03 | — |
+| E08-C05 | E08 | todo | E08-C01, E08-C04 | — |
+| E07-C01 | E07 | todo | — | — |
+| E07-C02 | E07 | todo | E07-C01 | — |
+| E07-C03 | E07 | todo | E07-C02 | — |
+| E07-C04 | E07 | todo | E07-C03 | — |
+| E07-C05 | E07 | todo | E07-C04 | — |
+| E07-C06 | E07 | todo | E07-C05 | — |
 
 ## Verify commands
 
@@ -67,6 +83,22 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 - **C25** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 27 `PGRConfigurationTest` + accepted siblings + 5 smoke tests listed)
 - **C26** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 30 `PGRConfigurationTest` + accepted siblings + 5 smoke tests listed)
 - **C27** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 35 `PGRConfigurationTest` + 7 `PGRScratchFixturesTest` + accepted siblings + 5 smoke tests — 66 run when no parallel-track (E06) suite has landed yet; accepted E06 suites add to the count; see `plan/04-epics/E03-configuration-scope-law/chunks.md` §checkpoint)
+- **E04-C01** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 7 `PGRScratchCheckFixturesTest` + every previously accepted suite, ≥95 run — membership + floor, never an exact ceiling)
+- **E04-C02** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 6 `PGRRegistrationTest` + 7 `PGRScratchCheckFixturesTest` + every previously accepted suite, ≥101 run — membership + floor)
+- **E04-C03** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 5 `PGRRegistryTest` + accepted E04 siblings + every previously accepted suite, ≥106 run — membership + floor)
+- **E04-C04** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 11 `PGRRegistryTest` + accepted E04 siblings + every previously accepted suite, ≥112 run — membership + floor)
+- **E04-C05** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 13 `PGRRegistryTest` + 6 `PGRRegistrationTest` + 7 `PGRScratchCheckFixturesTest` + every previously accepted suite, ≥114 run — the E04 exit-checkpoint leg 1; see `plan/04-epics/E04-registry-kit-handoff-conformance/chunks.md` §checkpoint)
+- **E08-C01** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; the new `testTraitProvidedMethodLintedAtUsingClassPackage` + every previously accepted suite, ≥89 run — membership + floor, never an exact ceiling)
+- **E08-C02** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 3 `PCKFixCommandTest` + every previously accepted suite, ≥91 run — membership + floor)
+- **E08-C03** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 6 `PCKFixCommandTest` + every previously accepted suite, ≥95 run — membership + floor)
+- **E08-C04** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 9 `PCKFixCommandTest` + every previously accepted suite, ≥98 run — membership + floor)
+- **E08-C05** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 8 `PCKLintRuleCheckTest` + 3 `PCKNoIsNilIfTrueRuleTest` + 9 `PCKFixCommandTest` + every previously accepted suite, ≥102 run — the E08 exit-checkpoint leg 1; see `plan/04-epics/E08-fix-command/chunks.md` §checkpoint)
+- **E07-C01** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 5 `PCKBehavioralFixturesTest` + every previously accepted suite, ≥93 run — membership + floor, never an exact ceiling; the four fixture classes appear in no test-run line)
+- **E07-C02** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 3 `PCKSuiteRunCacheTest` + every previously accepted suite, ≥96 run — membership + floor)
+- **E07-C03** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 3 `PCKTestSuiteCheckTest` + every previously accepted suite, ≥99 run — membership + floor)
+- **E07-C04** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 3 `PCKNoSkippedTestsMetaRuleTest` incl. both P-GATE-SKIP tests + every previously accepted suite, ≥102 run — membership + floor)
+- **E07-C05** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 4 new + 8 amended `PCKKitTest` and 4 `PCKTestSuiteCheckTest` + every previously accepted suite, ≥107 run — membership + floor)
+- **E07-C06** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; `testRecommendedBlockParsesAndConforms` + both amended stanza tests + every previously accepted suite, ≥108 run — the E07 exit-checkpoint leg 1; see `plan/04-epics/E07-behavioral-kind/chunks.md` §checkpoint)
 
 ## Epic acceptance
 
@@ -155,3 +187,71 @@ order (D-67). [P] eligibility (validator-confirmed disjoint manifests): C05 C06 
 C08 C10; orchestrator runs them serialized — the work orders' COMMIT preconditions
 (clean tree at spawn) and the shared `.build/work` verify image make shared-tree
 concurrency unsound; disjointness stands as the reviewer's cross-check.
+
+**E08 rows (E08-C01–E08-C05) added by the fifth Prompt-4 run (2026-07-25; Gate 4
+pending).** First epic-qualified cut (D-73): the counter is local to E08, so the
+concurrent same-day cuts (E04, E07 — papers on disk) cannot collide by
+construction. E08 `accepted` when all five rows are `accepted` and the exit
+checkpoint in `plan/04-epics/E08-fix-command/chunks.md` is filled in (named
+suites — `PCKFixCommandTest` 9 · `PCKLintRuleCheckTest` 8 ·
+`PCKNoIsNilIfTrueRuleTest` 3 — green within a ≥102 sweep incl. P-FIX-PREVIEW and
+P-CAT-AUTOFIX · CI leg, on one head commit) — at which point E08's interface
+digest (the `PCKFixCommand` fix-invocation implementation, the capability pair
+on `PCKLintRuleCheck`, the D-72 environment law — tabled in that file) freezes,
+and E09's entry check can count E08 satisfied. E08-C01 is the owner-scheduled
+D-72 amendment chunk (ruled ground beyond the roadmap row; placement annotated
+in `chunks.md` per D-61.a) — it amends E06's frozen surface through the
+decision-sheet path, never a silent edit. [P] eligibility (disjoint manifests):
+E08-C01 E08-C02; orchestrator runs them serialized — the COMMIT preconditions
+(clean tree at spawn) and the shared `.build/work` verify image make shared-tree
+concurrency unsound; disjointness stands as the reviewer's cross-check. E08
+itself runs `[P]` beside E05/E07 per the frozen roadmap (ground:
+`Phi-Coding-Kit-Rules`/`-Tests-Rules`; `PCKKitTest` is E07's file — no E08
+manifest touches it).
+
+**E04 rows (E04-C01–E04-C05) added by the fifth Prompt-4 run (2026-07-25; Gate 4
+pending; first cut under D-73 epic-qualified IDs).** E04 `accepted` when all five
+rows are `accepted` and the exit checkpoint in
+`plan/04-epics/E04-registry-kit-handoff-conformance/chunks.md` is filled in (the
+26-test named suite — 7 `PGRScratchCheckFixturesTest` + 6 `PGRRegistrationTest` +
+13 `PGRRegistryTest` — green with every previously accepted suite, ≥114 run,
+membership + floor · D-67 precheck discipline with `E04-C##:`-prefixed commits ·
+CI leg, on one head commit) — at which point E04 closes with **no new frozen
+exports** (the frozen roadmap's ruling: the engine is internal; the SDK contract
+it validates is E02's) and the specified-but-internal `PGRRegistry`/
+`PGRRegistration` surface E05 consumes is tabled in that file (changeable only
+via decision-sheet entry while E05 is in flight), so E05's entry check can pass.
+Properties: P-CONFORMANCE and P-LOADING-INERT discharged in full; P-REG-FRESH's
+named test lands here with its gate/report clause completing at E05; the
+P-ERR-IS-RED registration arm, P-GATE-MISSING core-half machinery, and
+P-CFG-STRICT's duplicate-name arm (E03's recorded handoff) are discharged and
+recorded as cross-epic statements in the chunk index. No `[P]` in this epic:
+C02 consumes C01's fixtures and C03–C05 share the `PGRRegistry`/`PGRRegistryTest`
+file pair — strictly serial picks; every manifest is disjoint from the kit-track
+cuts (E07/E08) running `[P]` beside this one.
+
+**E07 rows (E07-C01–E07-C06) added by the fifth Prompt-4 run (2026-07-25; Gate 4
+pending; epic-qualified IDs per D-73 — the concurrent same-day cuts E04/E08 own
+their local counters, so no collision is possible by construction).** E07
+`accepted` when all six rows are `accepted` and the exit checkpoint in
+`plan/04-epics/E07-behavioral-kind/chunks.md` is filled in (the 20 new E07 tests
+— `PCKBehavioralFixturesTest` 5 · `PCKSuiteRunCacheTest` 3 ·
+`PCKTestSuiteCheckTest` 4 · `PCKNoSkippedTestsMetaRuleTest` 3 · `PCKKitTest` +5
+— green with every previously accepted suite, ≥108 run, membership + floor ·
+D-67 precheck discipline with `E07-C##:`-prefixed commits · CI leg, on one head
+commit) — at which point E07's interface digest (behavioral registration naming
+incl. the `behavioral/tests-role` sentinel, the completed four-stage order law,
+the cache's one-message protocol, the kit-side wiring spellings, the complete
+three-key `recommendedBlock` — tabled in that file) freezes, and E09's entry
+check can count E07 satisfied. Properties owed and discharged here: P-GATE-SKIP,
+P-SUITES-BEFORE-META, P-GATE-MISSING (suite half; the gate half is E05's),
+P-STANZA-VALID, plus the two R-37 behavioral fixture pairs. No `[P]` in this
+epic: the chain is strictly linear (each chunk consumes its predecessor's
+deliverables; E07-C05/C06 share the `PCKKit`/`PCKKitTest` file pair). E07 runs
+`[P]` beside E04/E05/E08 per the frozen roadmap; its ground is
+`-Behavioral`/`-Fixtures-Behavioral`/`-Tests-Behavioral` plus
+`src/Phi-Coding-Kit/PCKKit.class.st` and the `-Tests-Rules` file
+`PCKKitTest.class.st` (the frozen E06 ruling "E07 extends the class in place";
+E08's papers reciprocally cede that file) — E07 alone touches `PCKKit` after
+E06, and the eight C05-amended E06 tests are scheduled ground enumerated in the
+work order, never silent edits.
