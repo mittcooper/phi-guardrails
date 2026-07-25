@@ -50,3 +50,35 @@ PCKLintRuleCheckTest >> testSubErrorSeverityYieldsAdvisories [
 	self denyEmpty: verdict advisories.
 	self assertEmpty: verdict findings
 ]
+
+{ #category : 'tests' }
+PCKLintRuleCheckTest >> testTraitProvidedMethodLintedAtUsingClassPackage [
+	"D-72 regression (the D-71 escape): a trait-provided method must be linted at the
+	using class's package. The scratch trait/class pair exists only inside this test;
+	ensure: removes it even when an assertion fails. The planted flag: send is a string
+	compiled at runtime into the scratch trait, never a committed send (R-37/D-26)."
+	| verdict |
+	[
+	(Trait << #PCKScratchCruftTrait
+		package: 'PCKScratchB03-Traits';
+		install) compile: 'probeCruft self flag: #probe'.
+	Object << #PCKScratchCruftUser
+		traits: { (Smalltalk globals at: #PCKScratchCruftTrait) };
+		package: 'PCKScratchB03-User';
+		install.
+	verdict := (PCKLintRuleCheck
+		rule: ReCodeCruftLeftInMethodsRule
+		packages: #('PCKScratchB03-User')) run.
+	self deny: verdict isGreen.
+	self assert: (verdict findings anySatisfy: [ :each |
+		each target includesSubstring: 'probeCruft' ]) ]
+		ensure: [
+			(Smalltalk globals at: #PCKScratchCruftUser ifAbsent: [ nil ])
+				ifNotNil: [ :user | user removeFromSystem ].
+			(Smalltalk globals at: #PCKScratchCruftTrait ifAbsent: [ nil ])
+				ifNotNil: [ :trait | trait removeFromSystem ].
+			(PackageOrganizer default packageNamed: 'PCKScratchB03-User' ifAbsent: [ nil ])
+				ifNotNil: [ :package | package removeFromSystem ].
+			(PackageOrganizer default packageNamed: 'PCKScratchB03-Traits' ifAbsent: [ nil ])
+				ifNotNil: [ :package | package removeFromSystem ] ]
+]
