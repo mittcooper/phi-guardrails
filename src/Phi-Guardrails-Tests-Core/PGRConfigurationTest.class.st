@@ -4,6 +4,9 @@ Mirror test for PGRConfiguration. Carries the canonical green artifact (validArt
 Class {
 	#name : 'PGRConfigurationTest',
 	#superclass : 'TestCase',
+	#instVars : [
+		'scratchDirectory'
+	],
 	#category : 'Phi-Guardrails-Tests-Core',
 	#package : 'Phi-Guardrails-Tests-Core'
 }
@@ -39,6 +42,35 @@ PGRConfigurationTest >> artifactWithout: aKey [
 	^ STON toString: map
 ]
 
+{ #category : 'running' }
+PGRConfigurationTest >> setUp [
+	super setUp.
+	scratchDirectory := FileSystem workingDirectory / 'pgr-c27-scratch'.
+	scratchDirectory ensureCreateDirectory
+]
+
+{ #category : 'running' }
+PGRConfigurationTest >> tearDown [
+	scratchDirectory ensureDeleteAll.
+	super tearDown
+]
+
+{ #category : 'tests' }
+PGRConfigurationTest >> testAbsentSrcIsLegal [
+	"An absent #src is legal - the par. 1.5 parameter pattern honored by absence; a consuming check goes missing at run time (E11), the parser stays silent."
+	| configuration |
+	configuration := PGRConfiguration fromString: self validArtifactString.
+	self assert: configuration srcPath isNil
+]
+
+{ #category : 'tests' }
+PGRConfigurationTest >> testAbsoluteSrcFromStringIsLegal [
+	"An absolute #src needs no anchor, so both entries accept it; whether the directory exists is deliberately unchecked at parse time - the consuming walk judges that (E11)."
+	| configuration |
+	configuration := PGRConfiguration fromString: (self artifactWith: #src value: '/tmp/pgr-elsewhere').
+	self assert: configuration srcPath equals: '/tmp/pgr-elsewhere'
+]
+
 { #category : 'tests' }
 PGRConfigurationTest >> testEmptyGroupMatcherIsLegal [
 	"An empty group is a legal baseline fact (D-25.a addendum): the group arm matches and contributes nothing."
@@ -62,6 +94,28 @@ PGRConfigurationTest >> testExemptNamePatternsGreenPath [
 	| configuration |
 	configuration := PGRConfiguration fromString: (self artifactWith: #exemptNamePatterns value: #( 'PGR-Scratch-.*' )).
 	self assert: configuration exemptPackageNames equals: #( 'PGR-Scratch-Ghost' )
+]
+
+{ #category : 'tests' }
+PGRConfigurationTest >> testFromFileMissingFileSignals [
+	"A missing file is a configuration error naming the path - the raw file exception never escapes: callers catch configuration defects by class (D-49)."
+	| path |
+	path := (scratchDirectory / 'no-such.ston') fullName.
+	self
+		should: [ PGRConfiguration fromFile: path ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error | self assert: (error messageText includesSubstring: path) ]
+]
+
+{ #category : 'tests' }
+PGRConfigurationTest >> testFromFileParsesAndAnchorsRelativeSrc [
+	"fromFile: joins fromString: on the frozen caller surface; a relative #src anchors to the config file's own directory, never the working directory (D-45 ruling 2)."
+	| path configuration |
+	path := scratchDirectory / 'guardrails.ston'.
+	path writeStreamDo: [ :stream | stream nextPutAll: (self artifactWith: #src value: 'src') ].
+	configuration := PGRConfiguration fromFile: path fullName.
+	self assert: configuration project equals: 'Scratch'.
+	self assert: configuration srcPath equals: (scratchDirectory / 'src') fullName
 ]
 
 { #category : 'tests' }
@@ -176,6 +230,17 @@ PGRConfigurationTest >> testProductionMatchingExemptPatternSignals [
 		should: [ PGRConfiguration fromString: (self artifactWith: #exemptNamePatterns value: #( 'PGR-Scratch-.*' 'Phi-Guardrails-SDK' )) ]
 		raise: PGRConfigurationError
 		withExceptionDo: [ :error | self assert: (error messageText includesSubstring: 'Phi-Guardrails-SDK') ]
+]
+
+{ #category : 'tests' }
+PGRConfigurationTest >> testRelativeSrcWithoutAnchorSignals [
+	"D-47 flag 2: a relative #src via fromString: has no directory to anchor to - the error names the fix, an absolute path or loading via fromFile:."
+	self
+		should: [ PGRConfiguration fromString: (self artifactWith: #src value: 'src') ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error |
+			self assert: (error messageText includesSubstring: 'fromFile:').
+			self assert: (error messageText includesSubstring: 'absolute') ]
 ]
 
 { #category : 'tests' }

@@ -1,5 +1,5 @@
 "
-The parsed, validated configuration artifact - the one scope of a gate run (spec ch. 1 par. 1.2). Class-side fromString: is the public caller surface; instance readers are internal to the framework and carry no compatibility promise. Validation is strict: malformed or unknown input signals PGRConfigurationError, never a silent default (P-CFG-STRICT). The pipeline lands across C21-C27; stages so far: 1 strict STON parse, 2 envelope shape law, 3 schema-version law (parse set exactly {2}, D-45/D-51), 4 kit and baseline resolution (class-side conformance for kits, never ancestry, D-53; inheritsFrom: BaselineOf for the baseline, D-25.a), 5 role-matcher expansion over the resolved baseline (group name first - membership pre-checked - else exact package name, else full-match pattern, D-47/D-15; zero-match legal; the group-vs-package ambiguity is unconstructible, D-70), 6 the scope law plus loadedness - every package the baseline declares in exactly one role, pairwise disjoint and jointly total (D-25 as amended by D-45), production- and tests-role packages loaded in the image, an absent exempt package legal (D-25.a), 7 exempt-name patterns when #exemptNamePatterns is present - every exempt-role package full-matches some pattern and no production- or tests-role package full-matches any (D-15 full-match; D-25 residual 1: misfiling is loud), an absent key meaning no check at all. Kit blocks are opaque beyond #kit and handed on verbatim (D-51).
+The parsed, validated configuration artifact - the one scope of a gate run (spec ch. 1 par. 1.2). Class-side fromString: and fromFile: are the public caller surface; instance readers are internal to the framework and carry no compatibility promise. Validation is strict: malformed or unknown input signals PGRConfigurationError, never a silent default (P-CFG-STRICT). The pipeline lands across C21-C27; stages so far: 1 strict STON parse, 2 envelope shape law, 3 schema-version law (parse set exactly {2}, D-45/D-51), 4 kit and baseline resolution (class-side conformance for kits, never ancestry, D-53; inheritsFrom: BaselineOf for the baseline, D-25.a), 5 role-matcher expansion over the resolved baseline (group name first - membership pre-checked - else exact package name, else full-match pattern, D-47/D-15; zero-match legal; the group-vs-package ambiguity is unconstructible, D-70), 6 the scope law plus loadedness - every package the baseline declares in exactly one role, pairwise disjoint and jointly total (D-25 as amended by D-45), production- and tests-role packages loaded in the image, an absent exempt package legal (D-25.a), 7 exempt-name patterns when #exemptNamePatterns is present - every exempt-role package full-matches some pattern and no production- or tests-role package full-matches any (D-15 full-match; D-25 residual 1: misfiling is loud), an absent key meaning no check at all, 8 the #src anchor - absent legal, absolute recorded verbatim, relative resolved against the config file's own directory via fromFile: and refused naming the fix via fromString: (D-45 rulings 1-2, D-47 flag 2). Kit blocks are opaque beyond #kit and handed on verbatim (D-51).
 "
 Class {
 	#name : 'PGRConfiguration',
@@ -11,7 +11,8 @@ Class {
 		'baselineClass',
 		'productionPackageNames',
 		'testsPackageNames',
-		'exemptPackageNames'
+		'exemptPackageNames',
+		'srcPath'
 	],
 	#category : 'Phi-Guardrails-Core',
 	#package : 'Phi-Guardrails-Core'
@@ -56,8 +57,25 @@ PGRConfiguration class >> expandRoles: rolesMap over: aBaselineClass [
 ]
 
 { #category : 'instance creation' }
+PGRConfiguration class >> fromFile: aPathString [
+	"Answer the validated configuration parsed from the file at aPathString, or signal PGRConfigurationError. The explicit path is all there is - no default location, no working-directory fallback (D-45 ruling 1); a missing or unreadable file is a configuration error naming the path, never a raw file exception - callers catch configuration defects by class (D-49)."
+	| file contents |
+	file := aPathString asFileReference.
+	contents := [ file contents ]
+		on: FileException
+		do: [ :error | PGRConfigurationError new signal: 'Cannot read configuration file: ' , aPathString ].
+	^ self fromString: contents anchor: file parent
+]
+
+{ #category : 'instance creation' }
 PGRConfiguration class >> fromString: aString [
 	"Answer the validated configuration parsed from aString, or signal PGRConfigurationError."
+	^ self fromString: aString anchor: nil
+]
+
+{ #category : 'private' }
+PGRConfiguration class >> fromString: aString anchor: aDirectoryOrNil [
+	"The one validation pipeline behind both frozen entries, stages 1-8 (one validation path, two entries); the anchor is the config file's own directory via fromFile:, nil via fromString:."
 	| map baselineClass expandedRoles |
 	map := self parsedMapFrom: aString.
 	self validateEnvelope: map.
@@ -74,6 +92,7 @@ PGRConfiguration class >> fromString: aString [
 		setProductionPackageNames: (expandedRoles at: 1)
 			testsPackageNames: (expandedRoles at: 2)
 			exemptPackageNames: (expandedRoles at: 3);
+		setSrcPath: (self resolveSrc: map anchor: aDirectoryOrNil);
 		yourself
 ]
 
@@ -112,6 +131,17 @@ PGRConfiguration class >> resolveKitClassNamed: aName [
 PGRConfiguration class >> resolveKitClasses: kitBlockArray [
 	"Stage 4, kit arm (spec ch. 1 par. 1.4 step 1): every block's #kit resolves to a loaded, class-side-conforming kit class. Answers the classes ordered as the blocks, parallel to kitBlocks."
 	^ kitBlockArray collect: [ :block | self resolveKitClassNamed: (block at: #kit) ]
+]
+
+{ #category : 'private' }
+PGRConfiguration class >> resolveSrc: aMap anchor: aDirectoryOrNil [
+	"Stage 8, the #src anchor rules (spec ch. 1 par. 1.1): absent is nothing to do - a consuming check goes missing at run time, the par. 1.5 pattern (E11); absolute is recorded as-is; relative resolves against the config file's own directory (D-45 ruling 2), and with no directory to anchor to the error names the fix (D-47 flag 2). Whether the directory exists is not checked - the walk that consumes it judges that at run time."
+	| src |
+	src := aMap at: #src ifAbsent: [ ^ nil ].
+	src asFileReference isAbsolute ifTrue: [ ^ src ].
+	aDirectoryOrNil ifNil: [
+		PGRConfigurationError new signal: 'Relative #src ' , src printString , ' cannot be anchored via fromString: - use an absolute path, or load the file via fromFile:' ].
+	^ (aDirectoryOrNil / src) fullName
 ]
 
 { #category : 'private' }
@@ -325,6 +355,17 @@ PGRConfiguration >> setProject: aString kitBlocks: blockArray kitClasses: classA
 	kitBlocks := blockArray.
 	kitClasses := classArray.
 	baselineClass := aClass
+]
+
+{ #category : 'private' }
+PGRConfiguration >> setSrcPath: aStringOrNil [
+	srcPath := aStringOrNil
+]
+
+{ #category : 'accessing' }
+PGRConfiguration >> srcPath [
+	"The #src source root as an absolute path String, nil when the artifact carries no #src. Specified but internal - E11's src-inventory wiring consumes it; whether it exists is judged by the walk at run time (R-47)."
+	^ srcPath
 ]
 
 { #category : 'accessing' }
