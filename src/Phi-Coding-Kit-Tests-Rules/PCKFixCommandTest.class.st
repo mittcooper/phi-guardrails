@@ -1,12 +1,34 @@
 "
-Behavioral pin of PCKFixCommand's construction, error and preview paths (ch. 3 par. 3.3): the not-autofixable guard's two arms, the apply-before-preview error (E08-C02), and the D-06 mandatory preview - diff emitted, count answered, changes exposed, nothing mutated (E08-C03). Error classes are asserted by class, never by wording; preview assertions pin content substrings, never layout.
+Behavioral pin of PCKFixCommand's construction, error, preview and apply paths (ch. 3 par. 3.3): the not-autofixable guard's two arms, the apply-before-preview error (E08-C02), the D-06 mandatory preview - diff emitted, count answered, changes exposed, nothing mutated (E08-C03) - and the apply legs (E08-C04): rewrite-and-answer, the D-34.2 stale guard, and the consumed-preview second apply. Error classes are asserted by class, never by wording; preview assertions pin content substrings, never layout. Every test that can mutate the plant restores it via the saved-source discipline in setUp/tearDown (ch. 9 P-FIX-PREVIEW).
 "
 Class {
 	#name : 'PCKFixCommandTest',
 	#superclass : 'TestCase',
+	#instVars : [
+		'savedSource'
+	],
 	#category : 'Phi-Coding-Kit-Tests-Rules',
 	#package : 'Phi-Coding-Kit-Tests-Rules'
 }
+
+{ #category : 'running' }
+PCKFixCommandTest >> setUp [
+	"Saved-source discipline (ch. 9 P-FIX-PREVIEW): snapshot the plant's source so
+	tearDown can put the bad code back - the fixture must be bad again for whatever
+	test runs next (idempotence)."
+	super setUp.
+	savedSource := (PCKLintBadFixture >> #withIsNilIfTrue) sourceCode
+]
+
+{ #category : 'running' }
+PCKFixCommandTest >> tearDown [
+	"Recompile the snapshot back when the current source differs (P5-confirmed
+	spelling: compile:classified: preserves the method's protocol, here 'fixture')."
+	savedSource ifNotNil: [
+		(PCKLintBadFixture >> #withIsNilIfTrue) sourceCode = savedSource
+			ifFalse: [ PCKLintBadFixture compile: savedSource classified: 'fixture' ] ].
+	super tearDown
+]
 
 { #category : 'tests' }
 PCKFixCommandTest >> testApplyWithoutPreviewSignals [
@@ -75,4 +97,44 @@ PCKFixCommandTest >> testPreviewMutatesNoSource [
 	fix := PCKFixCommand rule: PCKNoIsNilIfTrueRule packages: #('Phi-Coding-Kit-Tests-Rules').
 	fix previewOn: (WriteStream on: String new).
 	self assert: (PCKLintBadFixture >> #withIsNilIfTrue) sourceCode equals: before
+]
+
+{ #category : 'tests' }
+PCKFixCommandTest >> testPreviewThenApplyRewrites [
+	"P-FIX-PREVIEW leg 2 (ch. 9, D-06/R-15): the confirmed diff is the applied diff -
+	after apply the plant carries the D-04 rewrite, and apply answered the one change."
+	| fix applied current |
+	fix := PCKFixCommand rule: PCKNoIsNilIfTrueRule packages: #('Phi-Coding-Kit-Tests-Rules').
+	fix previewOn: (WriteStream on: String new).
+	applied := fix apply.
+	current := (PCKLintBadFixture >> #withIsNilIfTrue) sourceCode.
+	self assert: (current includesSubstring: 'ifNil:').
+	self deny: (current includesSubstring: 'isNil ifTrue:').
+	self assert: applied size equals: 1
+]
+
+{ #category : 'tests' }
+PCKFixCommandTest >> testSecondApplySignals [
+	"One preview authorizes one apply (D-06, chunks.md ruling): the second apply finds
+	its preview consumed - PGRFixNotPreviewed, and nothing applies twice."
+	| fix afterFirst |
+	fix := PCKFixCommand rule: PCKNoIsNilIfTrueRule packages: #('Phi-Coding-Kit-Tests-Rules').
+	fix previewOn: (WriteStream on: String new).
+	fix apply.
+	afterFirst := (PCKLintBadFixture >> #withIsNilIfTrue) sourceCode.
+	self should: [ fix apply ] raise: PGRFixNotPreviewed.
+	self assert: (PCKLintBadFixture >> #withIsNilIfTrue) sourceCode equals: afterFirst
+]
+
+{ #category : 'tests' }
+PCKFixCommandTest >> testStaleApplySignals [
+	"P-FIX-PREVIEW leg 3 (D-34.2): drift between preview and apply signals PGRFixStale
+	and applies nothing - the mutated form survives verbatim, all-or-nothing."
+	| fix staleSource |
+	fix := PCKFixCommand rule: PCKNoIsNilIfTrueRule packages: #('Phi-Coding-Kit-Tests-Rules').
+	fix previewOn: (WriteStream on: String new).
+	staleSource := savedSource copyReplaceAll: '#bad' with: '#stale'.
+	PCKLintBadFixture compile: staleSource classified: 'fixture'.
+	self should: [ fix apply ] raise: PGRFixStale.
+	self assert: (PCKLintBadFixture >> #withIsNilIfTrue) sourceCode equals: staleSource
 ]

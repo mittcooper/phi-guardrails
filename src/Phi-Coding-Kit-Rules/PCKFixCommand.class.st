@@ -1,5 +1,5 @@
 "
-The coding kit's implementation of the SDK fix-invocation protocol (D-53: construct -> previewOn: -> apply -> changes), realized over methods and the refactoring engine - the only framework code path that mutates client source; the gate never invokes it (P-FIX-GATE-WALL). Preview is mandatory before apply (D-06): a never-previewed instance refuses apply with PGRFixNotPreviewed; previewOn: (E08-C03) runs the rule through the D-72 environment, lands the full diff on the handed stream, and marks the instance previewed. apply's staleness/execution body is E08-C04's.
+The coding kit's implementation of the SDK fix-invocation protocol (D-53: construct -> previewOn: -> apply -> changes), realized over methods and the refactoring engine - the only framework code path that mutates client source; the gate never invokes it (P-FIX-GATE-WALL). Preview is mandatory before apply (D-06): a never-previewed instance refuses apply with PGRFixNotPreviewed; previewOn: (E08-C03) runs the rule through the D-72 environment, lands the full diff on the handed stream, and marks the instance previewed. apply (E08-C04) re-reads every pending change's target and signals PGRFixStale on any drift from the source the preview showed, applying nothing (D-34.2 all-or-nothing); otherwise it executes each change - an ordinary recompile, Epicea-recorded and listed in RBRefactoryChangeManager's undo history, with no code here managing either - and answers the applied change objects. One instance, one invocation: a successful apply consumes its preview, so a second apply refuses with PGRFixNotPreviewed; a stale command is discarded - a new fix run is a new instance with a new preview.
 "
 Class {
 	#name : 'PCKFixCommand',
@@ -8,7 +8,9 @@ Class {
 		'rule',
 		'packages',
 		'pendingChanges',
-		'previewed'
+		'previewedSources',
+		'previewed',
+		'applied'
 	],
 	#category : 'Phi-Coding-Kit-Rules',
 	#package : 'Phi-Coding-Kit-Rules'
@@ -32,11 +34,26 @@ PCKFixCommand class >> rule: aRuleClass packages: aCollectionOfPackageNames [
 
 { #category : 'actions' }
 PCKFixCommand >> apply [
-	"E08-C02 slice: with previewOn: not yet landed (E08-C03) every instance is
-	pre-preview, so this is exactly the guard - D-06's mandatory preview made
-	machine-checkable. The previewed-state test and the staleness/execution body
-	arrive with E08-C03/C04."
-	^ PGRFixNotPreviewed signal: 'previewOn: is the mandatory first step'
+	"D-06's second half: the diff the invoker confirmed is the diff that applies.
+	Guard: no preview on this instance, or a preview already consumed by a prior
+	apply, refuses with PGRFixNotPreviewed (one preview authorizes one apply).
+	Staleness (D-34.2): every pending change's target is re-read and compared to
+	the source the preview snapshotted; any drift signals PGRFixStale and applies
+	nothing - all-or-nothing. The re-read must not use oldVersionTextToDisplay,
+	which re-renders from the live method and so never drifts (P5 probe, E08-C04);
+	an untouched target's current sourceCode is textually identical to the
+	snapshot, so plain string inequality is drift."
+	| stale |
+	(previewed and: [ applied not ])
+		ifFalse: [ ^ PGRFixNotPreviewed signal: 'one preview authorizes one apply' ].
+	stale := false.
+	pendingChanges with: previewedSources do: [ :change :source |
+		(change changeClass >> change selector) sourceCode = source
+			ifFalse: [ stale := true ] ].
+	stale ifTrue: [ ^ PGRFixStale signal: 'target source changed since the preview' ].
+	pendingChanges do: [ :change | change execute ].
+	applied := true.
+	^ self changes
 ]
 
 { #category : 'accessing' }
@@ -52,7 +69,9 @@ PCKFixCommand >> changes [
 PCKFixCommand >> initialize [
 	super initialize.
 	pendingChanges := Array new.
-	previewed := false
+	previewedSources := Array new.
+	previewed := false.
+	applied := false
 ]
 
 { #category : 'actions' }
@@ -61,8 +80,11 @@ PCKFixCommand >> previewOn: aWriteStream [
 	steps 1-2 through the D-72 environment - one attribution story across check and
 	fix), keep each change-providing critique's change object, and land every
 	prospective diff - target, old source, new source - on the handed stream before
-	anything can change. Answers the pending count; the handed stream is the only
-	sink, and mutation stays apply's monopoly (E08-C04)."
+	anything can change. The old sources are snapshotted here because
+	oldVersionTextToDisplay re-reads the live method on every call (P5 probe,
+	E08-C04) - apply's staleness guard compares against this moment. Answers the
+	pending count; the handed stream is the only sink, and mutation stays apply's
+	monopoly (E08-C04)."
 	| ruleInstance checker critiques |
 	ruleInstance := rule new.
 	checker := ReSmalllintChecker new
@@ -73,13 +95,14 @@ PCKFixCommand >> previewOn: aWriteStream [
 	critiques := (checker criticsOf: ruleInstance) asArray
 		select: [ :each | each providesChange ].
 	pendingChanges := critiques collect: [ :each | each change ].
-	critiques with: pendingChanges do: [ :critique :change |
+	previewedSources := pendingChanges collect: [ :change | change oldVersionTextToDisplay ].
+	critiques with: previewedSources do: [ :critique :source |
 		aWriteStream
 			nextPutAll: critique entity printString; cr;
 			nextPutAll: '--- old'; cr;
-			nextPutAll: change oldVersionTextToDisplay; cr;
+			nextPutAll: source; cr;
 			nextPutAll: '+++ new'; cr;
-			nextPutAll: change textToDisplay; cr ].
+			nextPutAll: critique change textToDisplay; cr ].
 	previewed := true.
 	^ pendingChanges size
 ]
