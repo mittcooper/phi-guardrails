@@ -1,5 +1,5 @@
 "
-Mirror test for PGRConfiguration. Carries the canonical green artifact (validArtifactString) reused by every later E03 chunk, plus one-line mutation helpers for the defect arms. testUnknownKeySignals is the named test of property P-CFG-STRICT; testRolesByPatternWithoutBaselineGroups is the named test of P-ROLES-FROM-CONFIG (first half); testUnassignedPackageStillSignals is its second half, and testUnassignedPackageSignals, testOverlappingRoleGroupsSignals and testUnknownRoleGroupSignals are the named tests of P-SCOPE-TOTAL.
+Mirror test for PGRConfiguration. Carries the canonical green artifact (validArtifactString) reused by every later E03 chunk, plus one-line mutation helpers for the defect arms. testUnknownKeySignals is the named test of property P-CFG-STRICT; testRolesByPatternWithoutBaselineGroups is the named test of P-ROLES-FROM-CONFIG (first half); testUnassignedPackageStillSignals is its second half, and testUnassignedPackageSignals, testOverlappingRoleGroupsSignals and testUnknownRoleGroupSignals are the named tests of P-SCOPE-TOTAL. testExemptNamePatternMismatchSignals is the named test of P-ROLE-MISFILE.
 "
 Class {
 	#name : 'PGRConfigurationTest',
@@ -44,6 +44,23 @@ PGRConfigurationTest >> testEmptyGroupMatcherIsLegal [
 	"An empty group is a legal baseline fact (D-25.a addendum): the group arm matches and contributes nothing."
 	| configuration |
 	configuration := PGRConfiguration fromString: (self artifactWithExempt: #( 'scratch-ghost' 'scratch-empty' )).
+	self assert: configuration exemptPackageNames equals: #( 'PGR-Scratch-Ghost' )
+]
+
+{ #category : 'tests' }
+PGRConfigurationTest >> testExemptNamePatternMismatchSignals [
+	"P-ROLE-MISFILE: PGR-Scratch-Ghost is exempt-role yet full-matches no exempt-name pattern (direction 1) - the misfiled package is named (D-25 residual 1)."
+	self
+		should: [ PGRConfiguration fromString: (self artifactWith: #exemptNamePatterns value: #( 'Toy-.*' )) ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error | self assert: (error messageText includesSubstring: 'PGR-Scratch-Ghost') ]
+]
+
+{ #category : 'tests' }
+PGRConfigurationTest >> testExemptNamePatternsGreenPath [
+	"Both directions hold: the exempt-role Ghost full-matches 'PGR-Scratch-.*' and no production- or tests-role name does - also witnessing D-15 full-match semantics: the exempt-name pattern claims no Phi-Guardrails-* name."
+	| configuration |
+	configuration := PGRConfiguration fromString: (self artifactWith: #exemptNamePatterns value: #( 'PGR-Scratch-.*' )).
 	self assert: configuration exemptPackageNames equals: #( 'PGR-Scratch-Ghost' )
 ]
 
@@ -148,6 +165,15 @@ PGRConfigurationTest >> testOverlappingRoleGroupsSignals [
 	(map at: #roles) at: #tests put: #( 'scratch-tst' 'scratch-overlap' ).
 	self
 		should: [ PGRConfiguration fromString: (STON toString: map) ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error | self assert: (error messageText includesSubstring: 'Phi-Guardrails-SDK') ]
+]
+
+{ #category : 'tests' }
+PGRConfigurationTest >> testProductionMatchingExemptPatternSignals [
+	"Direction 2: production-role Phi-Guardrails-SDK full-matches an exempt-name pattern - a package wearing an exempt-looking name is filed wrong somewhere, and the misfiling is loud (D-25 residual 1)."
+	self
+		should: [ PGRConfiguration fromString: (self artifactWith: #exemptNamePatterns value: #( 'PGR-Scratch-.*' 'Phi-Guardrails-SDK' )) ]
 		raise: PGRConfigurationError
 		withExceptionDo: [ :error | self assert: (error messageText includesSubstring: 'Phi-Guardrails-SDK') ]
 ]

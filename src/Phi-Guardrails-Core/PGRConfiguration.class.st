@@ -1,5 +1,5 @@
 "
-The parsed, validated configuration artifact - the one scope of a gate run (spec ch. 1 par. 1.2). Class-side fromString: is the public caller surface; instance readers are internal to the framework and carry no compatibility promise. Validation is strict: malformed or unknown input signals PGRConfigurationError, never a silent default (P-CFG-STRICT). The pipeline lands across C21-C27; stages so far: 1 strict STON parse, 2 envelope shape law, 3 schema-version law (parse set exactly {2}, D-45/D-51), 4 kit and baseline resolution (class-side conformance for kits, never ancestry, D-53; inheritsFrom: BaselineOf for the baseline, D-25.a), 5 role-matcher expansion over the resolved baseline (group name first - membership pre-checked - else exact package name, else full-match pattern, D-47/D-15; zero-match legal; the group-vs-package ambiguity is unconstructible, D-70), 6 the scope law plus loadedness - every package the baseline declares in exactly one role, pairwise disjoint and jointly total (D-25 as amended by D-45), production- and tests-role packages loaded in the image, an absent exempt package legal (D-25.a). Kit blocks are opaque beyond #kit and handed on verbatim (D-51).
+The parsed, validated configuration artifact - the one scope of a gate run (spec ch. 1 par. 1.2). Class-side fromString: is the public caller surface; instance readers are internal to the framework and carry no compatibility promise. Validation is strict: malformed or unknown input signals PGRConfigurationError, never a silent default (P-CFG-STRICT). The pipeline lands across C21-C27; stages so far: 1 strict STON parse, 2 envelope shape law, 3 schema-version law (parse set exactly {2}, D-45/D-51), 4 kit and baseline resolution (class-side conformance for kits, never ancestry, D-53; inheritsFrom: BaselineOf for the baseline, D-25.a), 5 role-matcher expansion over the resolved baseline (group name first - membership pre-checked - else exact package name, else full-match pattern, D-47/D-15; zero-match legal; the group-vs-package ambiguity is unconstructible, D-70), 6 the scope law plus loadedness - every package the baseline declares in exactly one role, pairwise disjoint and jointly total (D-25 as amended by D-45), production- and tests-role packages loaded in the image, an absent exempt package legal (D-25.a), 7 exempt-name patterns when #exemptNamePatterns is present - every exempt-role package full-matches some pattern and no production- or tests-role package full-matches any (D-15 full-match; D-25 residual 1: misfiling is loud), an absent key meaning no check at all. Kit blocks are opaque beyond #kit and handed on verbatim (D-51).
 "
 Class {
 	#name : 'PGRConfiguration',
@@ -65,6 +65,7 @@ PGRConfiguration class >> fromString: aString [
 	baselineClass := self resolveBaselineClass: (map at: #baseline).
 	expandedRoles := self expandRoles: (map at: #roles) over: baselineClass.
 	self validateScopeLaw: expandedRoles over: baselineClass.
+	self validateExemptNamePatterns: map roles: expandedRoles.
 	^ self new
 		setProject: (map at: #project)
 			kitBlocks: (map at: #kits)
@@ -122,6 +123,14 @@ PGRConfiguration class >> select: nameCollection fullMatching: aMatcher [
 ]
 
 { #category : 'private' }
+PGRConfiguration class >> selectNames: nameCollection fullMatchingExemptNamePattern: aPattern [
+	"Same regex-wrap rule as the stage-5 matchers (family 7): an exempt-name pattern the engine rejects is a loud configuration error naming it - no engine exception escapes fromString:. Full-match semantics (D-15)."
+	^ [ nameCollection select: [ :name | name matchesRegex: aPattern ] ]
+		on: RegexError
+		do: [ :error | PGRConfigurationError new signal: 'Invalid exempt-name pattern regex: ' , aPattern ]
+]
+
+{ #category : 'private' }
 PGRConfiguration class >> shapeErrorFor: aKey expected: aDescription [
 	PGRConfigurationError new signal: 'Top-level key ' , aKey , ' must be ' , aDescription
 ]
@@ -132,6 +141,23 @@ PGRConfiguration class >> validateEnvelope: anObject [
 	self validateTopLevelMap: anObject.
 	self validateKeySet: anObject.
 	self validateShapes: anObject
+]
+
+{ #category : 'private' }
+PGRConfiguration class >> validateExemptNamePatterns: aMap roles: expandedRoles [
+	"Stage 7, #exemptNamePatterns in both directions (spec ch. 1 par. 1.1; R-24 validation half): absent means no check at all; present, every exempt-role package full-matches at least one exempt-name pattern (direction 1) and no production- or tests-role package full-matches any (direction 2 - a misfiled package is loud, D-25 residual 1). Arm order direction 1 then direction 2 is fixed so the error messages stay deterministic; every offender is named (family 7)."
+	aMap at: #exemptNamePatterns ifPresent: [ :patternArray |
+		| matchedExempt misfiled |
+		matchedExempt := Set new.
+		misfiled := OrderedCollection new.
+		patternArray do: [ :aPattern |
+			matchedExempt addAll: (self selectNames: (expandedRoles at: 3) fullMatchingExemptNamePattern: aPattern).
+			(self selectNames: (expandedRoles at: 1) , (expandedRoles at: 2) fullMatchingExemptNamePattern: aPattern)
+				do: [ :name | (misfiled includes: name) ifFalse: [ misfiled add: name ] ] ].
+		((expandedRoles at: 3) reject: [ :name | matchedExempt includes: name ]) ifNotEmpty: [ :unmatched |
+			PGRConfigurationError new signal: 'Exempt packages full-matching no exempt-name pattern: ' , (', ' join: unmatched) ].
+		misfiled ifNotEmpty: [
+			PGRConfigurationError new signal: 'Production or tests packages full-matching an exempt-name pattern: ' , (', ' join: misfiled) ] ]
 ]
 
 { #category : 'private' }
