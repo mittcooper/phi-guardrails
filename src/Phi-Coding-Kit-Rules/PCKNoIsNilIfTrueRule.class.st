@@ -10,8 +10,7 @@ Class {
 
 { #category : 'accessing' }
 PCKNoIsNilIfTrueRule class >> rationale [
-	^ 'x isNil ifTrue: [...] re-tests a nil you already have; ifNil: is one send and
-	reads as intent. The rewrite is behavior-preserving — apply the autofix.'
+	^ 'x isNil ifTrue: [...] re-tests a nil you already have; ifNil: is one send and reads as intent. The rewrite is behavior-preserving — apply the autofix.'
 ]
 
 { #category : 'accessing' }
