@@ -49,7 +49,7 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | E08-C04 | E08 | todo | E08-C03 | — |
 | E08-C05 | E08 | todo | E08-C01, E08-C04 | — |
 | E07-C01 | E07 | accepted | — | implementer-E07-C01 (picked @ c962f6c; accepted @ 574d04f, 120 run, fixtures unswept) |
-| E07-C02 | E07 | todo | E07-C01 | — |
+| E07-C02 | E07 | accepted | E07-C01 | implementer-E07-C02 (picked @ 6f9eea9; accepted @ b2bcca4, 126 run) |
 | E07-C03 | E07 | todo | E07-C02 | — |
 | E07-C04 | E07 | todo | E07-C03 | — |
 | E07-C05 | E07 | todo | E07-C04 | — |
