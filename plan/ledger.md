@@ -41,7 +41,7 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | E04-C01 | E04 | accepted | — | implementer-E04-C01 (picked @ 38cbbbd; accepted @ 3d7a477, 95 run) |
 | E04-C02 | E04 | accepted | E04-C01 | implementer-E04-C02 (picked @ cda0e03; accepted @ 79b1839, 101 run) |
 | E04-C03 | E04 | accepted | E04-C02 | implementer-E04-C03 (picked @ aa38715; accepted @ 1843b58, 106 run; advisory: PGRRegistry comment's "before wrapping (C04)" claim to be made true by C04) |
-| E04-C04 | E04 | todo | E04-C03 | — |
+| E04-C04 | E04 | accepted | E04-C03 | implementer-E04-C04 (picked @ 890e9b0; accepted @ f369239, 112 run; C03 advisory discharged) |
 | E04-C05 | E04 | todo | E04-C04 | — |
 | E08-C01 | E08 | todo | — | — |
 | E08-C02 | E08 | todo | — | — |
