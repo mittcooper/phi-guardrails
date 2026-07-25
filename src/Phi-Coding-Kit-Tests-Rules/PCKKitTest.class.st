@@ -109,6 +109,36 @@ PCKKitTest >> testNonRuleClassSignals [
 ]
 
 { #category : 'tests' }
+PCKKitTest >> testRecommendedBlockParsesAsKitBlock [
+	"The published stanza (ch. 1 par. 1.3, D-54/D-60) parses as the kit block it documents: a Dictionary with Symbol keys whose #kit is this class and whose #lintRules is the ordered catalog pair (D-51, par. 3.2 then 3.2b) - and nothing beyond those two keys (the M1-partial form; E07 appends #metaRules)."
+	| block |
+	block := STON fromString: PCKKit recommendedBlock.
+	self assert: (block isKindOf: Dictionary).
+	self assert: block size equals: 2.
+	self assert: (block at: #kit) equals: 'PCKKit'.
+	self
+		assert: (block at: #lintRules) asArray
+		equals: #('PCKNoIsNilIfTrueRule' 'ReCodeCruftLeftInMethodsRule')
+]
+
+{ #category : 'tests' }
+PCKKitTest >> testRecommendedBlockRegistersCleanly [
+	"The E06 arm of P-STANZA-VALID (E07 adds the registry-construction arm): the stanza can never name something that does not resolve - parsed and handed to the kit it yields exactly the two catalog specs, both resolved, none missing."
+	| specs |
+	specs := PCKKit
+		registrationsFrom: (STON fromString: PCKKit recommendedBlock)
+		productionPackages: #('Phi-Guardrails-SDK')
+		testsPackages: #().
+	self assert: specs size equals: 2.
+	self
+		assert: (specs collect: [ :each | each name ]) asArray
+		equals: #('lint/PCKNoIsNilIfTrueRule' 'lint/ReCodeCruftLeftInMethodsRule').
+	specs do: [ :each |
+		self deny: each check isNil.
+		self assert: each missingReason isNil ]
+]
+
+{ #category : 'tests' }
 PCKKitTest >> testRegistrationOrderIsLintThenArchitectureThenMeta [
 	"The order law, frozen at E06 acceptance (ch. 1 par. 1.4): all lint, then all architecture, then all meta specs - the dispatch order, whatever order the block was assembled in."
 	| block specs |

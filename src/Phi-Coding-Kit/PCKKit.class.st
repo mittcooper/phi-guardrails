@@ -1,5 +1,5 @@
 "
-The coding kit (name ruled D-56), implementing the frozen PGRKit contract. Stateless - all class-side, no class-side variables. It validates its own block strictly against the canonical five-key schema (ch. 1 par. 1.4; D-51: blocks are opaque to the core, so only the kit can) and answers its specs in the canonical order frozen at E06 acceptance: all lint, then all architecture, then all meta, in-key block order preserved. #lintRules becomes PCKLintRuleCheck registrations targeting the production role (D-25); #architectureChecks and #metaRules resolve via the promised packages: constructor (D-60), role-by-block-key (production and tests respectively). #layerMap is a parameter key: a present map is carried, unread, until E10 gives it its consumer. Behavioral suites have no block key (E07 derives them from the tests role); recommendedBlock stays inherited until C18.
+The coding kit (name ruled D-56), implementing the frozen PGRKit contract. Stateless - all class-side, no class-side variables. It validates its own block strictly against the canonical five-key schema (ch. 1 par. 1.4; D-51: blocks are opaque to the core, so only the kit can) and answers its specs in the canonical order frozen at E06 acceptance: all lint, then all architecture, then all meta, in-key block order preserved. #lintRules becomes PCKLintRuleCheck registrations targeting the production role (D-25); #architectureChecks and #metaRules resolve via the promised packages: constructor (D-60), role-by-block-key (production and tests respectively). #layerMap is a parameter key: a present map is carried, unread, until E10 gives it its consumer. Behavioral suites have no block key (E07 derives them from the tests role); recommendedBlock answers the published stanza (C18; E07 appends its #metaRules line).
 "
 Class {
 	#name : 'PCKKit',
@@ -66,6 +66,20 @@ PCKKit class >> promisedSpecFor: aCheckName prefix: aPrefixString kind: aKindSym
 		name: aPrefixString , aCheckName
 		kind: aKindSymbol
 		check: (cls packages: roleNames)
+]
+
+{ #category : 'accessing' }
+PCKKit class >> recommendedBlock [
+	"The published stanza (ch. 1 par. 1.3, D-54/D-60): pure-data STON text (D-16),
+	single-sourced here - a documented template the init tool composes into drafts
+	and docs quote, never run-time machinery. No STON comments: their support is
+	unverified and nothing may depend on it (P5). This is the M1-partial form:
+	E07 appends the #metaRules line (''PCKNoSkippedTestsMetaRule'') so the
+	recommended set is complete from M1's checkpoint."
+	^ '{
+	#kit : ''PCKKit'',
+	#lintRules : [ ''PCKNoIsNilIfTrueRule'', ''ReCodeCruftLeftInMethodsRule'' ]
+}'
 ]
 
 { #category : 'registering' }
