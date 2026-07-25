@@ -18,6 +18,21 @@ append-or-frozen.*
 | C09 | E02 | accepted | C08 | implementer-9 (picked @ c29bd1c) |
 | C10 | E02 | accepted | — | implementer-10 (picked @ 5d9e8bf) |
 | C11 | E02 | accepted | C09 | implementer-11 (picked @ 6838e75) |
+| C12 | E06 | todo | — | — |
+| C13 | E06 | todo | — | — |
+| C14 | E06 | todo | — | — |
+| C15 | E06 | todo | C13 | — |
+| C16 | E06 | todo | C15 | — |
+| C17 | E06 | todo | C16 | — |
+| C18 | E06 | todo | C17 | — |
+| C20 | E03 | todo | — | — |
+| C21 | E03 | todo | C20 | — |
+| C22 | E03 | todo | C21 | — |
+| C23 | E03 | todo | C22 | — |
+| C24 | E03 | todo | C23 (Q-31 recommendation) | — |
+| C25 | E03 | todo | C24 | — |
+| C26 | E03 | todo | C25 | — |
+| C27 | E03 | todo | C26 | — |
 
 ## Verify commands
 
@@ -32,6 +47,21 @@ append-or-frozen.*
 - **C09** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 7 `PGRVerdictTest` + accepted siblings + 5 smoke tests listed)
 - **C10** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 2 `PGRRegistrationSpecTest` + 5 smoke tests listed)
 - **C11** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 3 `PGRCheckSkeletonTest` + 1 `PGRKitSkeletonTest` + accepted siblings + 5 smoke tests listed)
+- **C12** — probe script headless exit 0, both observations printed; decision-log entry recorded (D-70 expected); `bash tools/build-image.sh && bash tools/verify.sh` stays green, run count unchanged from the pick-time accepted set (no product change)
+- **C13** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 2 `PCKNoIsNilIfTrueRuleTest` + every previously accepted suite listed — membership + floor, never an exact ceiling)
+- **C14** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 3 `PCKCodeCruftBuiltInTest` + every previously accepted suite listed)
+- **C15** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 4 `PCKLintRuleCheckTest` + every previously accepted suite listed)
+- **C16** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 5 `PCKKitTest` + every previously accepted suite listed)
+- **C17** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 6 new `PCKKitTest` + every previously accepted suite listed)
+- **C18** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; all 22 E06 kit tests + every previously accepted suite, ≥46 run — the E06 exit-checkpoint leg 1; see `plan/04-epics/E06-coding-kit-lint/chunks.md` §checkpoint)
+- **C20** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 7 `PGRScratchFixturesTest` + accepted siblings + 5 smoke tests listed)
+- **C21** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 7 `PGRConfigurationTest` + accepted siblings + 5 smoke tests listed)
+- **C22** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 10 `PGRConfigurationTest` + accepted siblings + 5 smoke tests listed)
+- **C23** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 15 `PGRConfigurationTest` + accepted siblings + 5 smoke tests listed)
+- **C24** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 21 `PGRConfigurationTest` + accepted siblings + 5 smoke tests listed)
+- **C25** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 27 `PGRConfigurationTest` + accepted siblings + 5 smoke tests listed)
+- **C26** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 30 `PGRConfigurationTest` + accepted siblings + 5 smoke tests listed)
+- **C27** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 35 `PGRConfigurationTest` + 7 `PGRScratchFixturesTest` + accepted siblings + 5 smoke tests — 66 run when no parallel-track (E06) suite has landed yet; accepted E06 suites add to the count; see `plan/04-epics/E03-configuration-scope-law/chunks.md` §checkpoint)
 
 ## Epic acceptance
 
@@ -58,6 +88,35 @@ kit protocol) — is hereby frozen; amendments need a decision-sheet entry. The 
 checks of E03 and E06 can pass. Not a milestone boundary (E02 is M1's first epic) —
 formal mining deferred to the M1 close; one recurring correction filed now under
 operating rule 9 (B-13, PharoDebug.log debris).
+
+**E06 rows (C12–C18) added by the third Prompt-4 run (2026-07-25).** E06
+`accepted` when all seven rows are `accepted` and the exit checkpoint in
+`plan/04-epics/E06-coding-kit-lint/chunks.md` is filled in (22-test named kit
+suite + 24 accepted tests green · B-03 probe leg recorded · CI leg, on one head
+commit) — at which point E06's interface digest (the coding kit's block schema,
+registration naming/order, `PCKKit`, `PCKLintRuleCheck rule:packages:`, the two
+catalog registrations, the D-41 enforcement point — tabled in that file)
+freezes, and the entry checks of E07 and E08 can pass. Commit expectations are
+stated per work order (D-67). [P] eligibility (disjoint manifests): C12 C13 C14;
+orchestrator runs them serialized — the COMMIT preconditions (clean tree at
+spawn) and the shared `.build/work` verify image make shared-tree concurrency
+unsound; disjointness stands as the reviewer's cross-check. E06 itself runs
+beside E03/E04/E05 per the frozen roadmap (disjoint packages).
+
+**E03 rows (C20–C27) added by the fourth Prompt-4 run (2026-07-25; Gate 4
+pending).** Numbering: the concurrent E06 cut (same day, papers on disk first)
+claimed C12–C18; chunk IDs are corpus-global and never collide or reuse, so E03
+took C20–C27 (C19 left unused — a gap, not a hole; the near-miss is reported to
+the owner). E03 `accepted` when all eight rows are `accepted` and the exit
+checkpoint in `plan/04-epics/E03-configuration-scope-law/chunks.md` is filled in
+(named 42-test suite green with accepted siblings, 66 run · D-67 precheck
+discipline · CI leg, on one head commit) — at which point E03's interface digest
+(caller surface `fromString:`/`fromFile:` + the version-2 artifact schema + the
+specified-but-internal readers E04 consumes, tabled in that file) freezes, and
+E04's entry check can pass. No `[P]` in this epic: C21–C27 share one class file
+pair, C20 is their fixture root — strictly serial picks. C24 rides Q-31's
+recommendation (decision sheet, veto-open); a veto amends C24 by its own chunk,
+not by silent edit.
 
 **E02 rows (C05–C11) added by the second Prompt-4 run (2026-07-23; Gate 4 approved,
 commit `3d718b4` — owner notice).** E02 `accepted` when all seven rows are `accepted`
