@@ -100,7 +100,17 @@ amendments need a decision-sheet entry):**
   entry naming a rule class without its own class-side `severity` is a
   configuration error raised by the kit.
 
-Checkpoint result (filled at acceptance): _pending_.
+Checkpoint result (filled at acceptance): **2026-07-25, all three legs green on head
+`0c4fb7b`** (orchestrator-run at epic acceptance) · leg 1: `tools/build-image.sh &&
+tools/verify.sh` exit 0 — `74 run, 74 passes, 0 failures, 0 errors.` with all 22 kit
+tests listed by name (`PCKNoIsNilIfTrueRuleTest` 2 · `PCKCodeCruftBuiltInTest` 3 ·
+`PCKLintRuleCheckTest` 4 · `PCKKitTest` 13) plus the 24 E01/E02 tests and the accepted
+E03 suites (≥46 floor met at 74); P-SEVERITY-EXPLICIT, P-BUILTIN-PINNED, and
+P-CAT-FIXTURES (lint) all discharged by their named tests · leg 2: B-03 recorded as
+**D-71** (not D-70 — taken; owner notice of 2026-07-25 superseded the "D-70 expected"
+phrasing), probe script committed with results header, and decision-sheet **Q-32**
+exists (the escape was confirmed) · leg 3: CI run 30155928234 on `0c4fb7b` —
+`completed success`.
 
 ## Addendum — post-PASS punch list (swept 2026-07-25; one batch, no re-validation per the validation rules)
 

@@ -18,18 +18,18 @@ append-or-frozen.*
 | C09 | E02 | accepted | C08 | implementer-9 (picked @ c29bd1c) |
 | C10 | E02 | accepted | — | implementer-10 (picked @ 5d9e8bf) |
 | C11 | E02 | accepted | C09 | implementer-11 (picked @ 6838e75) |
-| C12 | E06 | todo | — | — |
-| C13 | E06 | todo | — | — |
-| C14 | E06 | todo | — | — |
-| C15 | E06 | todo | C13 | — |
-| C16 | E06 | todo | C15 | — |
-| C17 | E06 | todo | C16 | — |
-| C18 | E06 | todo | C17 | — |
-| C20 | E03 | todo | — | — |
-| C21 | E03 | todo | C20 | — |
-| C22 | E03 | todo | C21 | — |
-| C23 | E03 | todo | C22 | — |
-| C24 | E03 | todo | C23 (Q-31 ruled — D-70) | — |
+| C12 | E06 | accepted | — | implementer-12 (picked @ 3c1680a) |
+| C13 | E06 | accepted | — | implementer-13 (picked @ 69701b9; fix 1 accepted) |
+| C14 | E06 | accepted | — | implementer-14 (picked @ 22b6209) |
+| C15 | E06 | accepted | C13 | implementer-15 (picked @ 1eea635) |
+| C16 | E06 | accepted | C15 | implementer-16 (picked @ 94863ba; advisory: exact class pin in PCKKitTest, carried to C17) |
+| C17 | E06 | accepted | C16 | implementer-17 (picked @ e8932f0) |
+| C18 | E06 | accepted | C17 | implementer-18 (picked @ e2f763f) |
+| C20 | E03 | accepted | — | implementer-20 (picked @ cb9fc49) |
+| C21 | E03 | accepted | C20 | implementer-21 (picked @ ce29378) |
+| C22 | E03 | accepted | C21 | implementer-22 (picked @ 6e8189d) |
+| C23 | E03 | accepted | C22 | implementer-23 (picked @ 6db98df) |
+| C24 | E03 | accepted | C23 (Q-31 ruled — D-70) | implementer-24 (picked @ bada692) |
 | C25 | E03 | todo | C24 | — |
 | C26 | E03 | todo | C25 | — |
 | C27 | E03 | todo | C26 | — |
@@ -88,6 +88,16 @@ kit protocol) — is hereby frozen; amendments need a decision-sheet entry. The 
 checks of E03 and E06 can pass. Not a milestone boundary (E02 is M1's first epic) —
 formal mining deferred to the M1 close; one recurring correction filed now under
 operating rule 9 (B-13, PharoDebug.log debris).
+
+**E06: ACCEPTED 2026-07-25.** All seven chunks accepted; exit checkpoint filled in
+(`plan/04-epics/E06-coding-kit-lint/chunks.md`, three legs green on head `0c4fb7b`:
+22-test named kit suite within a 74/74 sweep incl. the three owed properties · B-03
+probe leg = D-71 + Q-32 · CI run 30155928234). E06's interface digest — the block
+schema, registration naming/order, `PCKKit`, `PCKLintRuleCheck rule:packages:`, the
+two catalog registrations, the D-41 enforcement point (tabled in that file) — is
+hereby frozen; amendments need a decision-sheet entry. The entry checks of E07 and
+E08 can pass. One review round-trip this epic (C13 fix 1, rationale string); Q-32
+(trait-lint escape) remains open for the owner.
 
 **E06 rows (C12–C18) added by the third Prompt-4 run (2026-07-25).** E06
 `accepted` when all seven rows are `accepted` and the exit checkpoint in
