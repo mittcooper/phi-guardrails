@@ -1,5 +1,5 @@
 "
-The parsed, validated configuration artifact - the one scope of a gate run (spec ch. 1 par. 1.2). Class-side fromString: is the public caller surface; instance readers are internal to the framework and carry no compatibility promise. Validation is strict: malformed or unknown input signals PGRConfigurationError, never a silent default (P-CFG-STRICT). The pipeline lands across C21-C27; stages so far: 1 strict STON parse, 2 envelope shape law, 3 schema-version law (parse set exactly {2}, D-45/D-51), 4 kit and baseline resolution (class-side conformance for kits, never ancestry, D-53; inheritsFrom: BaselineOf for the baseline, D-25.a), 5 role-matcher expansion over the resolved baseline (group name first - membership pre-checked - else exact package name, else full-match pattern, D-47/D-15; zero-match legal; the group-vs-package ambiguity is unconstructible, D-70). Kit blocks are opaque beyond #kit and handed on verbatim (D-51).
+The parsed, validated configuration artifact - the one scope of a gate run (spec ch. 1 par. 1.2). Class-side fromString: is the public caller surface; instance readers are internal to the framework and carry no compatibility promise. Validation is strict: malformed or unknown input signals PGRConfigurationError, never a silent default (P-CFG-STRICT). The pipeline lands across C21-C27; stages so far: 1 strict STON parse, 2 envelope shape law, 3 schema-version law (parse set exactly {2}, D-45/D-51), 4 kit and baseline resolution (class-side conformance for kits, never ancestry, D-53; inheritsFrom: BaselineOf for the baseline, D-25.a), 5 role-matcher expansion over the resolved baseline (group name first - membership pre-checked - else exact package name, else full-match pattern, D-47/D-15; zero-match legal; the group-vs-package ambiguity is unconstructible, D-70), 6 the scope law plus loadedness - every package the baseline declares in exactly one role, pairwise disjoint and jointly total (D-25 as amended by D-45), production- and tests-role packages loaded in the image, an absent exempt package legal (D-25.a). Kit blocks are opaque beyond #kit and handed on verbatim (D-51).
 "
 Class {
 	#name : 'PGRConfiguration',
@@ -64,6 +64,7 @@ PGRConfiguration class >> fromString: aString [
 	self validateSchemaVersion: map.
 	baselineClass := self resolveBaselineClass: (map at: #baseline).
 	expandedRoles := self expandRoles: (map at: #roles) over: baselineClass.
+	self validateScopeLaw: expandedRoles over: baselineClass.
 	^ self new
 		setProject: (map at: #project)
 			kitBlocks: (map at: #kits)
@@ -155,6 +156,42 @@ PGRConfiguration class >> validateKits: anObject [
 ]
 
 { #category : 'private' }
+PGRConfiguration class >> validateRoleCoverage: expandedRoles over: declaredNames [
+	"Coverage arm: every package the baseline itself declares sits in some role - with disjointness, in exactly one: the scope law (D-25 as amended by D-45). An unassigned new package is a loud failure here, never unguarded code; dependency-project packages are out of scope (spec ch. 1 par. 1.1)."
+	| assigned uncovered |
+	assigned := Set new.
+	expandedRoles do: [ :roleNames | assigned addAll: roleNames ].
+	uncovered := declaredNames reject: [ :name | assigned includes: name ].
+	uncovered ifNotEmpty: [
+		PGRConfigurationError new signal: 'Packages assigned to no role: ' , (', ' join: uncovered) ]
+]
+
+{ #category : 'private' }
+PGRConfiguration class >> validateRoleDisjointness: expandedRoles [
+	"Disjointness arm: no package name in more than one expanded role; every offender is named (family 7). Within-role duplicates cannot reach here - stage 5 dedups per role."
+	| seen duplicated |
+	seen := Set new.
+	duplicated := OrderedCollection new.
+	expandedRoles do: [ :roleNames |
+		roleNames do: [ :name |
+			(seen includes: name)
+				ifTrue: [ (duplicated includes: name) ifFalse: [ duplicated add: name ] ]
+				ifFalse: [ seen add: name ] ] ].
+	duplicated ifNotEmpty: [
+		PGRConfigurationError new signal: 'Packages assigned to more than one role: ' , (', ' join: duplicated) ]
+]
+
+{ #category : 'private' }
+PGRConfiguration class >> validateRoleLoadedness: expandedRoles [
+	"Loadedness arm: every production- and tests-role package is loaded in the image (D-15 spelling). The exempt role is skipped by construction - no check ever targets an exempt package, so baseline introspection alone suffices for it (D-25.a)."
+	| missing |
+	missing := ((expandedRoles at: 1) , (expandedRoles at: 2)) select: [ :name |
+		(PackageOrganizer default packageNamed: name ifAbsent: [ nil ]) isNil ].
+	missing ifNotEmpty: [
+		PGRConfigurationError new signal: 'Role packages not loaded in the image: ' , (', ' join: missing) ]
+]
+
+{ #category : 'private' }
 PGRConfiguration class >> validateRoles: anObject [
 	"Exactly a subset of #production/#tests/#exempt, with #production and #tests mandatory; String role keys compare equal to Symbols, so symbol-ness is checked explicitly."
 	anObject isDictionary ifFalse: [ self shapeErrorFor: #roles expected: 'a map of role name to matcher list' ].
@@ -174,6 +211,15 @@ PGRConfiguration class >> validateSchemaVersion: aMap [
 	version := aMap at: #schemaVersion.
 	version = self currentSchemaVersion ifFalse: [
 		PGRConfigurationError new signal: 'artifact schema version ' , version printString , '; this gate reads version ' , self currentSchemaVersion printString ]
+]
+
+{ #category : 'private' }
+PGRConfiguration class >> validateScopeLaw: expandedRoles over: aBaselineClass [
+	"Stage 6, the scope law plus loadedness (spec ch. 1 par. 1.1). Arm order disjointness - coverage - loadedness is fixed so the error messages stay deterministic."
+	self validateRoleDisjointness: expandedRoles.
+	self validateRoleCoverage: expandedRoles
+		over: (aBaselineClass project version packages collect: [ :each | each name ]).
+	self validateRoleLoadedness: expandedRoles
 ]
 
 { #category : 'private' }

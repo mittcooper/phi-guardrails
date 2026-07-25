@@ -1,5 +1,5 @@
 "
-Mirror test for PGRConfiguration. Carries the canonical green artifact (validArtifactString) reused by every later E03 chunk, plus one-line mutation helpers for the defect arms. testUnknownKeySignals is the named test of property P-CFG-STRICT; testRolesByPatternWithoutBaselineGroups is the named test of P-ROLES-FROM-CONFIG (first half).
+Mirror test for PGRConfiguration. Carries the canonical green artifact (validArtifactString) reused by every later E03 chunk, plus one-line mutation helpers for the defect arms. testUnknownKeySignals is the named test of property P-CFG-STRICT; testRolesByPatternWithoutBaselineGroups is the named test of P-ROLES-FROM-CONFIG (first half); testUnassignedPackageStillSignals is its second half, and testUnassignedPackageSignals, testOverlappingRoleGroupsSignals and testUnknownRoleGroupSignals are the named tests of P-SCOPE-TOTAL.
 "
 Class {
 	#name : 'PGRConfigurationTest',
@@ -141,6 +141,18 @@ PGRConfigurationTest >> testNonMapTopLevelSignals [
 ]
 
 { #category : 'tests' }
+PGRConfigurationTest >> testOverlappingRoleGroupsSignals [
+	"P-SCOPE-TOTAL: scratch-overlap re-lists Phi-Guardrails-SDK under #tests while scratch-prod holds it in #production - the disjointness arm names the doubly assigned package."
+	| map |
+	map := self artifactMap.
+	(map at: #roles) at: #tests put: #( 'scratch-tst' 'scratch-overlap' ).
+	self
+		should: [ PGRConfiguration fromString: (STON toString: map) ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error | self assert: (error messageText includesSubstring: 'Phi-Guardrails-SDK') ]
+]
+
+{ #category : 'tests' }
 PGRConfigurationTest >> testResolvedKitAndBaselineReaders [
 	"Kit resolution answers the class itself via the conformance path - PGRScratchKit is duck-typed, no PGRKit ancestry (D-53); the baseline resolves to the loaded BaselineOf subclass."
 	| configuration |
@@ -189,6 +201,34 @@ PGRConfigurationTest >> testSubstringMatchDoesNotCount [
 ]
 
 { #category : 'tests' }
+PGRConfigurationTest >> testUnassignedPackageSignals [
+	"P-SCOPE-TOTAL: the valid artifact minus the #exempt role leaves PGR-Scratch-Ghost in no role - the scope law names the uncovered package (D-25 as amended by D-45)."
+	| map |
+	map := self artifactMap.
+	(map at: #roles) removeKey: #exempt.
+	self
+		should: [ PGRConfiguration fromString: (STON toString: map) ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error | self assert: (error messageText includesSubstring: 'PGR-Scratch-Ghost') ]
+]
+
+{ #category : 'tests' }
+PGRConfigurationTest >> testUnassignedPackageStillSignals [
+	"P-ROLES-FROM-CONFIG (second half): with a group-less baseline and exact-name role matchers, an unassigned package is still loud - the scope law survived the move to config-side assignment (D-45)."
+	| map |
+	map := self artifactMap.
+	map at: #baseline put: 'BaselineOfPGRScratchPlain'.
+	(map at: #roles)
+		at: #production put: #( 'Phi-Guardrails-SDK' );
+		at: #tests put: #( 'Phi-Guardrails-Tests-SDK' );
+		removeKey: #exempt.
+	self
+		should: [ PGRConfiguration fromString: (STON toString: map) ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error | self assert: (error messageText includesSubstring: 'Phi-Guardrails-Core') ]
+]
+
+{ #category : 'tests' }
 PGRConfigurationTest >> testUnknownBaselineSignals [
 	"A baseline name resolving to no loaded class is a configuration error naming it."
 	self
@@ -213,6 +253,40 @@ PGRConfigurationTest >> testUnknownKitClassSignals [
 		should: [ PGRConfiguration fromString: (self artifactWith: #kits value: (Array with: (Dictionary with: #kit -> 'PGRNoSuchKit'))) ]
 		raise: PGRConfigurationError
 		withExceptionDo: [ :error | self assert: (error messageText includesSubstring: 'PGRNoSuchKit') ]
+]
+
+{ #category : 'tests' }
+PGRConfigurationTest >> testUnknownRoleGroupSignals [
+	"P-SCOPE-TOTAL: a misspelled group name names no group, no package, and full-matches nothing, so it lawfully expands to zero (D-47) - SDK and Core then sit in no role and the coverage arm catches the consequence (the D-25.a silent-empty trap guarded structurally)."
+	| map |
+	map := self artifactMap.
+	(map at: #roles) at: #production put: #( 'scratch-prodd' ).
+	self
+		should: [ PGRConfiguration fromString: (STON toString: map) ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error | self assert: (error messageText includesSubstring: 'Phi-Guardrails-SDK') ]
+]
+
+{ #category : 'tests' }
+PGRConfigurationTest >> testUnloadedExemptPackageIsLegal [
+	"D-25.a: an exempt-role package absent from the image is fine - no check ever targets it; role validation works on baseline introspection alone."
+	| configuration |
+	configuration := PGRConfiguration fromString: self validArtifactString.
+	self assert: (configuration exemptPackageNames includes: 'PGR-Scratch-Ghost')
+]
+
+{ #category : 'tests' }
+PGRConfigurationTest >> testUnloadedProductionPackageSignals [
+	"Total and disjoint, but Ghost sits in #production now: a production-role package absent from the image is refused, naming it."
+	| map |
+	map := self artifactMap.
+	(map at: #roles)
+		at: #production put: #( 'scratch-prod' 'scratch-ghost' );
+		removeKey: #exempt.
+	self
+		should: [ PGRConfiguration fromString: (STON toString: map) ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error | self assert: (error messageText includesSubstring: 'PGR-Scratch-Ghost') ]
 ]
 
 { #category : 'tests' }
