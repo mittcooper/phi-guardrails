@@ -2566,3 +2566,22 @@ the next free number with substance unchanged — flagged to the owner at apply 
   "flag-only" sentence gains its erratum at the owner's next spec pass (joining
   §1.1/D-70, §2.3/D-72, §5.5/E07). The "who may sit the preview seat"
   independence question is future family ground, not blocked on.
+
+## D-75 · Q-34 ruled: the §7.3 mapping stands as written; the collision hardening goes to the widening (option a)
+
+- **From:** Q-34 (`plan/04-decision-sheet.md` — E05-C07's arm 4 hit its
+  stop-and-report trigger: this VM exits **1** on a corrupt/empty image, inside
+  §7.3's pass-through set, so an unloadable image reads as a red gate rather
+  than exit 3; reproduced by implementer and orchestrator) · **Ruled by:**
+  human — binding, owner word of 2026-07-26 · **Date:** 2026-07-26
+- **Ruling:** option (a), owner-worded "leave it as is and add to Widen." The
+  committed `guardrails.sh` stays **byte-identical to §7.3** (modulo the
+  recorded `--headless` accommodation) — no shifted exit-code band, no output
+  sniffing; the proposed remaps were judged unnecessary rule-making. The
+  unloadable-image-reads-as-red case is a **known v1 limitation on record**.
+- **Consequences:** E05-C07's arm 4 is amended to document the observed
+  behavior (the wrapper faithfully relays the VM's code) instead of asserting
+  exit 3 — C07 unblocks and the E05 checkpoint may close. The hardening is
+  **widening scope**: backlog B-23 (M5) carries it; E15's P-WRAPPER-GUARD
+  self-test runs against the mapping as written. Build failures still fail
+  loudly either way — the limitation is diagnostic labeling, not an escape.

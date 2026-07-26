@@ -99,15 +99,23 @@ completion report:
    `[ RED` and `exit 1`.
 3. **Config error → 2:** over `malformed.ston` — exit 2; exactly one error
    line.
-4. **Unloadable image → 3:** same invocation with `IMAGE=` an empty file
-   created under `.build/scratch/e05/` — the VM's exit code is recorded;
-   expect it ∉ {0, 1, 2} so the wrapper prints
-   `guardrails: gate did not run to a verdict (exit N)` to stderr and exits
-   **3**. **If the VM answers 0, 1, or 2 on the unloadable image, stop and
-   report** — that is a decision-sheet finding against the §7.3 mapping
-   (E15's P-WRAPPER-GUARD depends on it), not something to paper over.
+4. **Unloadable image → documented (amended under D-75; Q-34 ruled option a):**
+   same invocation with `IMAGE=` an empty file created under
+   `.build/scratch/e05/` — record the VM's observed exit code and the
+   wrapper's resulting code verbatim in the completion report. On this
+   toolchain the VM exits **1** on a corrupt/empty image (probed thrice,
+   Q-34), which §7.3's pass-through set relays as 1 — a **known v1
+   limitation, accepted by ruling**: an unloadable image reads as a red
+   gate until the widening hardening lands (M5 scope, D-75; E15's
+   P-WRAPPER-GUARD self-test runs against the mapping as written). The arm
+   asserts the wrapper faithfully relays what the VM answered — the script
+   stays byte-identical to §7.3 (modulo the recorded `--headless`
+   accommodation); a genuinely out-of-set VM code still maps to 3 with the
+   stderr line.
 
-VERIFY    the four arms above, in order, exit codes exactly 0 / 1 / 2 / 3 —
+VERIFY    the four arms above, in order — exit codes exactly 0 / 1 / 2 for
+          arms 1–3; arm 4 per its amended expectation (observed codes
+          recorded, wrapper relays faithfully) —
           plus `bash tools/verify.sh` still green (≥ 174 run when stacked
           after E05-C01–C06; the script changes no image code), and
           `git ls-files` shows `guardrails.sh` tracked with the executable

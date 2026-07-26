@@ -187,4 +187,8 @@ sniffing as in (c)), and keeps exit-code semantics the only contract; (a)
 leaves CI able to report a phantom RED until E15 lands. Amending frozen §7.3
 ground is precisely what the decision-sheet path is for.
 
-**Status:** OPEN — blocks E05-C07 acceptance and the E05 exit checkpoint.
+**Status:** **RULED** (owner word 2026-07-26) → **D-75**: option (a) — the
+script stays byte-identical to §7.3; the recommended exit-code remap was
+rejected as unnecessary rule-making; arm 4 documents the observed behavior
+(known v1 limitation); the hardening is widening scope (B-23, M5). C07
+unblocks.
