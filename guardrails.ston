@@ -1,0 +1,14 @@
+{
+	#schemaVersion : 2,
+	#project : 'PhiGuardrails',
+	#baseline : 'BaselineOfPhiGuardrails',
+	#roles : {
+		#production : [ 'production' ],
+		#tests : [ 'tests' ],
+		#exempt : [ 'fixtures', 'toy' ] },
+	#exemptNamePatterns : [ 'Phi-Coding-Kit-Fixtures-.*', 'Toy-.*' ],
+	#kits : [ {
+		#kit : 'PCKKit',
+		#lintRules : [ 'PCKNoIsNilIfTrueRule', 'ReCodeCruftLeftInMethodsRule' ],
+		#metaRules : [ 'PCKNoSkippedTestsMetaRule' ] } ]
+}
