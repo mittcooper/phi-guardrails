@@ -120,7 +120,26 @@ amendments need a decision-sheet entry):**
   D-72/Q-32 — recorded here as the decision-sheet-path amendment, never a
   silent edit.
 
-Checkpoint result (filled at acceptance): —
+Checkpoint result (filled at acceptance, 2026-07-25): **PASS — both legs green
+on head `19beb68`.** Leg 1: orchestrator-run
+`bash tools/build-image.sh && bash tools/verify.sh` → exit 0, **148 run, 148
+passes, 0 failures, 0 errors** — `PCKFixCommandTest` (9) ·
+`PCKLintRuleCheckTest` (8) · `PCKNoIsNilIfTrueRuleTest` (3) all listed by name
+with every previously accepted suite (≥102 floor met). Properties discharged:
+**P-FIX-PREVIEW** (all three named tests) · **P-CAT-AUTOFIX**
+(`testProvidesAutofix`) · the **D-72 amendment's witness**
+(`testTraitProvidedMethodLintedAtUsingClassPackage`). Leg 2: CI run
+**30183734274** `completed success` on `19beb68`. Precheck discipline held at
+every pick (`056e932` · `9c5af29` · `87366b1` · `e0bfd4c` · `f84e2cb` — C05
+re-picked at the owner's final D-74 text after the intermediate-text incident,
+first session terminated without commits). One precision note on the digest
+above: the `apply` line's cut-time phrase "staleness re-read against
+`oldVersionTextToDisplay`" is realized as the re-read against the
+**preview-time snapshot** of those texts — the accepted E08-C04
+implementation; the live image proved the accessor a lazy re-render that can
+never drift (B-19, spec erratum filed; the frozen behavior is the
+snapshot comparison). No fix round-trips this epic; Q-33→D-74 was this epic's
+one escalation, ruled mid-epic.
 
 E08 `accepted` when all five rows are `accepted` in `plan/ledger.md` and the
 checkpoint above is filled in — at which point E08's interface digest freezes

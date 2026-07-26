@@ -47,7 +47,7 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | E08-C02 | E08 | accepted | — | implementer-E08-C02 (picked @ 9c5af29; accepted @ 44dee8a, 123 run; Q-33 filed; advisory to C03 review: changes snapshot-vs-live-view) |
 | E08-C03 | E08 | accepted | E08-C01, E08-C02 | implementer-E08-C03 (picked @ 87366b1; accepted @ d531e2c, 129 run; watch point closed — changes answers a snapshot; advisories to C04: re-preview semantics, "pending/applied" comment) |
 | E08-C04 | E08 | accepted | E08-C03 | implementer-E08-C04 (picked @ e0bfd4c; accepted @ aa71c6e, 135 run ×2 idempotent; C03 advisories closed; B-19 filed) |
-| E08-C05 | E08 | todo | E08-C01, E08-C04 | — |
+| E08-C05 | E08 | accepted | E08-C01, E08-C04 (Q-33 ruled — D-74) | implementer-E08-C05b (re-picked @ f84e2cb; accepted @ 19beb68, 148 run — E08 checkpoint leg 1) |
 | E07-C01 | E07 | accepted | — | implementer-E07-C01 (picked @ c962f6c; accepted @ 574d04f, 120 run, fixtures unswept) |
 | E07-C02 | E07 | accepted | E07-C01 | implementer-E07-C02 (picked @ 6f9eea9; accepted @ b2bcca4, 126 run) |
 | E07-C03 | E07 | accepted | E07-C02 | implementer-E07-C03 (picked @ 64b711f; accepted @ 4024f30, 132 run; stall post-commit, report recovered; advisory to C05: wiring test may also pin packages-reader truthfulness) |
@@ -183,6 +183,25 @@ amendment table applied exactly (five untouched methods byte-identical —
 deterministic check). B-20 filed at close (suite-spec `packages`-reader
 truthfulness unpinned — the C03→C05 carried nit, outside C06's manifest);
 B-17's fuel-debris hazard was corroborated live at C05's red run.
+
+**E08: ACCEPTED 2026-07-25.** All five chunks accepted; exit checkpoint filled in
+(`plan/04-epics/E08-fix-command/chunks.md`, both legs green on head `19beb68`: the
+three named suites — `PCKFixCommandTest` 9 · `PCKLintRuleCheckTest` 8 ·
+`PCKNoIsNilIfTrueRuleTest` 3 — within a 148/148 sweep discharging P-FIX-PREVIEW
+(all three legs) and P-CAT-AUTOFIX, with the D-72 amendment's witness · CI run
+30183734274). E08's interface digest — the `PCKFixCommand` fix-invocation
+implementation (one instance, one invocation; staleness = re-read vs the
+preview-time snapshot, the B-19-corrected reading), the capability pair on
+`PCKLintRuleCheck` (`canFix` = the mechanical rewrite-recipe fact, D-74), and the
+D-72 environment law (tabled in that file) — is hereby frozen; amendments need a
+decision-sheet entry. E09's entry check can now count **E07 and E08 both
+satisfied — only E05 remains** (its cut is the owner's next Prompt-4 run).
+Epic history: Q-33 filed from C02's report and ruled D-74 mid-epic (the
+work-order amendment landed in two owner commits; C05's first implementer session
+used the intermediate text and was terminated under the owner's stop-and-report
+notice — standing rule adopted: foreign uncommitted tree state at pick time is a
+stop-and-report, never adopt-and-commit); one API-error implementer restart
+(no state lost); no fix round-trips. B-18/B-19 filed from this epic's reviews.
 
 **E06 rows (C12–C18) added by the third Prompt-4 run (2026-07-25).** E06
 `accepted` when all seven rows are `accepted` and the exit checkpoint in
