@@ -94,10 +94,6 @@ SDK's neutral ones." `PCKNoIsNilIfTrueRuleTest` (committed, C13) has a helper
 critique is selected as
 `each entity == (PCKLintBadFixture >> #withIsNilIfTrue)`.
 
-**The flag-only counterparty:** `ReCodeCruftLeftInMethodsRule` (ships with
-Pharo, catalog §3.2b, flag-only — not a rewrite rule): a `PCKLintRuleCheck`
-wrapping it must stay `canFix` false.
-
 **Constitution rules that bite here:** a test that cannot fail is a defect;
 never `isKindOf:`/`class ==` type predicates — assert conformance by behavior
 (responds-to plus an actual preview), not by class identity; comments state
@@ -132,10 +128,13 @@ On `PCKLintRuleCheckTest`:
 - `testCanFixTrueForRewriteRule` — **given** `PCKLintRuleCheck rule:
   PCKNoIsNilIfTrueRule packages: #('Phi-Guardrails-SDK')` / **then** `canFix`
   is true — the catalog rule's check advertises its autofix (P1: fixes, not
-  flags).
-- `testCanFixFalseForFlagOnlyRule` — **given** the check wrapping
-  `ReCodeCruftLeftInMethodsRule` / **then** `canFix` is false — flag-only
-  stays unfixable; the capability is per-rule fact, never a blanket true.
+  flags); **and** the check wrapping `ReCodeCruftLeftInMethodsRule` also
+  answers true (D-74: it carries a recipe — mechanical fact, no policy
+  overlay).
+- `testCanFixFalseForRecipelessRule` — **given** the check wrapping
+  `ReEmptyExceptionHandlerRule` (the C02-recorded non-rewrite built-in) /
+  **then** `canFix` is false — no recipe exists to offer; the capability is
+  per-rule fact, never a blanket true.
 - `testFixCommandOnAnswersWorkingCommand` — **given** the catalog-rule check /
   **when** `fixCommandOn: #('Phi-Coding-Kit-Tests-Rules')` / **then** the
   answer responds to `previewOn:`, `apply`, and `changes` (protocol

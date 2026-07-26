@@ -21,7 +21,7 @@ manifest touches it, ever.*
 | E08-C02 | `PCKFixCommand`: construction and error paths | — | yes | ~90 | `rule:packages:` signals `PGRNotAutofixable` on a flag-only rule; `apply` before preview signals `PGRFixNotPreviewed` (P-FIX-PREVIEW leg 1); `changes` empty pre-preview; `PCKFixCommandTest` (3) green |
 | E08-C03 | `PCKFixCommand`: `previewOn:` and `changes` | E08-C01, E08-C02 | no | ~100 | preview runs the rule through the D-72 environment, emits target + old + new source per pending change, answers the count; `changes` answers the change objects; preview mutates nothing; `PCKFixCommandTest` +3 green |
 | E08-C04 | `PCKFixCommand`: `apply` and the staleness guard | E08-C03 | no | ~115 | apply re-reads targets and signals `PGRFixStale` applying nothing on drift (D-34.2); otherwise `change execute` per pending change, applied objects answered; second apply signals; saved-source `setUp`/`tearDown` discipline; `PCKFixCommandTest` +3 green (P-FIX-PREVIEW legs 2–3) |
-| E08-C05 | The fix capability pair on `PCKLintRuleCheck` | E08-C01, E08-C04 | no | ~75 | `canFix` true for the rewrite catalog rule, false for the flag-only built-in; `fixCommandOn:` answers a bound, working command; `testProvidesAutofix` green (**P-CAT-AUTOFIX**); the scheduled `testKindIsLint` deny-line removal executed |
+| E08-C05 | The fix capability pair on `PCKLintRuleCheck` | E08-C01, E08-C04 | no | ~75 | `canFix` true for any recipe-carrying rule (catalog rule **and** the cruft built-in — D-74), false for a recipe-less built-in; `fixCommandOn:` answers a bound, working command; `testProvidesAutofix` green (**P-CAT-AUTOFIX**); the scheduled `testKindIsLint` deny-line removal executed |
 
 Total ~460 LOC across 5 chunks. **Placement annotation (D-61.a):** the frozen
 roadmap's E08 row estimated ~4 chunks covering `PCKFixCommand` and the
@@ -142,3 +142,19 @@ one round) with two MINORs, both applied the same day:
 The validator's two ADVISORYs (the mid-run E07 ledger race observation; the
 "still-bad" clause in C04's stale test) are recorded in the report, not acted
 on, per the severity rules.
+
+## Addendum 2 — the D-74 amendment (2026-07-25, owner-ruled)
+
+E08-C02's execution probed the cut's "flag-only counterparty" premise false:
+`ReCodeCruftLeftInMethodsRule` **is** mechanically a `ReNodeRewriteRule` (its
+recipe deletes the matched statement). Q-33 (filed by the orchestrator, commit
+`44dee8a`) was ruled **D-74**: no flag-only category exists — `canFix` is the
+mechanical fact alone; per-application judgment lives at the mandatory preview
+(guidance: appliers run the suite after apply; deletion diffs warrant reading
+the surrounding method). E08-C05's work order is amended under that ruling:
+the cruft check answers `canFix` true; the false-arm subject is the
+recipe-less `ReEmptyExceptionHandlerRule`
+(`testCanFixFalseForRecipelessRule`); TRACE cites D-74. C02–C04 stand
+untouched; the frozen-digest line "`canFix` ⇔ the wrapped rule is a rewrite
+rule" was already the mechanical reading and stands verbatim. §3.2b's
+erratum rides the owner's next spec pass.
