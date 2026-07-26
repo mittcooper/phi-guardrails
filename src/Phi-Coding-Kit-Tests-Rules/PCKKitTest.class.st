@@ -153,30 +153,49 @@ PCKKitTest >> testOwnMetaRuleRidesTheRunCache [
 ]
 
 { #category : 'tests' }
-PCKKitTest >> testRecommendedBlockParsesAsKitBlock [
-	"The published stanza (ch. 1 par. 1.3, D-54/D-60) parses as the kit block it documents: a Dictionary with Symbol keys whose #kit is this class and whose #lintRules is the ordered catalog pair (D-51, par. 3.2 then 3.2b) - and nothing beyond those two keys (the M1-partial form; E07 appends #metaRules)."
-	| block |
-	block := STON fromString: PCKKit recommendedBlock.
-	self assert: (block isKindOf: Dictionary).
-	self assert: block size equals: 2.
-	self assert: (block at: #kit) equals: 'PCKKit'.
-	self
-		assert: (block at: #lintRules) asArray
-		equals: #('PCKNoIsNilIfTrueRule' 'ReCodeCruftLeftInMethodsRule')
-]
-
-{ #category : 'tests' }
-PCKKitTest >> testRecommendedBlockRegistersCleanly [
-	"The P-STANZA-VALID arm: the stanza can never name something that does not resolve - parsed and handed to the kit with a real tests role it yields the two catalog specs plus the derived suite spec, all resolved, none missing (E07-C06 widens this to 4 when the stanza completes)."
+PCKKitTest >> testRecommendedBlockParsesAndConforms [
+	"P-STANZA-VALID (ch. 9): the published stanza parses cleanly, every check it names resolves and registers through the kit's own dispatch, and each registered check conforms to the frozen check protocol - run, kind, canFix, packages - with the spec's kind equal to the check's own kind (D-60's agreement fact, asserted directly at the kit boundary): the stanza can never drift from the code it describes."
 	| specs |
 	specs := PCKKit
 		registrationsFrom: (STON fromString: PCKKit recommendedBlock)
 		productionPackages: #('Phi-Guardrails-SDK')
 		testsPackages: #('Phi-Coding-Kit-Fixtures-Behavioral').
-	self assert: specs size equals: 3.
+	self assert: specs size equals: 4.
+	specs do: [ :each |
+		self deny: each check isNil.
+		#(run kind canFix packages) do: [ :selector |
+			self assert: (each check respondsTo: selector) ].
+		self assert: each kind identicalTo: each check kind ]
+]
+
+{ #category : 'tests' }
+PCKKitTest >> testRecommendedBlockParsesAsKitBlock [
+	"The published stanza (ch. 1 par. 1.3, D-54/D-60) parses as the kit block it documents: a Dictionary with Symbol keys whose #kit is this class, whose #lintRules is the ordered catalog pair (D-51, par. 3.2 then 3.2b), and whose #metaRules is the no-skips meta-rule (R-25) - the complete M1 recommended set, and nothing beyond those three keys."
+	| block |
+	block := STON fromString: PCKKit recommendedBlock.
+	self assert: (block isKindOf: Dictionary).
+	self assert: block size equals: 3.
+	self assert: (block at: #kit) equals: 'PCKKit'.
+	self
+		assert: (block at: #lintRules) asArray
+		equals: #('PCKNoIsNilIfTrueRule' 'ReCodeCruftLeftInMethodsRule').
+	self
+		assert: (block at: #metaRules) asArray
+		equals: #('PCKNoSkippedTestsMetaRule')
+]
+
+{ #category : 'tests' }
+PCKKitTest >> testRecommendedBlockRegistersCleanly [
+	"The resolution arm of P-STANZA-VALID: the stanza can never name something that does not resolve - parsed and handed to the kit with a real tests role it yields the two catalog specs, the derived suite spec, and the own-meta-rule spec, in the frozen four-stage order, all resolved, none missing."
+	| specs |
+	specs := PCKKit
+		registrationsFrom: (STON fromString: PCKKit recommendedBlock)
+		productionPackages: #('Phi-Guardrails-SDK')
+		testsPackages: #('Phi-Coding-Kit-Fixtures-Behavioral').
+	self assert: specs size equals: 4.
 	self
 		assert: (specs collect: [ :each | each name ]) asArray
-		equals: #('lint/PCKNoIsNilIfTrueRule' 'lint/ReCodeCruftLeftInMethodsRule' 'behavioral/Phi-Coding-Kit-Fixtures-Behavioral').
+		equals: #('lint/PCKNoIsNilIfTrueRule' 'lint/ReCodeCruftLeftInMethodsRule' 'behavioral/Phi-Coding-Kit-Fixtures-Behavioral' 'behavioral/PCKNoSkippedTestsMetaRule').
 	specs do: [ :each |
 		self deny: each check isNil.
 		self assert: each missingReason isNil ]

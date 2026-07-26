@@ -113,12 +113,16 @@ PCKKit class >> recommendedBlock [
 	"The published stanza (ch. 1 par. 1.3, D-54/D-60): pure-data STON text (D-16),
 	single-sourced here - a documented template the init tool composes into drafts
 	and docs quote, never run-time machinery. No STON comments: their support is
-	unverified and nothing may depend on it (P5). This is the M1-partial form:
-	E07 appends the #metaRules line (''PCKNoSkippedTestsMetaRule'') so the
-	recommended set is complete from M1's checkpoint."
+	unverified and nothing may depend on it (P5). This is the complete M1
+	recommended set (R-25/D-51): the two catalog lint rules plus the no-skips
+	meta-rule. Behavioral suites need no stanza line - they derive from the
+	adopter's tests role (par. 5.1); later milestones' checks join by their own
+	scheduled edits. An adopter keeps the meta-rule by keeping the line -
+	composition over defaults (D-51)."
 	^ '{
 	#kit : ''PCKKit'',
-	#lintRules : [ ''PCKNoIsNilIfTrueRule'', ''ReCodeCruftLeftInMethodsRule'' ]
+	#lintRules : [ ''PCKNoIsNilIfTrueRule'', ''ReCodeCruftLeftInMethodsRule'' ],
+	#metaRules : [ ''PCKNoSkippedTestsMetaRule'' ]
 }'
 ]
 
