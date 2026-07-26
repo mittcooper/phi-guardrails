@@ -78,7 +78,7 @@ PGRConfigurationTest >> testEmptyExemptNamePatternsLegalWithoutExemptPackages [
 	map := self artifactMap.
 	map at: #baseline put: 'BaselineOfPGRScratchPlain'.
 	(map at: #roles)
-		at: #production put: #( 'Phi-Guardrails-(SDK|Core)' );
+		at: #production put: #( 'Phi-Guardrails-SDK' 'Phi-Guardrails-Core' );
 		at: #tests put: #( 'Phi-Guardrails-Tests-SDK' );
 		removeKey: #exempt.
 	map at: #exemptNamePatterns put: #(  ).
