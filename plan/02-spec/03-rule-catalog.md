@@ -46,6 +46,8 @@ registration name `lint/ReCodeCruftLeftInMethodsRule`.
 |---|---|
 | AST pattern | built-in matcher — fires on `self halt`, `self haltIf:`, `Transcript show:`, `self flag:` (verified live, D-28); silent on clean code |
 | Autofix | flag-only — the fix deletes statements, which is never a safe automatic rewrite (same reasoning that deferred no-`self halt` in D-04) |
+
+*Erratum (D-74, M1 gate): there is **no flag-only category**. `canFix` is the mechanical fact alone (the rule carries a rewrite recipe or it does not — this rule does); per-application safety judgment lives at the mandatory preview. The "never a safe automatic rewrite" rationale was a producer-invented intent tracing to no ruling; D-06 already placed the whole safety model in explicit invocation + preview.*
 | Severity | `#error` (its shipped class-side value, verified D-28) — it blocks |
 | Rationale | its shipped string: "Breakpoints, logging statements, etc. should not be left in production code." |
 | Fixture pair | `PCKCodeCruftBuiltInTest>>#testFiresOnBadFixture` — **the bad fixture pins the rule's match set (D-55 item 4)**: it contains each send form this entry claims the rule catches (`self halt`, `self haltIf:`, `Transcript show:`, `self flag:`), one asserted critique per form, so the match set is a permanent regression guard rather than a one-time probe · `>>#testSilentOnGoodFixture` — R-37 applies to registered built-ins like any catalog rule |

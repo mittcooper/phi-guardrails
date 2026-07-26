@@ -121,6 +121,8 @@ case "$code" in
   0|1|2) exit "$code" ;;
   *) echo "guardrails: gate did not run to a verdict (exit $code)" >&2; exit 3 ;;
 esac
+
+*Erratum (D-75, M1 gate): the pass-through assumption does not fully hold on this toolchain — a corrupt/empty image makes the VM itself exit **1**, which relays as "a check failed" rather than 3. Ruled a **known v1 limitation** (failure is still loud; only the diagnostic label is wrong); the mapping stands as written, hardening is widening scope (B-23).*
 ```
 
 **The image-assembly recipe (D-60 — closing the cold-start gap):** how a caller gets

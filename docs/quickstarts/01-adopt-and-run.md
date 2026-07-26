@@ -3,6 +3,9 @@
 *Audience: a Pharo developer adopting the gate for an existing project (config author),
 and anyone invoking it (gate caller). Derived from spec ch. 1 §1.1, ch. 7 §7.1–§7.5,
 ch. 8 §8.1. Samples are unexecutable until milestone **M4** and are marked ⟨verify⟩;
+*(M1-gate note: the sample harness's "must not choke on this guide" claim is itself
+untested until M4 — recorded E09 advisory; the D-76 realness law binds this guide's
+fences at their M4 discharge.)*
 at that milestone a test executes each sample verbatim (spec ch. 9, P-GUIDE-EXEC).*
 
 phi-guardrails is a standalone checking tool for Pharo 13. You point it at a

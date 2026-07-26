@@ -73,6 +73,8 @@ classes the kit does not own — D-60, ch. 1 §1.4). Its `run`:
 
 1. Instantiate the rule; build `ReSmalllintChecker new rule: { rule }`, with
    `environment:` a `RBPackageEnvironment` over the target packages.
+
+*Erratum (D-71/D-72, M1 gate): the package-scoped run as written attributes a trait-provided method only to the trait's **defining** package (probed live, D-71). Ruled: trait methods are linted at each **using** class's package — realized by the kit's widened environment composition (`PCKLintRuleCheck class>>lintEnvironmentOver:`, the E08-C01 amendment); the recipe here describes the narrow pre-amendment form.*
 2. `run` it; collect the rule's critiques via `criticsOf:`.
 3. Map each critique to a `PGRFinding`: target = the critiqued entity printed precisely
    (`Class>>#selector`), message = `ruleName`, rationale = `rationale`.

@@ -34,6 +34,10 @@ it, and every one is decidable — it fails or it doesn't.*
 | **P-SPELLINGS** | P5/R-39 | process property — discharged by D-15; no runtime test | every spec spelling cites D-15 |
 | **P-DETERMINISTIC** | P2 — free checks before judgment | `PGRArchSelfTest>>#testNoNetworkOrStrayFileReferences` (the layer map cannot enforce this — §4.2 ignores unmapped classes — so this is its own reflective query) | no method in the seven production packages has a `referencedClasses` entry defined in a `Zinc-*`, `Network-*`, or `Zodiac-*` package; `FileReference`/`FileSystem`/`FileLocator` are referenced only from `PGRConfiguration class>>fromFile:`, `PGRGate class>>runHeadless:`(`on:`), and `PCKSrcInventoryCheck` — the two ruled file accesses of §7.6 (D-45) |
 
+*Erratum (E09-C01 record, M1 gate): the Zinc arm carries one ruled-site allowlist entry — `PGRConfiguration class>>fromFile:` references `ZnCharacterEncodingError` by the owner-scheduled B-15 hardening (E05-C01); the sweep allowlists exactly that site and pins the catch's liveness so it cannot silently vanish.*
+
+*Note (D-77, M1 gate): the quickstart sample harness installs **one class definition per fence, leading the fence** — method listings follow it. Guide authors: a definition after the first method listing is absorbed into the preceding body and never installed.*
+
 ## 9.2 Properties of the framework-wide constraints
 
 | Property | Restates | Test | Decidable assertion |

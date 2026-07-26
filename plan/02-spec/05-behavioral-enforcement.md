@@ -116,6 +116,8 @@ the meta-rule cannot fail open (D-36). The suite check's own pair, same scratch-
 shape: `PCKTestSuiteCheckTest>>#testRedOnFailingSuite` (a fixture class with one failing
 test) / `>>#testGreenOnPassingSuite`, plus `>>#testMissingOnEmptyTestsRole` for §5.1.
 
+*Erratum (E07 record, M1 gate): two letter-bends stand ruled-in via the E07 veto-open roster — the green/silent-arm subject is the package `Phi-Guardrails-Tests-SDK` (the check's unit is a package; the one fixtures package must hold the red/skip plants), and "scratch configuration" is realized as **baseline introspection** (P-SDK-EDGE forbids kit tests referencing `-Core` classes).*
+
 End-to-end (R-44): the toy's tests-role group loads `Toy-Tests`, which plants one
 red test and one skipped test; chapter 8's demo test asserts the suite registration goes
 red on the former and the meta-rule goes red on the latter, and that both turn green when

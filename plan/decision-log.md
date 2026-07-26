@@ -2640,3 +2640,28 @@ the next free number with substance unchanged — flagged to the owner at apply 
 - **Consequences:** guide-corpus scan recorded: fence 5 was the only
   definition-after-listings instance anywhere; guide 3 is clean, so E09-C06
   faces no repeat. E09-C05 re-picks; all five samples verified ready.
+
+## D-78 · M1 MILESTONE GATE CLOSED (owner word: "proceed", 2026-07-26)
+
+- **The gate:** E09's acceptance closed M1 (ledger block, head c50a064); the owner's
+  gate ran on the integrator's packet plus the advisor's independent verification
+  (tree/precheck/CI re-checked; the self-hosted gate re-run by the advisor's own
+  hand: GATE: GREEN, 0 blocking of 10, exit 0).
+- **Mining confirmed as packaged:** no new product rule warranted — M1's repeats are
+  build-infra debris and process notes. The one machine remedy RULED here:
+  **`*.fuel` joins `.gitignore`** (B-17's recommendation, the D-69 precedent — the
+  exact extension line, no broader wildcard); the integrator lands it as M2's
+  opening infra act. LOC soft-target overruns on comment-heavy test classes:
+  recorded observation, no rule. Backlog B-14…B-26 dispositions confirmed.
+- **Errata pass executed** (authorized per-ruling "at the owner's next spec pass" —
+  this was it): §1.1/D-70 · §2.3/D-72 · §3.2b/D-74 · §7.3/D-75 · §5.5/E07 bends ·
+  ch. 9 Zinc arm/E09 — plus the D-77 harness-constraint note and guide-1's
+  untested-claim marker. One commit, advisor-drafted, owner-authorized.
+- **One-time unattributed-intent audit run at this gate** (the Q-33/34/35 detector
+  applied retroactively); results filed with the gate record.
+- **Reference-encoding work deliberately deferred** until the audit's detection
+  data is in hand (owner's control-model stance: encoding improves where error is
+  detected, never by hindsight redesign).
+- **Roadmap steering: M2 re-confirmed as frozen** — E10 (layer-map check) → E11
+  (src inventory + the completed §7.5 artifact). E09's veto-opens close with this
+  gate per D-16.
