@@ -171,7 +171,24 @@ assigns this epic; amendments need a decision-sheet entry):**
 - Internal and unfrozen: `PGRReport project:verdicts:` and the rendering
   seam; `PGRGate`'s instVars; the verdict-line format.
 
-Checkpoint result (filled at acceptance): —
+Checkpoint result (filled at acceptance): **GREEN on head `70410b3`
+(2026-07-26)**. Leg 1 — `bash tools/build-image.sh && bash tools/verify.sh`:
+174 run, 174 passes, 0 failures, 0 errors; named suites exact —
+`PGRConfigurationTest` 38 (35 accepted byte-identical + 3) · `PGRReportTest`
+7 · `PGRGateTest` 16 — the 26 new E05 tests within the ≥174 floor; all nine
+fully-owed properties plus the four recorded completions and P-CFG-STRICT's
+two B-15 arms discharged by their named tests. Leg 2 (runner) — the four
+shell arms on the same head: 0 · 1 · 2 · **1** — arm 4 per its D-75-amended
+expectation (this VM exits 1 on an unloadable image; the wrapper relays it
+faithfully — known v1 limitation, hardening at B-23; a genuinely out-of-set
+code still maps to 3); `guardrails.sh` tracked executable (100755, blob
+`44a1123`). Leg 3 (infra) — `bash tools/precheck.sh` green at every one of
+the seven picks; every commit `E05-C##:`-prefixed (D-73). Leg 4 (CI) — run
+**30192903522** `completed success` on the same head. Epic history: two fix
+round-trips (C01 exact-name matchers + report accounting; C04 purity-test
+deletion hole); Q-34 filed from C07's stop-and-report and ruled D-75 option
+(a) mid-epic (arm 4 amended @ `f250ad6`); B-21/B-22/B-25 filed from reviews,
+B-23/B-24 owner-filed.
 
 ## Milestone note
 

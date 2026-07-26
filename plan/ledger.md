@@ -54,13 +54,13 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | E07-C04 | E07 | accepted | E07-C03 | implementer-E07-C04 (picked @ 51c6af7; accepted @ d1528c6, 138 run) |
 | E07-C05 | E07 | accepted | E07-C04 | implementer-E07-C05 (picked @ b8a0317; accepted @ 627cea1, 143 run; amendment table exact, 5 untouched byte-identical; nit to C06/backlog: suite-spec packages-reader truthfulness unpinned; B-17 corroborated by red-run fuel debris) |
 | E07-C06 | E07 | accepted | E07-C05 | implementer-E07-C06 (picked @ f528a23; accepted @ f569549, 144 run — E07 checkpoint leg 1) |
-| E05-C01 | E05 | todo | — | — |
-| E05-C02 | E05 | todo | — | — |
-| E05-C03 | E05 | todo | E05-C02 | — |
-| E05-C04 | E05 | todo | E05-C03 | — |
-| E05-C05 | E05 | todo | E05-C04, E05-C01 | — |
-| E05-C06 | E05 | todo | E05-C05 | — |
-| E05-C07 | E05 | todo | E05-C05 | — |
+| E05-C01 | E05 | accepted | — | implementer-E05-C01 (picked @ 085d23c; fix 1 accepted @ 95984e2, 151 run) |
+| E05-C02 | E05 | accepted | — | implementer-E05-C02 (picked @ 95984e2; accepted @ 1b2aa9e, 158 run) |
+| E05-C03 | E05 | accepted | E05-C02 | implementer-E05-C03 (picked @ 1b2aa9e; accepted @ 43b20aa, 162 run) |
+| E05-C04 | E05 | accepted | E05-C03 | implementer-E05-C04 (picked @ 43b20aa; fix 1 accepted @ 68f6f4a, 166 run) |
+| E05-C05 | E05 | accepted | E05-C04, E05-C01 | implementer-E05-C05 (picked @ 68f6f4a; accepted @ 5fad1d5, 170 run; B-21/B-22 filed) |
+| E05-C06 | E05 | accepted | E05-C05 | implementer-E05-C06 (picked @ 5a51f01; accepted @ 9339b07, 174 run) |
+| E05-C07 | E05 | accepted | E05-C05 (Q-34 ruled — D-75) | implementer-E05-C07 (picked @ 9339b07; committed @ 65bd022; Q-34 → D-75, arm 4 amended @ f250ad6; accepted post-re-run, arms 0/1/2/1-relayed) |
 
 ## Verify commands
 
@@ -243,6 +243,40 @@ E05-C02 E05-C07; orchestrator runs them serialized — the COMMIT preconditions
 shared-tree concurrency unsound; disjointness stands as the reviewer's
 cross-check. C03–C06 are strictly serial (shared
 `PGRGate.class.st`/`PGRGateTest.class.st` file pair).
+
+**E05: ACCEPTED 2026-07-26.** All seven chunks accepted; exit checkpoint
+filled in (`plan/04-epics/E05-gate-report-invocation/chunks.md`, four legs
+green on head `70410b3`: the 26 new E05 tests — `PGRConfigurationTest` +3 ·
+`PGRReportTest` 7 · `PGRGateTest` 16 — within a 174/174 sweep discharging
+P-GATE-COMPLETE, P-STREAM (both), P-JUDGE-CONVICTS, P-GATE-PURE,
+P-GATE-HEADLESS, P-EXIT-CODES, P-NO-DEFAULT-PATH, P-SAME-VERDICT,
+P-NEVER-UNDECIDED (both arms), plus the recorded completions P-ERR-IS-RED /
+P-GATE-MISSING / P-REG-FRESH and P-CFG-STRICT's two B-15 arms · runner leg
+0/1/2/1-relayed per the D-75-amended arm 4 · precheck green at every pick
+with D-73-qualified commits · CI run 30192903522). E05's interface digest —
+the gate-caller SDK (`PGRGate class>>runHeadless:` / `runHeadless:on:` /
+`forConfiguration:`; instance `onVerdict:` / `run` → `PGRReport`;
+`PGRReport>>verdicts` / `isClean` / `exitCode` / `blockingVerdicts` /
+`advisories`), the exit-code contract (0 clean · 1 non-green · 2 config
+error or escape, D-39), and the reference runner's mapping (`guardrails.sh`
+relays 0/1/2, else 3 with one stderr line; tabled in that file) — is hereby
+frozen; amendments need a decision-sheet entry. The report's printed text is
+explicitly not an API; `PGRReport project:verdicts:`, the rendering seam,
+and `PGRGate`'s instVars stay internal. **The core track (E01→E05) is
+complete; E09's entry check can now count all three prerequisites (E05, E07,
+E08) satisfied — the M1 join epic is the owner's next Prompt-4 cut.** Epic
+history: two fix round-trips in seven chunks (E05-C01 fixture-matcher
+fidelity + report accounting; E05-C04 purity-witness deletion hole — both
+reviewer-caught, one pass each); Q-34 filed from C07's stop-and-report
+trigger and ruled D-75 option (a) mid-epic (the §7.3 mapping stands; the
+unloadable-image collision is a known v1 limitation, hardening carried as
+B-23); B-21/B-22 (C05 review: double registry build seam; append-splice
+authoring convention unruled) and B-25 (C07 review: wrapper quote-injection
+edge, folds into B-23) filed by the orchestrator; B-23/B-24 owner-filed.
+Seat-agent note: the `.claude/agents/` seats were not registered in this
+session's agent registry (predates f5d2af4's pickup); seats were reproduced
+faithfully — implementer one tier down per the seat's model line, reviewer
+inherited — prompts verbatim.
 
 **E06 rows (C12–C18) added by the third Prompt-4 run (2026-07-25).** E06
 `accepted` when all seven rows are `accepted` and the exit checkpoint in
