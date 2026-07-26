@@ -289,3 +289,63 @@ PGRGateTest >> testHeadlessAndInImageAgree [
 	self assert: cleanInImage equals: 0.
 	self assert: redInImage equals: 1
 ]
+
+{ #category : 'tests' }
+PGRGateTest >> testEscapedExceptionExitsTwo [
+	"Ch.-9-named, P-NEVER-UNDECIDED (kit arm, D-39.2): a kit whose registrationsFrom:...
+	raises a plain Error while the registry is under construction escapes to
+	runHeadless:on:'s top-level Error, Halt handler - answers 2, does not raise, and the
+	stream holds exactly one line naming the exception, including the kit's own message."
+	| path stream code |
+	path := self scratchArtifactFileFor: '[ { #kit : ''PGRScratchThrowingKit'' } ]'
+		named: 'throwing-kit.ston'.
+	stream := WriteStream on: String new.
+	code := PGRGate runHeadless: path on: stream.
+	self assert: code equals: 2.
+	self assert: (stream contents occurrencesOf: Character lf) equals: 1.
+	self assert: (stream contents includesSubstring: 'scratch kit exploded')
+]
+
+{ #category : 'tests' }
+PGRGateTest >> testThrowingStreamStillAnswersTwo [
+	"Ch.-9-named, P-NEVER-UNDECIDED (stream arm - ch. 9's 'and, separately, a sink that
+	throws'): a clean artifact run onto a stream whose every write raises still answers 2
+	and does not raise - even the error line's own write failure is swallowed by
+	runHeadless:on:'s guard; deciding the number wins over reporting it."
+	| path code |
+	path := self scratchArtifactFileFor: '[ { #kit : ''PGRScratchSpecKit'', #specs : [
+		{ #name : ''scratch/G1'', #kind : ''scratch'', #check : ''PGRScratchGreenCheck'' } ] } ]'
+		named: 'clean-for-throwing-stream.ston'.
+	code := PGRGate runHeadless: path on: PGRScratchThrowingWriteStream new.
+	self assert: code equals: 2
+]
+
+{ #category : 'tests' }
+PGRGateTest >> testKitRaisedConfigurationErrorExitsTwo [
+	"Ch.-9-named, the E04 ADVISORY headless arm: a kit whose registrationsFrom:... raises
+	PGRConfigurationError while the registry is under construction is caught by
+	runHeadless:on:'s PGRConfigurationError arm - answers 2, wrote exactly one line
+	carrying the kit's own messageText - before any check runs."
+	| path stream code |
+	path := self scratchArtifactFileFor: '[ { #kit : ''PGRScratchConfigErrorKit'' } ]'
+		named: 'config-error-kit.ston'.
+	stream := WriteStream on: String new.
+	code := PGRGate runHeadless: path on: stream.
+	self assert: code equals: 2.
+	self assert: (stream contents occurrencesOf: Character lf) equals: 1.
+	self assert: (stream contents includesSubstring: 'scratch kit block defect')
+]
+
+{ #category : 'tests' }
+PGRGateTest >> testKitConfigurationErrorPropagatesFromConstruction [
+	"Ch.-9-named, the E04 ADVISORY direct arm: the same defective kit, driven through
+	PGRGate forConfiguration: with no handler present, raises PGRConfigurationError
+	carrying the kit's own message - the frozen E04 claim ('propagates out of
+	fromConfiguration: unhandled') witnessed through the gate's eager registry build."
+	| text |
+	text := self artifactWithKitsFragment: '[ { #kit : ''PGRScratchConfigErrorKit'' } ]'.
+	self
+		should: [ PGRGate forConfiguration: (PGRConfiguration fromString: text) ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error | self assert: (error messageText includesSubstring: 'scratch kit block defect') ]
+]
