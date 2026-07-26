@@ -7,9 +7,11 @@ GOAL      `PCKLintRuleCheck` declares the SDK fix capability — `canFix` true
 
 TRACE     R-11 (fix half) · R-15 (the autofix, capability leg) · ch. 1 §1.3
           (`PGRCheck` capability rows, D-54.2) · ch. 3 §3.3 (the pair's
-          division of labor) · P-CAT-AUTOFIX (ch. 9, this chunk's owed
-          property) · scheduled amendment of one E06 test line (below —
-          E06's own papers deferred it here).
+          division of labor) · **D-74 (Q-33 ruled: capability = mechanical
+          fact; no flag-only category; judgment at the preview)** ·
+          P-CAT-AUTOFIX (ch. 9, this chunk's owed property) · scheduled
+          amendment of one E06 test line (below — E06's own papers deferred
+          it here).
 
 ## CONTEXT DIGEST
 
@@ -33,8 +35,9 @@ skeleton's `fixCommandOn:` is a `subclassResponsibility` marker (D-68:
 
 ```smalltalk
 canFix
-    "True exactly when the wrapped rule carries a rewrite (ch. 3 §3.3:
-     flag-only rules have no autofix)."
+    "True exactly when the wrapped rule carries a rewrite recipe (D-74:
+     capability is the mechanical fact; apply-time judgment lives at the
+     mandatory preview)."
     ^ <the confirmed isRewriteRule form over the `rule` class>
 
 fixCommandOn: aCollectionOfPackageNames
@@ -46,9 +49,22 @@ fixCommandOn: aCollectionOfPackageNames
 
 (`rule` is the E06-frozen internal reader. Note the deliberate asymmetry:
 `run` reads `self packages` — the gate's targets; `fixCommandOn:` takes its
-own — the invoker's. For a flag-only rule's check, `fixCommandOn:` would
+own — the invoker's. For a recipe-less rule's check, `fixCommandOn:` would
 signal `PGRNotAutofixable` via the constructor — legitimate: a conforming
 caller consults `canFix` first and never sends it, D-68.)
+
+**The capability under D-74 (Q-33 ruled — this paragraph supersedes the cut's
+original "flag-only counterparty" premise).** There is no flag-only category:
+`canFix` is the mechanical fact alone, and per-application safety judgment
+belongs to the mandatory preview (D-74 guidance: appliers run the suite after
+apply; deletion diffs warrant reading the surrounding method).
+`ReCodeCruftLeftInMethodsRule` **is** a `ReNodeRewriteRule` — probed live at
+E08-C02; its recipe deletes the matched statement — so its check answers
+`canFix` **true**. The recipe-less counterparty for the false arm is
+`ReEmptyExceptionHandlerRule` (the C02-recorded non-rewrite built-in; reuse
+that report's `isRewriteRule` record). Ch. 3 §3.2b's "flag-only" sentence
+gains its erratum at the owner's next spec pass (D-74), matching the D-70/D-72
+pattern.
 
 **The scheduled E06 test amendment.** `PCKLintRuleCheckTest>>#testKindIsLint`
 currently ends with:

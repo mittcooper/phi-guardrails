@@ -143,5 +143,8 @@ this ruling):** (b) — the catalog's safety judgment should be machine-enforced
 (P1), not prose; (a) silently widens the fix surface past what §3.2b ruled
 safe, and (c) reverses a safety call on convenience grounds.
 
-**Status:** OPEN — blocks E08-C05 (its `canFix` arm); E08-C03/C04 proceed
-(they exercise a genuine rewrite rule).
+**Status:** **RULED** (owner word 2026-07-25) → **D-74**: option (a),
+owner-strengthened — no flag-only category exists; `canFix` is the mechanical
+fact alone; per-application judgment lives at the mandatory preview. E08-C05
+amended under the ruling and unblocked; §3.2b gains an erratum at the next
+spec pass.

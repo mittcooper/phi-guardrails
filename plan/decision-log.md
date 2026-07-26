@@ -2540,3 +2540,29 @@ the next free number with substance unchanged — flagged to the owner at apply 
 - **Consequences:** C01–C27 are **grandfathered** — bare IDs stand as history,
   never renamed, never reused; C19 remains a documented gap. The ledger's
   preamble carries the convention note.
+
+## D-74 · Q-33 ruled: fix capability is the mechanical fact alone — no flag-only category (option a)
+
+- **From:** Q-33 (`plan/04-decision-sheet.md`, filed by the orchestrator from the
+  E08-C02 completion report: `ReCodeCruftLeftInMethodsRule` is mechanically a
+  `ReNodeRewriteRule` answering `isRewriteRule` true — its recipe deletes the
+  matched statement — while ch. 3 §3.2b classified it flag-only by prose policy)
+  · **Ruled by:** human — binding, owner word of 2026-07-25, after full advisory
+  review · **Date:** 2026-07-25
+- **Ruling:** option (a), owner-strengthened. **There is no flag-only category.**
+  `canFix` is the mechanical fact alone: a rule carrying a rewrite recipe offers
+  its fix; a recipe-less rule answers false (`PGRNotAutofixable` on attempted
+  construction — absence of a recipe is a fact, not a classification). Fix-safety
+  is judged **per application, at the mandatory preview, by the applier** (human
+  or agent) — the preview-first + staleness machinery (E08-C03/C04) is the
+  judgment seat; no design-time safety mark, no deny-list, no catalog
+  classification is maintained.
+- **Guidance (non-binding, recorded with the ruling):** appliers run the suite
+  after apply; deletion diffs warrant reading the surrounding method — the one
+  fix class the test suite cannot witness.
+- **Consequences:** E08-C05's work order amended under this entry (the false-arm
+  subject becomes a recipe-less built-in, `ReEmptyExceptionHandlerRule`; the
+  cruft check answers `canFix` true); C02–C04 stand untouched. Ch. 3 §3.2b's
+  "flag-only" sentence gains its erratum at the owner's next spec pass (joining
+  §1.1/D-70, §2.3/D-72, §5.5/E07). The "who may sit the preview seat"
+  independence question is future family ground, not blocked on.
