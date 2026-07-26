@@ -1,5 +1,5 @@
 "
-The coding kit (name ruled D-56), implementing the frozen PGRKit contract. Stateless - all class-side, no class-side variables. It validates its own block strictly against the canonical five-key schema (ch. 1 par. 1.4; D-51: blocks are opaque to the core, so only the kit can) and answers its specs in the canonical order frozen at E06 acceptance: all lint, then all architecture, then all meta, in-key block order preserved. #lintRules becomes PCKLintRuleCheck registrations targeting the production role (D-25); #architectureChecks and #metaRules resolve via the promised packages: constructor (D-60), role-by-block-key (production and tests respectively). #layerMap is a parameter key: a present map is carried, unread, until E10 gives it its consumer. Behavioral suites have no block key (E07 derives them from the tests role); recommendedBlock answers the published stanza (C18; E07 appends its #metaRules line).
+The coding kit (name ruled D-56), implementing the frozen PGRKit contract. Stateless - all class-side, no class-side variables. It validates its own block strictly against the canonical five-key schema (ch. 1 par. 1.4; D-51: blocks are opaque to the core, so only the kit can) and answers its specs in the canonical four-stage order (frozen at E06 acceptance, completed E07): all lint, then all architecture, then all derived behavioral suites, then all meta, in-key block order preserved. #lintRules becomes PCKLintRuleCheck registrations targeting the production role (D-25); #architectureChecks and #metaRules resolve via the promised packages: constructor (D-60), role-by-block-key (production and tests respectively). #layerMap is a parameter key: a present map is carried, unread, until E10 gives it its consumer. Behavioral suites have no block key (D-25): one derived registration per tests-role package - or the behavioral/tests-role missing sentinel on an empty expansion (R-24) - and every behavioral check of a call closes over that call's one PCKSuiteRunCache (par. 5.4, D-36), the kit's own PCKNoSkippedTestsMetaRule named in #metaRules riding the same cache. recommendedBlock answers the published stanza (C18; E07-C06 appends its #metaRules line).
 "
 Class {
 	#name : 'PCKKit',
@@ -7,6 +7,25 @@ Class {
 	#category : 'Phi-Coding-Kit',
 	#package : 'Phi-Coding-Kit'
 }
+
+{ #category : 'private' }
+PCKKit class >> behavioralSpecsFor: testsNames cache: aSuiteRunCache [
+	"Par. 5.1's whole derivation law: behavioral suites have no block key - one
+	registration per tests-role package, unconditional and in handed order, each
+	check closed over the run's one cache (D-36). An empty expansion is instead the
+	one behavioral/tests-role missing registration (ch. 1 par. 1.5): the stock
+	runner exits 0 on nothing-to-run, and silence is never a pass (R-24)."
+	testsNames ifEmpty: [
+		^ { PGRRegistrationSpec
+			missing: 'behavioral/tests-role'
+			kind: #behavioral
+			reason: 'the tests-role expansion is empty - no packages to derive suite registrations from' } ].
+	^ testsNames collect: [ :each |
+		PGRRegistrationSpec
+			name: 'behavioral/' , each
+			kind: #behavioral
+			check: (PCKTestSuiteCheck package: each cache: aSuiteRunCache) ]
+]
 
 { #category : 'private' }
 PCKKit class >> blockKeys [
@@ -39,6 +58,27 @@ PCKKit class >> lintSpecFor: aRuleName productionPackages: productionNames [
 		name: 'lint/' , aRuleName
 		kind: #lint
 		check: (PCKLintRuleCheck rule: ruleClass packages: productionNames)
+]
+
+{ #category : 'private' }
+PCKKit class >> metaRuleSpecFor: aCheckName packages: testsNames cache: aSuiteRunCache [
+	"Par. 5.4's own-meta-rule special case: only when the name resolves to the kit's
+	own PCKNoSkippedTestsMetaRule - identity, not kinship - is the check constructed
+	over the run's shared cache, so it reads the very result objects the suite
+	checks read (D-36). Every other resolved class keeps the generic promised
+	packages: path and reaches no cache; unresolved names still answer missing
+	specs there. Spec name and kind are the same either way."
+	(Smalltalk globals at: aCheckName asSymbol ifAbsent: [ nil ])
+		== PCKNoSkippedTestsMetaRule ifTrue: [
+			^ PGRRegistrationSpec
+				name: 'behavioral/' , aCheckName
+				kind: #behavioral
+				check: (PCKNoSkippedTestsMetaRule packages: testsNames cache: aSuiteRunCache) ].
+	^ self
+		promisedSpecFor: aCheckName
+		prefix: 'behavioral/'
+		kind: #behavioral
+		packages: testsNames
 ]
 
 { #category : 'private' }
@@ -84,15 +124,19 @@ PCKKit class >> recommendedBlock [
 
 { #category : 'registering' }
 PCKKit class >> registrationsFrom: aBlock productionPackages: productionNames testsPackages: testsNames [
-	"The frozen contract (E02 digest). The answered order is the canonical one (ch. 1
-	par. 1.4): all lint, then all architecture, then all meta specs, in-key block
-	order preserved - E07 inserts derived behavioral-suite registrations between
-	architecture and meta. Role-by-block-key: #architectureChecks hands the
-	production list, #metaRules the tests list. #layerMap contributes no specs:
-	a parameter, not a check list - carried, unread, until E10."
-	| specs |
+	"The frozen contract (E02 digest). The answered order is the canonical four-stage
+	one, completed here (ch. 1 par. 1.4): all lint, then all architecture, then all
+	derived behavioral suites (par. 5.1 - no block key), then all #metaRules specs,
+	in-key block order preserved. One PCKSuiteRunCache per call closes every
+	behavioral check of the call over one shared suite run (par. 5.4, D-36) -
+	run-scoped, discarded with its checks, never global (R-35). Role-by-block-key:
+	#architectureChecks hands the production list, #metaRules the tests list.
+	#layerMap contributes no specs: a parameter, not a check list - carried,
+	unread, until E10."
+	| specs cache |
 	self validateBlock: aBlock.
 	specs := OrderedCollection new.
+	cache := PCKSuiteRunCache new.
 	(aBlock at: #lintRules ifAbsent: [ #() ]) do: [ :each |
 		specs add: (self lintSpecFor: each productionPackages: productionNames) ].
 	(aBlock at: #architectureChecks ifAbsent: [ #() ]) do: [ :each |
@@ -101,12 +145,9 @@ PCKKit class >> registrationsFrom: aBlock productionPackages: productionNames te
 			prefix: 'architecture/'
 			kind: #architecture
 			packages: productionNames) ].
+	specs addAll: (self behavioralSpecsFor: testsNames cache: cache).
 	(aBlock at: #metaRules ifAbsent: [ #() ]) do: [ :each |
-		specs add: (self
-			promisedSpecFor: each
-			prefix: 'behavioral/'
-			kind: #behavioral
-			packages: testsNames) ].
+		specs add: (self metaRuleSpecFor: each packages: testsNames cache: cache) ].
 	^ specs
 ]
 

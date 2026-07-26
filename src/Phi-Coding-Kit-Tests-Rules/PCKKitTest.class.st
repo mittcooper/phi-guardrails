@@ -1,5 +1,5 @@
 "
-Behavioral pin of the kit block envelope and dispatch: strict five-key validation (D-51 - blocks are opaque to the core, so only the kit can validate its own), the #lintRules pipeline arms (C16), and the generic promised-constructor paths for #architectureChecks and #metaRules with role-by-block-key, missing specs for unresolved names, the neither-path configuration error, the carried-unread #layerMap parameter, and the frozen lint -> architecture -> meta order law (C17). Error-message assertions name the offender, never exact wording (the text is human-facing, not an API). Lives here by the recorded chunks.md ruling: the frozen E01 tree has no root kit tests package; E07 extends this class in place.
+Behavioral pin of the kit block envelope and dispatch: strict five-key validation (D-51 - blocks are opaque to the core, so only the kit can validate its own), the #lintRules pipeline arms (C16), the generic promised-constructor paths for #architectureChecks and #metaRules with role-by-block-key, missing specs for unresolved names, the neither-path configuration error, the carried-unread #layerMap parameter, the derived behavioral-suite registrations sharing one run-scoped cache per call with the behavioral/tests-role sentinel and the own-meta-rule special case (E07-C05; par. 5.1/5.4, D-36), and the completed four-stage lint -> architecture -> behavioral -> meta order law (C17, completed E07-C05). Error-message assertions name the offender, never exact wording (the text is human-facing, not an API). Lives here by the recorded chunks.md ruling: the frozen E01 tree has no root kit tests package; E07 extends this class in place.
 "
 Class {
 	#name : 'PCKKitTest',
@@ -18,12 +18,15 @@ PCKKitTest >> testArchitectureCheckResolvedViaPackagesConstructor [
 		registrationsFrom: block
 		productionPackages: #('P-One' 'P-Two')
 		testsPackages: #().
-	self assert: specs size equals: 1.
+	self assert: specs size equals: 2.
 	spec := specs first.
 	self assert: spec name equals: 'architecture/PCKArchStubCheck'.
 	self assert: spec kind identicalTo: #architecture.
 	self assert: spec check class equals: PCKArchStubCheck.
-	self assert: spec check packages equals: #('P-One' 'P-Two')
+	self assert: spec check packages equals: #('P-One' 'P-Two').
+	self assert: specs last name equals: 'behavioral/tests-role'.
+	self assert: specs last kind identicalTo: #behavioral.
+	self assert: specs last check isNil
 ]
 
 { #category : 'tests' }
@@ -40,6 +43,24 @@ PCKKitTest >> testClassAnsweringNeitherPathSignals [
 ]
 
 { #category : 'tests' }
+PCKKitTest >> testDerivesOneSuiteRegistrationPerTestsRolePackage [
+	"Par. 5.1's whole derivation, ordered: one suite registration per tests-role package, no block key - unconditional, in handed order, each check a PCKTestSuiteCheck closed over its own package (D-25)."
+	| specs |
+	specs := PCKKit
+		registrationsFrom: Dictionary new
+		productionPackages: #('P-One')
+		testsPackages: #('Phi-Coding-Kit-Fixtures-Behavioral' 'Phi-Guardrails-Tests-SDK').
+	self assert: specs size equals: 2.
+	self
+		assert: (specs collect: [ :each | each name ]) asArray
+		equals: #('behavioral/Phi-Coding-Kit-Fixtures-Behavioral' 'behavioral/Phi-Guardrails-Tests-SDK').
+	specs do: [ :each |
+		self assert: each kind identicalTo: #behavioral.
+		self assert: each check class equals: PCKTestSuiteCheck.
+		self assert: 'behavioral/' , each check package equals: each name ]
+]
+
+{ #category : 'tests' }
 PCKKitTest >> testLayerMapKeyProducesNoRegistrationsAndNoError [
 	"#layerMap is a parameter key, not a check list: a present map is carried, unread and unregistered until E10 gives it its consumer and its shape validation."
 	| block specs |
@@ -50,8 +71,9 @@ PCKKitTest >> testLayerMapKeyProducesNoRegistrationsAndNoError [
 		registrationsFrom: block
 		productionPackages: #('P-One')
 		testsPackages: #().
-	self assert: specs size equals: 1.
-	self assert: specs first name equals: 'lint/PCKNoIsNilIfTrueRule'
+	self assert: specs size equals: 2.
+	self assert: specs first name equals: 'lint/PCKNoIsNilIfTrueRule'.
+	self assert: specs last name equals: 'behavioral/tests-role'
 ]
 
 { #category : 'tests' }
@@ -65,16 +87,16 @@ PCKKitTest >> testLintRegistrationsFromBlock [
 		registrationsFrom: block
 		productionPackages: #('Phi-Guardrails-SDK')
 		testsPackages: #().
-	self assert: specs size equals: 2.
+	self assert: specs size equals: 3.
 	self
 		assert: (specs collect: [ :each | each name ]) asArray
-		equals: #('lint/PCKNoIsNilIfTrueRule' 'lint/ReCodeCruftLeftInMethodsRule').
-	specs do: [ :each |
+		equals: #('lint/PCKNoIsNilIfTrueRule' 'lint/ReCodeCruftLeftInMethodsRule' 'behavioral/tests-role').
+	(specs first: 2) do: [ :each |
 		self assert: each kind identicalTo: #lint.
 		self assert: each check class equals: PCKLintRuleCheck.
 		self assert: each check packages equals: #('Phi-Guardrails-SDK') ].
 	self assert: specs first check rule identicalTo: PCKNoIsNilIfTrueRule.
-	self assert: specs last check rule identicalTo: ReCodeCruftLeftInMethodsRule
+	self assert: (specs at: 2) check rule identicalTo: ReCodeCruftLeftInMethodsRule
 ]
 
 { #category : 'tests' }
@@ -87,8 +109,11 @@ PCKKitTest >> testMetaRuleResolvedWithTestsRole [
 		registrationsFrom: block
 		productionPackages: #('P-One')
 		testsPackages: #('T-One').
-	self assert: specs size equals: 1.
-	spec := specs first.
+	self assert: specs size equals: 2.
+	self assert: specs first name equals: 'behavioral/T-One'.
+	self assert: specs first kind identicalTo: #behavioral.
+	self assert: specs first check class equals: PCKTestSuiteCheck.
+	spec := specs last.
 	self assert: spec name equals: 'behavioral/PCKMetaStubCheck'.
 	self assert: spec kind identicalTo: #behavioral.
 	self assert: spec check class equals: PCKMetaStubCheck.
@@ -109,6 +134,25 @@ PCKKitTest >> testNonRuleClassSignals [
 ]
 
 { #category : 'tests' }
+PCKKitTest >> testOwnMetaRuleRidesTheRunCache [
+	"Par. 5.4's own-meta-rule special case + D-36's one-cache law: the kit's own class named in #metaRules is constructed over the run's one shared cache - identical to the suite check's - so it reads the very result objects the suite registrations produce; the sibling generic path is pinned by testMetaRuleResolvedWithTestsRole."
+	| block specs metaSpec |
+	block := Dictionary new.
+	block at: #metaRules put: #('PCKNoSkippedTestsMetaRule').
+	specs := PCKKit
+		registrationsFrom: block
+		productionPackages: #('P-One')
+		testsPackages: #('Phi-Coding-Kit-Fixtures-Behavioral').
+	self assert: specs size equals: 2.
+	metaSpec := specs last.
+	self assert: metaSpec name equals: 'behavioral/PCKNoSkippedTestsMetaRule'.
+	self assert: metaSpec kind identicalTo: #behavioral.
+	self assert: metaSpec check class equals: PCKNoSkippedTestsMetaRule.
+	self assert: metaSpec check packages equals: #('Phi-Coding-Kit-Fixtures-Behavioral').
+	self assert: metaSpec check cache identicalTo: specs first check cache
+]
+
+{ #category : 'tests' }
 PCKKitTest >> testRecommendedBlockParsesAsKitBlock [
 	"The published stanza (ch. 1 par. 1.3, D-54/D-60) parses as the kit block it documents: a Dictionary with Symbol keys whose #kit is this class and whose #lintRules is the ordered catalog pair (D-51, par. 3.2 then 3.2b) - and nothing beyond those two keys (the M1-partial form; E07 appends #metaRules)."
 	| block |
@@ -123,16 +167,16 @@ PCKKitTest >> testRecommendedBlockParsesAsKitBlock [
 
 { #category : 'tests' }
 PCKKitTest >> testRecommendedBlockRegistersCleanly [
-	"The E06 arm of P-STANZA-VALID (E07 adds the registry-construction arm): the stanza can never name something that does not resolve - parsed and handed to the kit it yields exactly the two catalog specs, both resolved, none missing."
+	"The P-STANZA-VALID arm: the stanza can never name something that does not resolve - parsed and handed to the kit with a real tests role it yields the two catalog specs plus the derived suite spec, all resolved, none missing (E07-C06 widens this to 4 when the stanza completes)."
 	| specs |
 	specs := PCKKit
 		registrationsFrom: (STON fromString: PCKKit recommendedBlock)
 		productionPackages: #('Phi-Guardrails-SDK')
-		testsPackages: #().
-	self assert: specs size equals: 2.
+		testsPackages: #('Phi-Coding-Kit-Fixtures-Behavioral').
+	self assert: specs size equals: 3.
 	self
 		assert: (specs collect: [ :each | each name ]) asArray
-		equals: #('lint/PCKNoIsNilIfTrueRule' 'lint/ReCodeCruftLeftInMethodsRule').
+		equals: #('lint/PCKNoIsNilIfTrueRule' 'lint/ReCodeCruftLeftInMethodsRule' 'behavioral/Phi-Coding-Kit-Fixtures-Behavioral').
 	specs do: [ :each |
 		self deny: each check isNil.
 		self assert: each missingReason isNil ]
@@ -140,7 +184,7 @@ PCKKitTest >> testRecommendedBlockRegistersCleanly [
 
 { #category : 'tests' }
 PCKKitTest >> testRegistrationOrderIsLintThenArchitectureThenMeta [
-	"The order law, frozen at E06 acceptance (ch. 1 par. 1.4): all lint, then all architecture, then all meta specs - the dispatch order, whatever order the block was assembled in."
+	"The four-stage order law, frozen at E06 acceptance and completed here (ch. 1 par. 1.4): all lint, then all architecture, then all derived behavioral suites, then all #metaRules specs - the dispatch order, whatever order the block was assembled in."
 	| block specs |
 	block := Dictionary new.
 	block at: #metaRules put: #('PCKMetaStubCheck').
@@ -152,7 +196,7 @@ PCKKitTest >> testRegistrationOrderIsLintThenArchitectureThenMeta [
 		testsPackages: #('T-One').
 	self
 		assert: (specs collect: [ :each | each name ]) asArray
-		equals: #('lint/PCKNoIsNilIfTrueRule' 'architecture/PCKArchStubCheck' 'behavioral/PCKMetaStubCheck')
+		equals: #('lint/PCKNoIsNilIfTrueRule' 'architecture/PCKArchStubCheck' 'behavioral/T-One' 'behavioral/PCKMetaStubCheck')
 ]
 
 { #category : 'tests' }
@@ -166,6 +210,39 @@ PCKKitTest >> testRuleWithoutOwnSeveritySignals [
 		raise: PGRConfigurationError
 		withExceptionDo: [ :error |
 			self assert: (error messageText includesSubstring: 'PCKInheritedSeverityStubRule') ]
+]
+
+{ #category : 'tests' }
+PCKKitTest >> testSuiteRegistrationsPrecedeMetaRules [
+	"P-SUITES-BEFORE-META (ch. 9): every derived suite spec's index in the answer is lower than every #metaRules spec's index - the suites a meta-rule reads over are registered before it."
+	| block specs lastSuiteIndex firstMetaIndex |
+	block := Dictionary new.
+	block at: #metaRules put: #('PCKMetaStubCheck').
+	specs := PCKKit
+		registrationsFrom: block
+		productionPackages: #('P-One')
+		testsPackages: #('Phi-Coding-Kit-Fixtures-Behavioral' 'Phi-Guardrails-Tests-SDK').
+	lastSuiteIndex := specs findLast: [ :each | each check class = PCKTestSuiteCheck ].
+	firstMetaIndex := specs findFirst: [ :each | each name = 'behavioral/PCKMetaStubCheck' ].
+	self assert: lastSuiteIndex > 0.
+	self assert: firstMetaIndex > 0.
+	self assert: lastSuiteIndex < firstMetaIndex
+]
+
+{ #category : 'tests' }
+PCKKitTest >> testTwoRegistrationRoundsShareNoCache [
+	"R-35: the cache is run-scoped - one per contract call, closed over by that call's behavioral checks and discarded with them; two calls never share one."
+	| block firstCache secondCache |
+	block := Dictionary new.
+	firstCache := (PCKKit
+		registrationsFrom: block
+		productionPackages: #('P-One')
+		testsPackages: #('Phi-Coding-Kit-Fixtures-Behavioral')) first check cache.
+	secondCache := (PCKKit
+		registrationsFrom: block
+		productionPackages: #('P-One')
+		testsPackages: #('Phi-Coding-Kit-Fixtures-Behavioral')) first check cache.
+	self deny: firstCache identicalTo: secondCache
 ]
 
 { #category : 'tests' }
@@ -192,12 +269,14 @@ PCKKitTest >> testUnresolvedArchitectureAndMetaAnswerMissingSpecs [
 		registrationsFrom: block
 		productionPackages: #('P-One')
 		testsPackages: #('T-One').
-	self assert: specs size equals: 2.
+	self assert: specs size equals: 3.
 	self assert: specs first name equals: 'architecture/PCKNoSuchCheck'.
 	self assert: specs first kind identicalTo: #architecture.
+	self assert: (specs at: 2) name equals: 'behavioral/T-One'.
+	self deny: (specs at: 2) check isNil.
 	self assert: specs last name equals: 'behavioral/PCKNoSuchCheck'.
 	self assert: specs last kind identicalTo: #behavioral.
-	specs do: [ :each |
+	{ specs first. specs last } do: [ :each |
 		self assert: each check isNil.
 		self assert: (each missingReason includesSubstring: 'PCKNoSuchCheck') ]
 ]
@@ -212,10 +291,13 @@ PCKKitTest >> testUnresolvedLintRuleAnswersMissingSpec [
 		registrationsFrom: block
 		productionPackages: #('Phi-Guardrails-SDK')
 		testsPackages: #().
-	self assert: specs size equals: 1.
+	self assert: specs size equals: 2.
 	spec := specs first.
 	self assert: spec name equals: 'lint/PCKNoSuchRule'.
 	self assert: spec kind identicalTo: #lint.
 	self assert: spec check isNil.
-	self assert: (spec missingReason includesSubstring: 'PCKNoSuchRule')
+	self assert: (spec missingReason includesSubstring: 'PCKNoSuchRule').
+	self assert: specs last name equals: 'behavioral/tests-role'.
+	self assert: specs last kind identicalTo: #behavioral.
+	self assert: specs last check isNil
 ]

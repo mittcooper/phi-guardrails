@@ -1,5 +1,5 @@
 "
-Pins the behavioral suite check (spec ch. 5 par. 5.2): red with exact Class>>#selector findings over the planted red fixture package (passes, skips, and the expected failure produce none - the par. 5.3 precision split), green over the always-green Phi-Guardrails-Tests-SDK mirror package (the par. 5.5 pair's good half, R-37), and missing on a loaded package with zero test classes (R-24, D-21). A fourth method, testMissingOnEmptyTestsRole, is added by E07-C05 (kit-derivation ground). Swept, green-only.
+Pins the behavioral suite check (spec ch. 5 par. 5.2): red with exact Class>>#selector findings over the planted red fixture package (passes, skips, and the expected failure produce none - the par. 5.3 precision split), green over the always-green Phi-Guardrails-Tests-SDK mirror package (the par. 5.5 pair's good half, R-37), and missing on a loaded package with zero test classes (R-24, D-21). The fourth method, testMissingOnEmptyTestsRole (E07-C05, kit-derivation ground), pins P-GATE-MISSING's suite half here per par. 5.5. Swept, green-only.
 "
 Class {
 	#name : 'PCKTestSuiteCheckTest',
@@ -17,6 +17,22 @@ PCKTestSuiteCheckTest >> testGreenOnPassingSuite [
 		cache: PCKSuiteRunCache new) run.
 	self assert: verdict isGreen.
 	self assertEmpty: verdict findings
+]
+
+{ #category : 'tests' }
+PCKTestSuiteCheckTest >> testMissingOnEmptyTestsRole [
+	"P-GATE-MISSING, suite half (ch. 5 par. 5.5, R-24): an empty tests-role expansion is one loud missing registration under the literal name behavioral/tests-role - the stock runner exits 0 on nothing-to-run, so silence is never a pass."
+	| specs spec |
+	specs := PCKKit
+		registrationsFrom: Dictionary new
+		productionPackages: #('P-One')
+		testsPackages: #().
+	self assert: specs size equals: 1.
+	spec := specs first.
+	self assert: spec name equals: 'behavioral/tests-role'.
+	self assert: spec kind identicalTo: #behavioral.
+	self assert: spec check isNil.
+	self assert: (spec missingReason includesSubstring: 'empty')
 ]
 
 { #category : 'tests' }
