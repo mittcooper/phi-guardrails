@@ -34,6 +34,46 @@ PGRGate class >> forConfiguration: aPGRConfiguration [
 		yourself
 ]
 
+{ #category : 'running' }
+PGRGate class >> runHeadless: aPathString [
+	"Delegate onto Stdio stdout - the only Stdio reference this chunk adds (§7.6's ruled file/stream access site)."
+	^ self runHeadless: aPathString on: Stdio stdout
+]
+
+{ #category : 'running' }
+PGRGate class >> runHeadless: aPathString on: aWriteStream [
+	"Ch. 7 §7.3, the invocation contract: parse the configuration at the explicit path (no
+	default, no working-directory fallback - D-45 rulings 1/4, no environment sniffing), then
+	stream the report onto aWriteStream - header first, one verdict line as each registration
+	completes, then the summary - flush before answering. Exit codes: 0 clean, 1 non-green, 2
+	a configuration error or any exception escaping the run (D-39's law - the gate never ends
+	without deciding a number). The whole run is one top-level handler: a PGRConfigurationError
+	writes its messageText; anything else writes its class name and description - exactly one
+	line either way, itself guarded (on: Error do:, swallowing) so a broken stream still yields
+	the number. Halt is the verified non-Error catchable on this image (P5); a resumable
+	Notification resumes with nil by default and so never escapes."
+	| writeErrorLine |
+	writeErrorLine := [ :text | [ aWriteStream nextPutAll: text; lf; flush ] on: Error do: [ :ignored | ] ].
+	^ [ [
+		| configuration registry report |
+		configuration := PGRConfiguration fromFile: aPathString.
+		registry := PGRRegistry fromConfiguration: configuration.
+		PGRReport printHeaderProject: configuration project count: registry size on: aWriteStream.
+		report := (self forConfiguration: configuration)
+			onVerdict: [ :verdict | aWriteStream lf. PGRReport printVerdict: verdict on: aWriteStream ];
+			run.
+		aWriteStream lf.
+		report printSummaryOn: aWriteStream.
+		aWriteStream flush.
+		report exitCode
+	  ] on: PGRConfigurationError do: [ :error |
+		writeErrorLine value: error messageText.
+		2 ]
+	  ] on: Error, Halt do: [ :error |
+		writeErrorLine value: error class name , ': ' , error description.
+		2 ]
+]
+
 { #category : 'configuring' }
 PGRGate >> onVerdict: aOneArgBlock [
 	"Set the verdict sink. There is no default (D-55): given none, run merely accumulates verdicts into the report."

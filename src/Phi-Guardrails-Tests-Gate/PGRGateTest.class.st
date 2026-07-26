@@ -14,6 +14,9 @@ across test classes is deliberate self-containment).
 Class {
 	#name : 'PGRGateTest',
 	#superclass : 'TestCase',
+	#instVars : [
+		'scratchDirectory'
+	],
 	#category : 'Phi-Guardrails-Tests-Gate',
 	#package : 'Phi-Guardrails-Tests-Gate'
 }
@@ -171,4 +174,118 @@ PGRGateTest >> testDeliberatelyRedRegistrationIsReported [
 	self deny: report isClean.
 	self assert: (report blockingVerdicts collect: [ :v | v registrationName ]) equals: #( 'scratch/R1' ).
 	self assert: report exitCode equals: 1
+]
+
+{ #category : 'fixtures' }
+PGRGateTest >> scratchFileNamed: aFileName contents: aString [
+	"Write aString verbatim to scratchDirectory / aFileName; answer the full path - the
+	accepted PGRConfigurationTest scratch-file shape (writeStreamDo: + nextPutAll:)."
+	| path |
+	path := scratchDirectory / aFileName.
+	path writeStreamDo: [ :stream | stream nextPutAll: aString ].
+	^ path fullName
+]
+
+{ #category : 'fixtures' }
+PGRGateTest >> scratchArtifactFileFor: aStonKitsArrayString named: aFileName [
+	"The canonical scratch envelope (artifactWithKitsFragment:, E05-C03's helper on this
+	class) with the given #kits fragment, written to scratchDirectory / aFileName; answer
+	the full path."
+	^ self scratchFileNamed: aFileName contents: (self artifactWithKitsFragment: aStonKitsArrayString)
+]
+
+{ #category : 'running' }
+PGRGateTest >> setUp [
+	super setUp.
+	scratchDirectory := FileSystem workingDirectory / 'pgr-e05-scratch'.
+	scratchDirectory ensureCreateDirectory
+]
+
+{ #category : 'running' }
+PGRGateTest >> tearDown [
+	scratchDirectory ensureDeleteAll.
+	super tearDown
+]
+
+{ #category : 'tests' }
+PGRGateTest >> testRunHeadlessAnswersExitCode [
+	"Ch.-9-named, P-GATE-HEADLESS: a clean artifact file at an explicit scratch path answers
+	0; a red one answers 1; both streams carry the header line and the final GATE: summary
+	line by return - the full report reached the stream before the exit code was answered
+	(the §7.3 flush requirement, machine-stated)."
+	| cleanPath redPath cleanStream redStream |
+	cleanPath := self scratchArtifactFileFor: '[ { #kit : ''PGRScratchSpecKit'', #specs : [
+		{ #name : ''scratch/G1'', #kind : ''scratch'', #check : ''PGRScratchGreenCheck'' } ] } ]' named: 'clean.ston'.
+	redPath := self scratchArtifactFileFor: '[ { #kit : ''PGRScratchSpecKit'', #specs : [
+		{ #name : ''scratch/R1'', #kind : ''scratch'', #check : ''PGRScratchRedCheck'' } ] } ]' named: 'red.ston'.
+	cleanStream := WriteStream on: String new.
+	redStream := WriteStream on: String new.
+	self assert: (PGRGate runHeadless: cleanPath on: cleanStream) equals: 0.
+	self assert: (PGRGate runHeadless: redPath on: redStream) equals: 1.
+	self assert: (cleanStream contents includesSubstring: 'PGR gate · Scratch').
+	self assert: (cleanStream contents includesSubstring: 'GATE: GREEN').
+	self assert: (redStream contents includesSubstring: 'PGR gate · Scratch').
+	self assert: (redStream contents includesSubstring: 'GATE: RED')
+]
+
+{ #category : 'tests' }
+PGRGateTest >> testConfigurationErrorExitsTwo [
+	"Ch.-9-named, P-EXIT-CODES: a malformed artifact file is caught by the top-level handler
+	- answers 2, does not raise, and writes exactly one line (one lf) naming the defect (its
+	PGRConfigurationError messageText substring)."
+	| path stream code |
+	path := self scratchFileNamed: 'malformed.ston' contents: 'not ston {'.
+	stream := WriteStream on: String new.
+	code := PGRGate runHeadless: path on: stream.
+	self assert: code equals: 2.
+	self assert: (stream contents occurrencesOf: Character lf) equals: 1.
+	self assert: (stream contents includesSubstring: 'Malformed STON')
+]
+
+{ #category : 'tests' }
+PGRGateTest >> testNoDefaultPathIsConsulted [
+	"Ch.-9-named, P-NO-DEFAULT-PATH: a valid guardrails.ston present in the process working
+	directory (the decoy discipline - created only if absent, deleted only if this test
+	created it) is never consulted; an explicit path to a different, red artifact answers
+	that artifact's verdict (1); an explicit path to a nonexistent file answers 2 with one
+	error line - no fallback."
+	| decoyPath decoyCreated redPath redStream missingStream |
+	decoyPath := FileSystem workingDirectory / 'guardrails.ston'.
+	decoyCreated := false.
+	decoyPath exists ifFalse: [
+		decoyPath writeStreamDo: [ :stream | stream nextPutAll: (self artifactWithKitsFragment: '[ { #kit : ''PGRScratchSpecKit'', #specs : [
+			{ #name : ''scratch/D1'', #kind : ''scratch'', #check : ''PGRScratchGreenCheck'' } ] } ]') ].
+		decoyCreated := true ].
+	[
+		redPath := self scratchArtifactFileFor: '[ { #kit : ''PGRScratchSpecKit'', #specs : [
+			{ #name : ''scratch/R1'', #kind : ''scratch'', #check : ''PGRScratchRedCheck'' } ] } ]' named: 'no-default.ston'.
+		redStream := WriteStream on: String new.
+		self assert: (PGRGate runHeadless: redPath on: redStream) equals: 1.
+		missingStream := WriteStream on: String new.
+		self assert: (PGRGate runHeadless: (scratchDirectory / 'absent.ston') fullName on: missingStream) equals: 2.
+		self assert: (missingStream contents occurrencesOf: Character lf) equals: 1
+	] ensure: [ decoyCreated ifTrue: [ decoyPath ensureDelete ] ]
+]
+
+{ #category : 'tests' }
+PGRGateTest >> testHeadlessAndInImageAgree [
+	"Ch.-9-named, P-SAME-VERDICT: the same artifact text, both written to a scratch file and
+	held as a string, answers the same exit code through runHeadless:on: and through the
+	in-image forConfiguration:/run/exitCode path - one engine, two modes - for both a clean
+	(0) and a red (1) artifact."
+	| cleanText redText cleanPath redPath cleanStream redStream cleanInImage redInImage |
+	cleanText := self artifactWithKitsFragment: '[ { #kit : ''PGRScratchSpecKit'', #specs : [
+		{ #name : ''scratch/G1'', #kind : ''scratch'', #check : ''PGRScratchGreenCheck'' } ] } ]'.
+	redText := self artifactWithKitsFragment: '[ { #kit : ''PGRScratchSpecKit'', #specs : [
+		{ #name : ''scratch/R1'', #kind : ''scratch'', #check : ''PGRScratchRedCheck'' } ] } ]'.
+	cleanPath := self scratchFileNamed: 'agree-clean.ston' contents: cleanText.
+	redPath := self scratchFileNamed: 'agree-red.ston' contents: redText.
+	cleanStream := WriteStream on: String new.
+	redStream := WriteStream on: String new.
+	cleanInImage := (PGRGate forConfiguration: (PGRConfiguration fromString: cleanText)) run exitCode.
+	redInImage := (PGRGate forConfiguration: (PGRConfiguration fromString: redText)) run exitCode.
+	self assert: (PGRGate runHeadless: cleanPath on: cleanStream) equals: cleanInImage.
+	self assert: (PGRGate runHeadless: redPath on: redStream) equals: redInImage.
+	self assert: cleanInImage equals: 0.
+	self assert: redInImage equals: 1
 ]
