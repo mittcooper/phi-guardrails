@@ -65,8 +65,8 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | E09-C02 | E09 | accepted | — | implementer-E09-C02 (picked @ 0dc0e82; committed @ f401511; accepted @ f401511, 183 run — verify green, reviewer accept) |
 | E09-C03 | E09 | accepted | — | implementer-E09-C03 (picked @ f401511; committed @ b3e384d; accepted @ b3e384d, 189 run + self-hosted gate exit 0 / 10 GREEN — both instruments verified, reviewer accept) |
 | E09-C04 | E09 | accepted | — | implementer-E09-C04 (picked @ b3e384d; committed @ ff8e473; accepted @ ff8e473, 193 run + self-hosted gate exit 0 — both legs verified, reviewer accept; SmalltalkCI-selector question → backlog B-26) |
-| E09-C05 | E09 | blocked | E09-C04 | implementer-E09-C05 (round 1 @ 8809f00 → Q-35 ruled D-76, guide 2 §5 amended @ e4ad139; re-pick round 2 @ e4ad139 → STOP-AND-REPORT: D-76's enriched sample 5 has a 2nd class def mid-fence that outruns the frozen C04 harness parser (one pre-header def only) — install fails `AcmeCommentFix` undeclared; verified independently; escalated → Q-36, OPEN. Other 4 samples verified ready; sample-5 install shape sole blocker) |
-| E09-C06 | E09 | todo | E09-C05 | — |
+| E09-C05 | E09 | accepted | E09-C04 | implementer-E09-C05 (round 1 @ 8809f00 → Q-35/D-76 guide amend; round 2 @ e4ad139 → Q-36/D-77 fence reshape; round 3 re-pick @ a568bf8; committed @ 4b42d0e; accepted @ 4b42d0e, 194 run + self-hosted gate exit 0 — both instruments verified, reviewer accept) |
+| E09-C06 | E09 | accepted | E09-C05 | implementer-E09-C06 (picked @ 4b42d0e; committed @ c50a064; accepted @ c50a064, 195 run + self-hosted gate exit 0, C05 methods byte-identical 92/0 — both instruments verified, reviewer accept) |
 
 ## Verify commands
 
@@ -289,6 +289,87 @@ Seat-agent note: the `.claude/agents/` seats were not registered in this
 session's agent registry (predates f5d2af4's pickup); seats were reproduced
 faithfully — implementer one tier down per the seat's model line, reviewer
 inherited — prompts verbatim.
+
+**E09: ACCEPTED 2026-07-26 — and with it MILESTONE M1 CLOSES.** All six
+chunks accepted; the exit checkpoint (`plan/04-epics/E09-self-host-m1-freeze/chunks.md`
+§checkpoint) is met on head `c50a064`, four legs: (1) **named suite** — the 21
+new E09 tests (`PGRArchSelfTest` 6 · `PGRSurfaceConformanceTest` 3 ·
+`PGRToySweepExemptionTest` 3 · `PCKArtifactBlockM1FormTest` 3 ·
+`PGRQuickstartSampleHarnessTest` 4 · `PGRQuickstartSamplesTest` 2) within a
+**195/195** sweep, 0 failures/0 errors, discharging **P-SURFACE-CONFORMS ·
+P-CORE-NEUTRAL · P-SDK-EDGE · P-NO-TRANSCRIPT · P-DETERMINISTIC · P-GUIDE-EXEC
+(both M1 legs)** plus the recorded forms P-FIX-GATE-WALL (reflective) and
+P-SELF-HOSTED (M1); (2) **self-hosted leg** — `./guardrails.sh guardrails.ston`
+→ exit 0, `PhiGuardrails`, 10 registrations, `GATE: GREEN`; (3) **infra leg** —
+`bash tools/precheck.sh` green at every pick, D-73 `E09-C##` commits; (4) **CI
+leg** — CI run **30209108452** `completed success` on `c50a064` (also proving
+the quickstart locator's CI behavior, informing B-26). Each leg was re-run by
+the orchestrator independently, never on report. **Interface digest — no new
+frozen exports:** E09 is the join; what freezes is the *machine witness* over
+surfaces already frozen at E02/E03/E05/E06/E07/E08 — `PGRSurfaceConformanceTest`'s
+41-triple/4-error manifest mirrors the ch. 0 §0.3 roster (the freeze is
+red-test-enforced from here, roadmap §2) and `PGRArchSelfTest`'s six reflective
+walls enforce the one-way arrows before the layer map exists. **The committed
+M1 artifact form freezes as ruled ground:** `guardrails.ston` = §7.5 minus the
+two architecture entries and `#layerMap`/`#src`; it grows only by scheduled
+epic edits (E11 completes it), witnessed by `PCKArtifactBlockM1FormTest`.
+Internal/unfrozen: the harness parsing/locator machinery, the pin-test and
+sweep helper spellings.
+
+Epic history — three chunks landed first-try (C01/C02/C03/C04 all accepted on
+first review); **E09-C05 took three rounds via two owner rulings**: the
+executable-guide property (P-GUIDE-EXEC) caught two real defects in the
+producer-owned guide 2 §5 — a caret-plus-comment syntax error (Q-35 → **D-76**,
+owner-broadened: ALL quickstart guides must be genuinely executable, standing
+Drydock law) and, after the D-76 rewrite, a two-class-definitions-per-fence
+shape that outran the accepted C04 harness parser (Q-36 → **D-77** option (a),
+fence reshaped so the class definition leads). Both stop-and-reports were
+verified independently before escalation; the implementer never patched guide,
+harness, or assertion. E09-C06 landed last with C05's methods byte-identical
+(92/0 diff). B-26 filed (C04 review: quickstart-locator `SmalltalkCI` selector
+unpinned — the CI leg's green now validates the image-directory fallback as the
+real CI path, so the guarded form is the accepted permanent form). No fix
+round-trips (both C05 halts were external-guide escalations, not implementer
+failures).
+
+**Formal M1 mining pass (over E02–E09 reports/reviews, per the E01 precedent
+and operating rule 9):** the milestone's recurring corrections were swept for
+repeats warranting a new machine-enforced rule. Finding — **no new *product*
+lint rule or architecture test is warranted**: the recurring items are not
+recurring code-defect patterns but (a) build-infra debris and (b) process
+notes. (a) **Repo-root debris from errored/red headless runs** is the one
+repeat with a concrete machine remedy: `PharoDebug.log` (B-13, recurred across
+E02, ruled **D-69** — gitignored) and `*.fuel` (B-17, from red SUnit CLI runs
+at E04) recurred again at **E09-C05** (an errored probe dropped a `.fuel` at
+repo root). Recommendation carried to B-17: close it by the D-69 precedent —
+add `*.fuel` to `.gitignore` (build-infra category, D-65), a next-infra-chunk
+one-liner. (b) Process notes, no rule owed: LOC routinely exceeds the 150 soft
+target (never the 300 ceiling) on constitution-mandated-comment-heavy and
+manifest-shaped test classes (C01 226 · C02 166 · C04 288) — the ceiling is the
+real bound, reviewer-checked; and P5 in-image spelling gotchas (e.g.
+`assert:equals:description:` does not exist) are the verify-the-spellings
+discipline working as designed, recorded per chunk. The P-GUIDE-EXEC guide
+episode is already machine-enforced going forward (D-76 makes verbatim
+execution mandatory; the sample tests are the standing verifier).
+
+**Open backlog dispositioned into the M1 mining packet (B-14…B-26):** all
+carried, none M1-blocking. Resolved/advanced by this milestone: **B-15**
+(`fromFile:` encoding-error wrap landed at E05; E09-C01's Zinc-arm pins the
+reconciliation live) · **B-16** method-half landed (phi `2552925`); its
+product-side completeness-check arm stays an M5 catalog candidate · **B-26**
+validated by the CI leg (guarded locator + image-dir fallback confirmed the CI
+workhorse). Carried unchanged to their named milestones: B-14 (Symbol/String
+asymmetry — E09 re-confirmed `#X = 'X'` holds in-image; M5) · B-17 (the debris
+recurrence above; next infra chunk) · B-18/B-19 (owner spec-erratum pass) · B-20
+(next `PCKKitTest`-touching chunk) · B-21 (double registry build; M5 or next
+`PGRGate` chunk) · B-22 (append-splice authoring convention still precedent, not
+law — used again at E09-C06; owner ruling pass) · B-23/B-25 (wrapper hardening,
+M5) · B-24 (structured STON report, E15/M5). Owner-pending errata noted for the
+next spec pass: the ch. 9 Zinc-arm note (E09-C01) and the two E09 chunks-index
+advisories (guide-1 not-choking untested until M4; the harness's
+one-pre-header-definition-per-fence constraint, now a documented limit after
+D-77). **E10's entry check (M2) can pass; per the owner's standing notice,
+work stops here for the owner's M1 milestone gate.**
 
 **E06 rows (C12–C18) added by the third Prompt-4 run (2026-07-25).** E06
 `accepted` when all seven rows are `accepted` and the exit checkpoint in
