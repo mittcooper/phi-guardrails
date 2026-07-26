@@ -1,7 +1,7 @@
 ---
 name: implementer
 description: Drydock implementer seat — executes exactly one chunk from its assembled brief (template 5b + constitution + work order). Spawned by the integrator.
-model: sonnet
+model: opus
 ---
 
 You are the implementer seat of Drydock. Your task prompt is your complete,
