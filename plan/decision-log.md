@@ -2612,3 +2612,31 @@ the next free number with substance unchanged — flagged to the owner at apply 
   findings there. The realness requirement lands as method law (Drydock, both
   lines) in the same stroke. E09-C05 unblocks; C06 follows; the E09 checkpoint
   (= the M1 boundary) may close.
+
+## D-77 · Q-36 ruled: guide 2 fence 5 reshaped — definition leads, listings follow (option a)
+
+- **From:** Q-36 (`plan/04-decision-sheet.md` — the E09-C05 re-pick under D-76 hit
+  a second block: the D-76-enriched fence placed `Object << #AcmeCommentFix`
+  mid-fence, after method listings, and the frozen C04 harness installs a class
+  definition only from the pre-header segment — the definition's lines were
+  absorbed into the preceding method body and `AcmeCommentFix` never existed.
+  Implementer stop-and-report; orchestrator reproduced against the real harness
+  at e4ad139) · **Ruled by:** human — binding, owner word of 2026-07-26 ·
+  **Date:** 2026-07-26
+- **Attribution, on the record:** the defective fence shape was the **advisor's**
+  D-76 drafting — spellings were probed (P5) but the fence's shape was never
+  checked against its actual consumer, the C04 harness's install model, though
+  that model was in accepted papers the advisor had reviewed. P-GUIDE-EXEC
+  caught its own author's fix, exactly as D-76's text promised ("this very test
+  is its verifier"). Second consecutive guide defect caught mechanically; none
+  reached a reader.
+- **Ruling:** option (a) — reshape within the same fence: the fluid definition
+  leads, all method listings (both classes) follow, the wiring pair
+  (`canFix`/`fixCommandOn:`) last; one prose sentence adjusted to the new
+  narrative order ("the fix object first, then the wiring"). No accepted surface
+  touched; C04's fence-inventory pin holds at 5. Options (b) extend-the-frozen-
+  harness and (c) split-the-fence rejected as disproportionate — new machinery
+  or reddened accepted pins to accommodate a shape only one fence ever had.
+- **Consequences:** guide-corpus scan recorded: fence 5 was the only
+  definition-after-listings instance anywhere; guide 3 is clean, so E09-C06
+  faces no repeat. E09-C05 re-picks; all five samples verified ready.

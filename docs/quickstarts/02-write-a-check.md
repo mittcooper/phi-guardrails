@@ -125,17 +125,11 @@ must implement class-side `severity` itself (`#error` blocks; `#warning` /
 
 A check that can safely repair what it flags declares it — and the declaration is a
 pair: `canFix` answers true, and `fixCommandOn:` answers a **complete working fix
-object** you own. Below is the whole thing for our running example — the fix that
-gives an uncommented class its comment *(verified executable: the M1 sample test
-runs this fence verbatim — D-76)*:
+object** you own. Below is the whole thing for our running example — the fix object
+first, then the two methods that wire it onto the check *(verified executable: the
+M1 sample test runs this fence verbatim — D-76/D-77)*:
 
 ```smalltalk
-AcmeClassCommentCheck >> canFix
-    ^ true
-
-AcmeClassCommentCheck >> fixCommandOn: packageNames
-    ^ AcmeCommentFix onPackages: packageNames
-
 Object << #AcmeCommentFix
     slots: { #packages. #pending. #previewed };
     package: 'Acme-Checks'
@@ -167,6 +161,12 @@ AcmeCommentFix >> apply
 
 AcmeCommentFix >> changes
     ^ pending copy
+
+AcmeClassCommentCheck >> canFix
+    ^ true
+
+AcmeClassCommentCheck >> fixCommandOn: packageNames
+    ^ AcmeCommentFix onPackages: packageNames
 ```
 
 That is the entire fix-invocation protocol, working: construct → `previewOn:` (emits

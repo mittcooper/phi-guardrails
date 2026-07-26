@@ -349,4 +349,6 @@ file; note guide 3's own §5-style samples should be checked for the same
 two-definitions-per-fence shape before C06 runs). E09's exit checkpoint — the
 M1 milestone boundary — waits on both. C01–C04 remain accepted and green.
 
-**Status:** **OPEN** — awaiting owner ruling.
+**Status:** **RULED** (owner word 2026-07-26) → **D-77**: option (a) — fence 5
+reshaped, definition leads, wiring last; advisor's drafting attributed on the
+record; guide 3 scanned clean. E09-C05 re-picks.
