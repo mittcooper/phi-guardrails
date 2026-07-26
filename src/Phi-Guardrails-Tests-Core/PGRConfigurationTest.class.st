@@ -72,6 +72,31 @@ PGRConfigurationTest >> testAbsoluteSrcFromStringIsLegal [
 ]
 
 { #category : 'tests' }
+PGRConfigurationTest >> testEmptyExemptNamePatternsLegalWithoutExemptPackages [
+	"B-15 arm 2, the other side: an empty #exemptNamePatterns list over a baseline with no exempt-role packages parses clean - both stage-7 directions are vacuous over an empty exempt role."
+	| map configuration |
+	map := self artifactMap.
+	map at: #baseline put: 'BaselineOfPGRScratchPlain'.
+	(map at: #roles)
+		at: #production put: #( 'Phi-Guardrails-(SDK|Core)' );
+		at: #tests put: #( 'Phi-Guardrails-Tests-SDK' );
+		removeKey: #exempt.
+	map at: #exemptNamePatterns put: #(  ).
+	configuration := PGRConfiguration fromString: (STON toString: map).
+	self assert: configuration project equals: 'Scratch'.
+	self assertEmpty: configuration exemptPackageNames
+]
+
+{ #category : 'tests' }
+PGRConfigurationTest >> testEmptyExemptNamePatternsSignalsForExemptPackage [
+	"B-15 arm 2: #exemptNamePatterns present as an empty list is not absent - stage 7 direction 1 fires for every exempt-role package under an empty pattern list, pinning the behavior."
+	self
+		should: [ PGRConfiguration fromString: (self artifactWith: #exemptNamePatterns value: #(  )) ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error | self assert: (error messageText includesSubstring: 'PGR-Scratch-Ghost') ]
+]
+
+{ #category : 'tests' }
 PGRConfigurationTest >> testEmptyGroupMatcherIsLegal [
 	"An empty group is a legal baseline fact (D-25.a addendum): the group arm matches and contributes nothing."
 	| configuration |
@@ -317,6 +342,18 @@ PGRConfigurationTest >> testUnassignedPackageStillSignals [
 		should: [ PGRConfiguration fromString: (STON toString: map) ]
 		raise: PGRConfigurationError
 		withExceptionDo: [ :error | self assert: (error messageText includesSubstring: 'Phi-Guardrails-Core') ]
+]
+
+{ #category : 'tests' }
+PGRConfigurationTest >> testUndecodableFileSignalsConfigurationError [
+	"B-15 arm 1: file contents raises ZnInvalidUTF8 (a ZnCharacterEncodingError), not a FileException, on invalid UTF-8 bytes - fromFile: wraps both, so the raw Zn error never escapes."
+	| path |
+	path := scratchDirectory / 'bad.ston'.
+	path binaryWriteStreamDo: [ :stream | stream nextPutAll: #[ 255 254 200 155 ] ].
+	self
+		should: [ PGRConfiguration fromFile: path fullName ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error | self assert: (error messageText includesSubstring: path fullName) ]
 ]
 
 { #category : 'tests' }

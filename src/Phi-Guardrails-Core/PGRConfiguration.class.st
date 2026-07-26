@@ -58,11 +58,11 @@ PGRConfiguration class >> expandRoles: rolesMap over: aBaselineClass [
 
 { #category : 'instance creation' }
 PGRConfiguration class >> fromFile: aPathString [
-	"Answer the validated configuration parsed from the file at aPathString, or signal PGRConfigurationError. The explicit path is all there is - no default location, no working-directory fallback (D-45 ruling 1); a missing or unreadable file is a configuration error naming the path, never a raw file exception - callers catch configuration defects by class (D-49)."
+	"Answer the validated configuration parsed from the file at aPathString, or signal PGRConfigurationError. The explicit path is all there is - no default location, no working-directory fallback (D-45 ruling 1); a missing, unreadable, or undecodable file is a configuration error naming the path, never a raw file or encoding exception - callers catch configuration defects by class (D-49; B-15: file contents raises ZnCharacterEncodingError, not FileException, on invalid UTF-8 bytes)."
 	| file contents |
 	file := aPathString asFileReference.
 	contents := [ file contents ]
-		on: FileException
+		on: FileException, ZnCharacterEncodingError
 		do: [ :error | PGRConfigurationError new signal: 'Cannot read configuration file: ' , aPathString ].
 	^ self fromString: contents anchor: file parent
 ]
