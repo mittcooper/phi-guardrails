@@ -61,10 +61,10 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | E05-C05 | E05 | accepted | E05-C04, E05-C01 | implementer-E05-C05 (picked @ 68f6f4a; accepted @ 5fad1d5, 170 run; B-21/B-22 filed) |
 | E05-C06 | E05 | accepted | E05-C05 | implementer-E05-C06 (picked @ 5a51f01; accepted @ 9339b07, 174 run) |
 | E05-C07 | E05 | accepted | E05-C05 (Q-34 ruled — D-75) | implementer-E05-C07 (picked @ 9339b07; committed @ 65bd022; Q-34 → D-75, arm 4 amended @ f250ad6; accepted post-re-run, arms 0/1/2/1-relayed) |
-| E09-C01 | E09 | todo | — | — |
-| E09-C02 | E09 | todo | — | — |
-| E09-C03 | E09 | todo | — | — |
-| E09-C04 | E09 | todo | — | — |
+| E09-C01 | E09 | accepted | — | implementer-E09-C01 (picked @ 964787b; committed @ 0dc0e82; accepted @ 0dc0e82, 180 run — verify green, reviewer accept) |
+| E09-C02 | E09 | accepted | — | implementer-E09-C02 (picked @ 0dc0e82; committed @ f401511; accepted @ f401511, 183 run — verify green, reviewer accept) |
+| E09-C03 | E09 | accepted | — | implementer-E09-C03 (picked @ f401511; committed @ b3e384d; accepted @ b3e384d, 189 run + self-hosted gate exit 0 / 10 GREEN — both instruments verified, reviewer accept) |
+| E09-C04 | E09 | accepted | — | implementer-E09-C04 (picked @ b3e384d; committed @ ff8e473; accepted @ ff8e473, 193 run + self-hosted gate exit 0 — both legs verified, reviewer accept; SmalltalkCI-selector question → backlog B-26) |
 | E09-C05 | E09 | todo | E09-C04 | — |
 | E09-C06 | E09 | todo | E09-C05 | — |
 
