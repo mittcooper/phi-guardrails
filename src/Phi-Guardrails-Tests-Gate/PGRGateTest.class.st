@@ -77,6 +77,89 @@ PGRGateTest >> testNoSinkMeansNoStreaming [
 	self assert: report verdicts size equals: 3
 ]
 
+{ #category : 'fixtures' }
+PGRGateTest >> plainBaselineArtifactString [
+	"The E04-C05 plain-baseline shape: no groups, one green scratch/P1 spec - this arm wants a runnable second gate."
+	^ '{
+	#schemaVersion : 2,
+	#project : ''ScratchPlain'',
+	#baseline : ''BaselineOfPGRScratchPlain'',
+	#roles : {
+		#production : [ ''Phi-Guardrails-SDK'', ''Phi-Guardrails-Core'' ],
+		#tests : [ ''Phi-Guardrails-Tests-SDK'' ] },
+	#kits : [ { #kit : ''PGRScratchSpecKit'', #specs : [
+		{ #name : ''scratch/P1'', #kind : ''scratch'', #check : ''PGRScratchGreenCheck'' } ] } ]
+}'
+]
+
+{ #category : 'tests' }
+PGRGateTest >> testRunContinuesAfterErroringCheck [
+	"Ch.-9-named, P-ERR-IS-RED (gate arm, completing the property): with the throwing check placed mid-registry, the erroring registration yields #red with the error text as its finding message, the run continues, and every later registration still produced a verdict; the report exits 1."
+	| report middle last |
+	report := (self gateFromKitsFragment: '[ { #kit : ''PGRScratchSpecKit'', #specs : [
+		{ #name : ''scratch/G1'', #kind : ''scratch'', #check : ''PGRScratchGreenCheck'' },
+		{ #name : ''scratch/E1'', #kind : ''scratch'', #check : ''PGRScratchErroringCheck'' },
+		{ #name : ''scratch/G2'', #kind : ''scratch'', #check : ''PGRScratchGreenCheck'' } ] } ]') run.
+	self assert: report verdicts size equals: 3.
+	middle := report verdicts at: 2.
+	self assert: middle registrationName equals: 'scratch/E1'.
+	self assert: middle status equals: #red.
+	self assert: middle findings size equals: 1.
+	self assert: (middle findings first message includesSubstring: 'scratch check exploded').
+	last := report verdicts at: 3.
+	self assert: last registrationName equals: 'scratch/G2'.
+	self assert: last isGreen.
+	self assert: report exitCode equals: 1
+]
+
+{ #category : 'tests' }
+PGRGateTest >> testMissingRegistrationFailsGate [
+	"Ch.-9-named, P-GATE-MISSING (gate half): a missing registration's verdict has status #missing, isClean is false, exitCode = 1."
+	| report missing |
+	report := (self gateFromKitsFragment: '[ { #kit : ''PGRScratchSpecKit'', #specs : [
+		{ #name : ''scratch/G1'', #kind : ''scratch'', #check : ''PGRScratchGreenCheck'' },
+		{ #name : ''scratch/M1'', #kind : ''scratch'', #missing : ''engine absent'' } ] } ]') run.
+	missing := report verdicts at: 2.
+	self assert: missing registrationName equals: 'scratch/M1'.
+	self assert: missing status equals: #missing.
+	self deny: report isClean.
+	self assert: report exitCode equals: 1
+]
+
+{ #category : 'tests' }
+PGRGateTest >> testRunMutatesNoSource [
+	"Ch.-9-named, P-GATE-PURE (R-12): snapshot sourceCode of every method of the scratch check classes the run touches, keyed by selector, per class; run a gate over a red configuration; every snapshotted source is identical afterwards - the gate only reports."
+	| greenBefore redBefore |
+	greenBefore := Dictionary new.
+	PGRScratchGreenCheck methods do: [ :m | greenBefore at: m selector put: m sourceCode ].
+	redBefore := Dictionary new.
+	PGRScratchRedCheck methods do: [ :m | redBefore at: m selector put: m sourceCode ].
+	(self gateFromKitsFragment: '[ { #kit : ''PGRScratchSpecKit'', #specs : [
+		{ #name : ''scratch/G1'', #kind : ''scratch'', #check : ''PGRScratchGreenCheck'' },
+		{ #name : ''scratch/R1'', #kind : ''scratch'', #check : ''PGRScratchRedCheck'' } ] } ]') run.
+	PGRScratchGreenCheck methods do: [ :m | self assert: m sourceCode equals: (greenBefore at: m selector) ].
+	PGRScratchRedCheck methods do: [ :m | self assert: m sourceCode equals: (redBefore at: m selector) ]
+]
+
+{ #category : 'tests' }
+PGRGateTest >> testTwoGatesProduceIndependentReports [
+	"P-REG-FRESH gate clause (the E04-recorded split, completed): two gates over the grouped and plain artifacts answer reports that share nothing - independent verdict names, no shared verdict identity, and a fresh re-run of one leaves the other's already-answered report unchanged."
+	| groupedFragment groupedGate plainGate groupedReport plainReport plainNamesBefore |
+	groupedFragment := '[ { #kit : ''PGRScratchSpecKit'', #specs : [
+		{ #name : ''scratch/G1'', #kind : ''scratch'', #check : ''PGRScratchGreenCheck'' },
+		{ #name : ''scratch/M1'', #kind : ''scratch'', #missing : ''engine absent'' } ] } ]'.
+	groupedGate := self gateFromKitsFragment: groupedFragment.
+	plainGate := PGRGate forConfiguration: (PGRConfiguration fromString: self plainBaselineArtifactString).
+	groupedReport := groupedGate run.
+	plainReport := plainGate run.
+	self assert: (groupedReport verdicts collect: [ :v | v registrationName ]) equals: #( 'scratch/G1' 'scratch/M1' ).
+	self assert: (plainReport verdicts collect: [ :v | v registrationName ]) equals: #( 'scratch/P1' ).
+	groupedReport verdicts do: [ :gv | plainReport verdicts do: [ :pv | self deny: gv == pv ] ].
+	plainNamesBefore := plainReport verdicts collect: [ :v | v registrationName ].
+	(self gateFromKitsFragment: groupedFragment) run.
+	self assert: (plainReport verdicts collect: [ :v | v registrationName ]) equals: plainNamesBefore
+]
+
 { #category : 'tests' }
 PGRGateTest >> testDeliberatelyRedRegistrationIsReported [
 	"Ch.-9-named, P-JUDGE-CONVICTS (D-40): a deliberately red registration leaves the report unclean, named in blockingVerdicts, exitCode 1."
