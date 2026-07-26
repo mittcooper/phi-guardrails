@@ -32,6 +32,19 @@ PCKNoIsNilIfTrueRuleTest >> testFiresOnBadFixture [
 ]
 
 { #category : 'tests' }
+PCKNoIsNilIfTrueRuleTest >> testProvidesAutofix [
+	"P-CAT-AUTOFIX (ch. 9): the check declares the fix capability and the plant's
+	violation carries a previewable change - Renraku's isRewriteRule/providesChange,
+	the engine spellings behind the SDK's neutral ones."
+	| plantCritique check |
+	plantCritique := self runRuleCritiques detect: [ :each |
+		each entity == (PCKLintBadFixture >> #withIsNilIfTrue) ].
+	check := PCKLintRuleCheck rule: PCKNoIsNilIfTrueRule packages: #('Phi-Coding-Kit-Tests-Rules').
+	self assert: check canFix.
+	self assert: plantCritique providesChange
+]
+
+{ #category : 'tests' }
 PCKNoIsNilIfTrueRuleTest >> testSilentOnGoodFixture [
 	"Zero critiques on the clean twin: the rule is precise, not trigger-happy."
 	| goodCritiques |

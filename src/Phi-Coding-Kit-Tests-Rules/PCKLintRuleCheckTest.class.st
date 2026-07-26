@@ -9,6 +9,39 @@ Class {
 }
 
 { #category : 'tests' }
+PCKLintRuleCheckTest >> testCanFixFalseForRecipelessRule [
+	"The C02-recorded non-rewrite built-in: no recipe exists to offer, so the capability
+	is per-rule fact, never a blanket true."
+	self deny: (PCKLintRuleCheck rule: ReEmptyExceptionHandlerRule packages: #('Phi-Guardrails-SDK')) canFix
+]
+
+{ #category : 'tests' }
+PCKLintRuleCheckTest >> testCanFixTrueForRewriteRule [
+	"P1: fixes, not flags - the catalog rule's check advertises its autofix. D-74 makes
+	the capability the mechanical fact with no policy overlay: ReCodeCruftLeftInMethodsRule
+	carries a deletion recipe (E08-C02 P5 probe), so its check answers true too."
+	self assert: (PCKLintRuleCheck rule: PCKNoIsNilIfTrueRule packages: #('Phi-Guardrails-SDK')) canFix.
+	self assert: (PCKLintRuleCheck rule: ReCodeCruftLeftInMethodsRule packages: #('Phi-Guardrails-SDK')) canFix
+]
+
+{ #category : 'tests' }
+PCKLintRuleCheckTest >> testFixCommandOnAnswersWorkingCommand [
+	"Protocol conformance behaviorally (responds-to plus an actual preview, never class
+	identity), and the command is bound, not merely shaped: previewing finds exactly the
+	plant in the handed target - the invoker's packages, not the check's own (par. 1.3).
+	No apply is sent: this test mutates nothing."
+	| check command stream |
+	check := PCKLintRuleCheck rule: PCKNoIsNilIfTrueRule packages: #('Phi-Guardrails-SDK').
+	command := check fixCommandOn: #('Phi-Coding-Kit-Tests-Rules').
+	self assert: (command respondsTo: #previewOn:).
+	self assert: (command respondsTo: #apply).
+	self assert: (command respondsTo: #changes).
+	stream := WriteStream on: String new.
+	self assert: (command previewOn: stream) equals: 1.
+	self assert: (stream contents includesSubstring: 'withIsNilIfTrue')
+]
+
+{ #category : 'tests' }
 PCKLintRuleCheckTest >> testGreenOnCleanPackage [
 	"The frozen -SDK package is clean under the catalog rule (the constitution's own ifNil: mandate)."
 	| verdict |
@@ -20,11 +53,9 @@ PCKLintRuleCheckTest >> testGreenOnCleanPackage [
 
 { #category : 'tests' }
 PCKLintRuleCheckTest >> testKindIsLint [
-	"canFix stays the inherited false: the fix capability is E08's, not this chunk's."
 	| check |
 	check := PCKLintRuleCheck rule: PCKNoIsNilIfTrueRule packages: #('Phi-Guardrails-SDK').
-	self assert: check kind identicalTo: #lint.
-	self deny: check canFix
+	self assert: check kind identicalTo: #lint
 ]
 
 { #category : 'tests' }

@@ -1,5 +1,5 @@
 "
-The lint kind's check (ch. 2 par. 2.3): wraps one Renraku rule class plus its target package names and answers the D-03 verdict - #error-severity critiques become red findings, sub-#error critiques become advisories on a green verdict, no critiques means green. One rule = one registration = one verdict. The gate reads critiques only, never applies a rule's rewrite (R-12); the fix capability pair stays inherited-false until E08. Constructed via the kit-side rule:packages: - richer than the promised packages: because the kit owns this class. E08 amendment through the decision-sheet path (D-72): run scopes the checker with the class-side lintEnvironmentOver: composition, so a trait-provided method is linted at each using class's package.
+The lint kind's check (ch. 2 par. 2.3): wraps one Renraku rule class plus its target package names and answers the D-03 verdict - #error-severity critiques become red findings, sub-#error critiques become advisories on a green verdict, no critiques means green. One rule = one registration = one verdict. The gate reads critiques only, never applies a rule's rewrite (R-12); the fix capability pair (E08-C05): canFix is true exactly when the wrapped rule carries a rewrite recipe (D-74 - the mechanical fact; judgment lives at the mandatory preview), and fixCommandOn: answers a PCKFixCommand bound to the wrapped rule and the handed fix target. Constructed via the kit-side rule:packages: - richer than the promised packages: because the kit owns this class. E08 amendment through the decision-sheet path (D-72): run scopes the checker with the class-side lintEnvironmentOver: composition, so a trait-provided method is linted at each using class's package.
 "
 Class {
 	#name : 'PCKLintRuleCheck',
@@ -34,6 +34,23 @@ PCKLintRuleCheck class >> rule: aRuleClass packages: aCollectionOfPackageNames [
 	^ (self packages: aCollectionOfPackageNames)
 		setRule: aRuleClass;
 		yourself
+]
+
+{ #category : 'fixing' }
+PCKLintRuleCheck >> canFix [
+	"True exactly when the wrapped rule carries a rewrite recipe (D-74: capability is
+	the mechanical fact; apply-time judgment lives at the mandatory preview).
+	isRewriteRule is instance-side in Pharo 13 (P5 probe, E08-C02), hence the probe
+	instance."
+	^ rule new isRewriteRule
+]
+
+{ #category : 'fixing' }
+PCKLintRuleCheck >> fixCommandOn: aCollectionOfPackageNames [
+	"Answers the coding kit's fix-invocation implementation, bound to the wrapped rule
+	and the handed target (never this check's own packages - the invoker chooses the
+	fix target, par. 1.3)."
+	^ PCKFixCommand rule: rule packages: aCollectionOfPackageNames
 ]
 
 { #category : 'accessing' }
