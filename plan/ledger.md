@@ -61,6 +61,12 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | E05-C05 | E05 | accepted | E05-C04, E05-C01 | implementer-E05-C05 (picked @ 68f6f4a; accepted @ 5fad1d5, 170 run; B-21/B-22 filed) |
 | E05-C06 | E05 | accepted | E05-C05 | implementer-E05-C06 (picked @ 5a51f01; accepted @ 9339b07, 174 run) |
 | E05-C07 | E05 | accepted | E05-C05 (Q-34 ruled — D-75) | implementer-E05-C07 (picked @ 9339b07; committed @ 65bd022; Q-34 → D-75, arm 4 amended @ f250ad6; accepted post-re-run, arms 0/1/2/1-relayed) |
+| E09-C01 | E09 | todo | — | — |
+| E09-C02 | E09 | todo | — | — |
+| E09-C03 | E09 | todo | — | — |
+| E09-C04 | E09 | todo | — | — |
+| E09-C05 | E09 | todo | E09-C04 | — |
+| E09-C06 | E09 | todo | E09-C05 | — |
 
 ## Verify commands
 
@@ -113,6 +119,12 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 - **E05-C05** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 12 `PGRGateTest` + every previously accepted suite, ≥170 run — membership + floor)
 - **E05-C06** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 16 `PGRGateTest` + every previously accepted suite, ≥174 run — membership + floor; the three new fixture classes appear in no test-run line)
 - **E05-C07** — the four shell arms of its work order's checkpoint section (clean→0 · red→1 · malformed→2 · unloadable image→3) plus `bash tools/verify.sh` still green (≥174) and `guardrails.sh` tracked executable; see `plan/04-epics/E05-gate-report-invocation/C07-reference-runner.md` §VERIFY
+- **E09-C01** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 6 `PGRArchSelfTest` + every previously accepted suite, ≥180 run — membership + floor, never an exact ceiling)
+- **E09-C02** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 3 `PGRSurfaceConformanceTest` + every previously accepted suite, ≥177 run — parallel-landed E09 chunks add to the count; membership + floor)
+- **E09-C03** — two instruments, same commit: `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 3 `PGRToySweepExemptionTest` + 3 `PCKArtifactBlockM1FormTest` + every previously accepted suite, ≥180 run — membership + floor) **and** `PHARO_VM=.build/pharo/vm/Pharo.app/Contents/MacOS/Pharo IMAGE=.build/work/phi.image ./guardrails.sh guardrails.ston` → exit 0, 10 green registrations
+- **E09-C04** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 4 `PGRQuickstartSampleHarnessTest` + every previously accepted suite, ≥178 run — membership + floor)
+- **E09-C05** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; `testWriteACheckSamples` + 4 `PGRQuickstartSampleHarnessTest` + every previously accepted suite, ≥179 run — ≥194 once E09-C01–C03 are in per the listed serial pick order; membership + floor)
+- **E09-C06** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; both `PGRQuickstartSamplesTest` methods + every previously accepted suite, ≥195 run — membership + floor); then the E09 exit checkpoint = the M1 milestone boundary on the accepted head; see `plan/04-epics/E09-self-host-m1-freeze/chunks.md` §checkpoint
 
 ## Epic acceptance
 
@@ -386,3 +398,39 @@ deliverables; E07-C05/C06 share the `PCKKit`/`PCKKitTest` file pair). E07 runs
 E08's papers reciprocally cede that file) — E07 alone touches `PCKKit` after
 E06, and the eight C05-amended E06 tests are scheduled ground enumerated in the
 work order, never silent edits.
+
+**E09 rows (E09-C01–E09-C06) added by the seventh Prompt-4 run (2026-07-26;
+Gate 4 pending; epic-qualified IDs per D-73 — the counter is local to E09).**
+E09 is the M1 join epic: all three dependencies (E05 · E07 · E08) were
+`accepted` with frozen digests at cut time, and nothing runs `[P]` beside it.
+E09 `accepted` when all six rows are `accepted` and the exit checkpoint in
+`plan/04-epics/E09-self-host-m1-freeze/chunks.md` is filled in (the 21 new
+E09 tests — `PGRArchSelfTest` 6 · `PGRSurfaceConformanceTest` 3 ·
+`PGRToySweepExemptionTest` 3 · `PCKArtifactBlockM1FormTest` 3 ·
+`PGRQuickstartSampleHarnessTest` 4 · `PGRQuickstartSamplesTest` 2 — green
+with every previously accepted suite, ≥195 run, membership + floor · the
+self-hosted leg `./guardrails.sh guardrails.ston` exit 0 with 10 green
+registrations · D-67 precheck discipline with `E09-C##:`-prefixed commits ·
+CI leg, on one head commit) — at which point **milestone M1 closes** (the
+roadmap §1 checkpoint is exactly that set), the formal M1 mining pass runs
+over E02–E09, and E10's entry check (M2) can pass. Per the frozen roadmap:
+**no new frozen exports** — E09 delivers the machine witness over the
+already-frozen surfaces (P-SURFACE-CONFORMS, red-test-enforced from here)
+plus the committed M1 artifact form (grows only by scheduled epic edits;
+witnessed by `PCKArtifactBlockM1FormTest`). **Amended accepted surface:
+none** — every deliverable is a new file (five class files +
+`guardrails.ston`) or C06's scheduled extension of C05's own file; zero
+accepted test methods change. One forced move rides this cut, recorded
+veto-open in the chunk index: the two classless tests-role stub packages
+(`Phi-Guardrails-Tests-Toy`, `Phi-Coding-Kit-Tests-Architecture`) each gain
+one real pin-test class in E09-C03 — without them the frozen E07 missing
+semantics make R-38's self-hosted exit 0 unsatisfiable. Also recorded
+veto-open: the P-DETERMINISTIC Zinc-arm allowlist reconciliation with
+accepted B-15 ground, the D-59 test-home closure (`-Tests-Gate`), and the
+CI-stays-step-1 reading (the two-step upgrade is E15's frozen row). [P]
+eligibility (disjoint manifests): E09-C01 E09-C02 E09-C03 E09-C04;
+orchestrator runs them serialized — the COMMIT preconditions (clean tree at
+spawn) and the shared `.build/work` verify image make shared-tree
+concurrency unsound; disjointness stands as the reviewer's cross-check.
+C05→C06 strictly serial (shared `PGRQuickstartSamplesTest.class.st`; C05
+consumes C04's harness).
