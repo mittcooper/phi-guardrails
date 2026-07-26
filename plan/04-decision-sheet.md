@@ -192,3 +192,74 @@ script stays byte-identical to §7.3; the recommended exit-code remap was
 rejected as unnecessary rule-making; arm 4 documents the observed behavior
 (known v1 limitation); the hardening is widening scope (B-23, M5). C07
 unblocks.
+
+## Q-35 · Guide 2 sample 5 (`fixCommandOn:`) is a Pharo 13 syntax error — P-GUIDE-EXEC finding against a producer-owned guide
+
+Filed by the orchestrator from the E09-C05 completion report (2026-07-26),
+**verified independently before filing** (guide text read directly; the
+syntax error reproduced in-image — a headless compile of the verbatim body
+hangs on the resulting syntax-error debugger, corroborating the
+implementer's caught `OCSyntaxErrorNotice`). E09-C05 (`testWriteACheckSamples`)
+must execute every sample in `docs/quickstarts/02-write-a-check.md` verbatim
+through the C04 harness (P-GUIDE-EXEC). Sample 5 (§5, "the fix capability")
+does not compile:
+
+```
+AcmeClassCommentCheck >> fixCommandOn: packages
+    ^ "an object conforming to the fix-invocation protocol"
+```
+
+`^` (caret return) followed only by a comment, with no expression, is a hard
+Pharo 13 syntax error ("Variable or expression expected"). The harness
+`install:` compiles the whole sample body, so the `fixCommandOn:` segment
+aborts installation and sample 5 cannot be installed — the work order's step 2
+(`canFix` true witnessed on the installed skeleton) is unreachable. Notably
+the offending fence in the guide is preceded by a literal `⟨verify⟩` marker:
+these spellings were flagged for in-image verification and never confirmed.
+
+Every route around this is a forbidden move for the implementer — editing the
+guide, splitting/patching the sample in the harness, or dropping the sample-5
+install and the `canFix`-true assertion (OUT OF SCOPE: "Any edit to the
+guides, the harness, or any accepted file"; "a sample the surface no longer
+satisfies is a red test to report, not a document or product to patch"). This
+is the P-GUIDE-EXEC property working exactly as designed: the executable-guide
+check caught a real defect in an accepted, producer-owned file (D-59). The
+implementer correctly stopped and reported rather than compensate.
+
+**Everything else in the plan is verified green** (implementer probe against
+the C04-loaded image, orchestrator has not re-run but the arms are
+independent of sample 5): the named Symbol/String risk does **not** bite
+(`#Object = 'Object'` → true on this image, so sample 3's `f target =
+'AcmeUncommentedFixture'` holds); a commentless class's `comment` is `''`
+(empty, not nil), so sample 1's `run` fires/silences the fixture pair
+correctly; steps 1–4 (plain-class conformance + resolved registration,
+skeleton superclass + inherited `packages:`, fixture pair 2/2 green, gate
+report includes `architecture/AcmeClassCommentCheck`) all hold. Sample 5 is
+the sole blocker.
+
+**To rule:** the fix is a change to an accepted, producer-owned guide, which
+only the owner may authorize — (a) correct sample 5's `fixCommandOn:` to a
+compilable placeholder, recommended as the caret-free comment form matching
+sample 2's own `run "as above"` idiom — `fixCommandOn: packages    "an object
+conforming to the fix-invocation protocol"` (compiles; returns self, a lawful
+placeholder that satisfies existence/arity validation, which is all the
+sample-4 registration exercises) — or supply a real returnable placeholder
+expression; then re-accept the guide, and E09-C05 lands unchanged as
+specified. (b) Alternatively, if the guide is meant to show a non-compiling
+illustrative sketch here, amend P-GUIDE-EXEC / the C05 work order to exclude
+sample 5 from verbatim execution (a scope change to the property, not
+recommended — it puts a hole in the executable-guide guarantee).
+
+**Recommendation (orchestrator-relayed, implementer concurring):** (a), the
+caret-free comment form. It is the smallest correct change, matches an idiom
+the same guide already uses, keeps every sample verbatim-executable (the
+whole point of P-GUIDE-EXEC), and leaves the C05 work order untouched. (b)
+weakens the property to accommodate a typo.
+
+**Impact / blocking:** E09-C05 is `blocked` on this ruling. E09-C06 depends on
+C05 (`testBuildAKitSamples` is a scheduled addition to C05's same file), so it
+is blocked transitively. E09's exit checkpoint — which **is** the M1 milestone
+boundary — cannot close until both land. The rest of E09 (C01–C04) is accepted
+and green; only the two sample legs wait on this one guide correction.
+
+**Status:** **OPEN** — awaiting owner ruling.
