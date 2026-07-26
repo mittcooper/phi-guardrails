@@ -148,3 +148,43 @@ owner-strengthened — no flag-only category exists; `canFix` is the mechanical
 fact alone; per-application judgment lives at the mandatory preview. E08-C05
 amended under the ruling and unblocked; §3.2b gains an erratum at the next
 spec pass.
+
+## Q-34 · The §7.3 wrapper mapping is unsound on this toolchain: an unloadable image exits 1, not ∉ {0,1,2}
+
+Filed by the orchestrator from the E05-C07 completion report (2026-07-26;
+commit `65bd022`), reproduced independently before filing. The frozen §7.3
+contract script maps VM exit codes `0|1|2` straight through and treats
+anything else as "gate did not run to a verdict" (exit 3). Its stated
+assumption — "the image failing to load, the `PGRGate` class being absent, or
+the VM dying must never read as success" — does not hold for this VM build:
+feeding an empty/corrupt image file makes the VM itself exit **1**
+(`[ERROR] … Invalid image format: detected version 0, expected version
+68021`; reproduced twice by the implementer, once by the orchestrator, and
+confirmed with the VM invoked directly without the wrapper). Exit 1 is inside
+the wrapper's pass-through set, so a broken image reads as "RED — a check
+failed" rather than exit 3, and CI would report a real-looking violation
+verdict where no gate ever ran. Arms 1–3 are sound (0/1/2 exactly, verified);
+the committed script is byte-identical to §7.3 modulo the recorded
+`--headless` accommodation; the E05-C07 work order named exactly this
+observation as a stop-and-report decision-sheet finding (E15's
+P-WRAPPER-GUARD depends on the mapping's soundness). E05-C07 is `blocked` on
+this ruling; it is the last E05 chunk, so the epic checkpoint (runner leg:
+exit exactly 0/1/2/3) waits with it.
+
+**To rule:** (a) accept the gap as a known limitation for v1 — arm 4's
+expectation is amended to "documents the observed VM behavior" and
+P-WRAPPER-GUARD (E15) owns the real defense (e.g. a sentinel probe run before
+the gate run); (b) amend §7.3 so the image-side answer cannot collide with
+raw VM exits — e.g. `Smalltalk exit:` a shifted code set (gate answers
+0/1/2 → image exits 10/11/12, wrapper maps back, anything else → 3); or
+(c) keep the mapping and have the wrapper distinguish by scanning the run's
+output for the `GATE:`/error-line marker before honoring 0|1|2.
+
+**Recommendation (orchestrator-relayed, implementer concurring):** (b) — it
+makes the collision impossible by construction with a three-line wrapper
+change and one amended eval string, stays fully deterministic (P2, no output
+sniffing as in (c)), and keeps exit-code semantics the only contract; (a)
+leaves CI able to report a phantom RED until E15 lands. Amending frozen §7.3
+ground is precisely what the decision-sheet path is for.
+
+**Status:** OPEN — blocks E05-C07 acceptance and the E05 exit checkpoint.
