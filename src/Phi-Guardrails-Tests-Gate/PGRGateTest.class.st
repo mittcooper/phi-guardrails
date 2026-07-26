@@ -128,7 +128,7 @@ PGRGateTest >> testMissingRegistrationFailsGate [
 
 { #category : 'tests' }
 PGRGateTest >> testRunMutatesNoSource [
-	"Ch.-9-named, P-GATE-PURE (R-12): snapshot sourceCode of every method of the scratch check classes the run touches, keyed by selector, per class; run a gate over a red configuration; every snapshotted source is identical afterwards - the gate only reports."
+	"Ch.-9-named, P-GATE-PURE (R-12): snapshot sourceCode of every method of the scratch check classes the run touches, keyed by selector, per class; run a gate over a red configuration; every snapshotted source is identical afterwards - the gate only reports. Both-sides dictionary equality (not a live-side lookup loop) so a run that deletes a method - or every method - cannot pass silently: Dictionary >> = compares size and content together."
 	| greenBefore redBefore |
 	greenBefore := Dictionary new.
 	PGRScratchGreenCheck methods do: [ :m | greenBefore at: m selector put: m sourceCode ].
@@ -137,8 +137,10 @@ PGRGateTest >> testRunMutatesNoSource [
 	(self gateFromKitsFragment: '[ { #kit : ''PGRScratchSpecKit'', #specs : [
 		{ #name : ''scratch/G1'', #kind : ''scratch'', #check : ''PGRScratchGreenCheck'' },
 		{ #name : ''scratch/R1'', #kind : ''scratch'', #check : ''PGRScratchRedCheck'' } ] } ]') run.
-	PGRScratchGreenCheck methods do: [ :m | self assert: m sourceCode equals: (greenBefore at: m selector) ].
-	PGRScratchRedCheck methods do: [ :m | self assert: m sourceCode equals: (redBefore at: m selector) ]
+	self assert: (PGRScratchGreenCheck methods inject: Dictionary new into: [ :d :m | d at: m selector put: m sourceCode; yourself ])
+		equals: greenBefore.
+	self assert: (PGRScratchRedCheck methods inject: Dictionary new into: [ :d :m | d at: m selector put: m sourceCode; yourself ])
+		equals: redBefore
 ]
 
 { #category : 'tests' }
