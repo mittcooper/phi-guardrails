@@ -262,4 +262,8 @@ is blocked transitively. E09's exit checkpoint — which **is** the M1 milestone
 boundary — cannot close until both land. The rest of E09 (C01–C04) is accepted
 and green; only the two sample legs wait on this one guide correction.
 
-**Status:** **OPEN** — awaiting owner ruling.
+**Status:** **RULED** (owner word 2026-07-26) → **D-76**, owner-broadened: ALL
+quickstart guides must be REAL — every fence genuine executable code doing the
+actual lesson. Guide 2 §5 amended to a complete working fix object
+(`AcmeCommentFix`); the realness requirement lands as Drydock law. E09-C05
+unblocks.

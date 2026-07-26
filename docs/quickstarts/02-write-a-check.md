@@ -123,23 +123,60 @@ must implement class-side `severity` itself (`#error` blocks; `#warning` /
 
 ## 5 · Optional: the fix capability
 
-A check that can safely repair what it flags declares it: ⟨verify⟩
+A check that can safely repair what it flags declares it — and the declaration is a
+pair: `canFix` answers true, and `fixCommandOn:` answers a **complete working fix
+object** you own. Below is the whole thing for our running example — the fix that
+gives an uncommented class its comment *(verified executable: the M1 sample test
+runs this fence verbatim — D-76)*:
 
 ```smalltalk
 AcmeClassCommentCheck >> canFix
     ^ true
 
-AcmeClassCommentCheck >> fixCommandOn: packages
-    ^ "an object conforming to the fix-invocation protocol"
+AcmeClassCommentCheck >> fixCommandOn: packageNames
+    ^ AcmeCommentFix onPackages: packageNames
+
+Object << #AcmeCommentFix
+    slots: { #packages. #pending. #previewed };
+    package: 'Acme-Checks'
+
+AcmeCommentFix class >> onPackages: names
+    ^ self new setPackages: names
+
+AcmeCommentFix >> setPackages: names
+    packages := names.
+    pending := OrderedCollection new.
+    previewed := false
+
+AcmeCommentFix >> previewOn: aStream
+    pending := OrderedCollection new.
+    packages do: [ :pkgName |
+        ((PackageOrganizer default packageNamed: pkgName) definedClasses
+            select: [ :cls | cls comment isEmpty ])
+            do: [ :cls | pending add: cls ] ].
+    pending do: [ :cls |
+        aStream nextPutAll: cls name;
+            nextPutAll: ' -> will gain the comment (was empty)'; cr ].
+    previewed := true.
+    ^ pending size
+
+AcmeCommentFix >> apply
+    previewed ifFalse: [ self error: 'preview first - the diff you saw is the diff that applies' ].
+    pending do: [ :cls | cls comment: 'TODO: describe this class (written by AcmeCommentFix)' ].
+    ^ pending
+
+AcmeCommentFix >> changes
+    ^ pending copy
 ```
 
-The fix-invocation protocol is preview-first, always: construct → `previewOn:` (emits
-the full before/after diff; mandatory) → `apply` (refuses if anything changed since
-the preview) → `changes`. Three errors are catchable by class: `PGRNotAutofixable`
+That is the entire fix-invocation protocol, working: construct → `previewOn:` (emits
+the before/after per target; mandatory — `apply` refuses without it) → `apply` →
+`changes`. The kit's own `PCKFixCommand` adds what production fixes also need — the
+staleness re-read (`PGRFixStale` when a target drifted between preview and apply,
+nothing applied) — and three errors are catchable by class: `PGRNotAutofixable`
 (the check has no fix), `PGRFixNotPreviewed` (`apply` before any preview),
-`PGRFixStale` (the target drifted between preview and apply — nothing is applied).
-The gate itself never invokes a fix; checking never mutates. See spec ch. 3 §3.3 for
-the coding kit's reference implementation.
+`PGRFixStale`. The gate itself never invokes a fix; checking never mutates. See
+spec ch. 3 §3.3 for the coding kit's reference implementation.
 
 ---
 *Spec citations: ch. 1 §1.3 (protocol table, the `packages:` constructor,

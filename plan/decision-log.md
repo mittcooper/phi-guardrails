@@ -2585,3 +2585,30 @@ the next free number with substance unchanged — flagged to the owner at apply 
   **widening scope**: backlog B-23 (M5) carries it; E15's P-WRAPPER-GUARD
   self-test runs against the mapping as written. Build failures still fail
   loudly either way — the limitation is diagnostic labeling, not an escape.
+
+## D-76 · Q-35 ruled, owner-broadened: ALL quickstart guides must be REAL — sample 5 becomes a working fix
+
+- **From:** Q-35 (`plan/04-decision-sheet.md` — E09-C05's P-GUIDE-EXEC run caught
+  guide 2 §5's `fixCommandOn:` sample as a hard Pharo 13 syntax error: `^`
+  followed only by a comment — a never-discharged ⟨verify⟩ placeholder from the
+  guide's Gate-2-era authoring; implementer stop-and-report, orchestrator
+  reproduced independently) · **Ruled by:** human — binding, owner word of
+  2026-07-26: "ALL QUICK GUIDES must be REAL" · **Date:** 2026-07-26
+- **Ruling:** beyond the one sample — **a quickstart guide demonstrates the real
+  thing or it is defective.** Every code fence in every guide must be genuine,
+  compiling, executable code performing the actual lesson; placeholders,
+  pseudocode, and stub bodies wearing sample costume are defects of the same
+  class as a test that cannot fail. Guide 2 §5 is amended under this entry from
+  the placeholder to a **complete working fix object** (`AcmeCommentFix`:
+  construct → preview-first guard → `previewOn:` emitting per-target lines →
+  `apply` writing real class comments → `changes`), in the same single fence
+  (C04's fence-count pin holds). Spellings probed before drafting
+  (`.build/scratch/q35/` — `comment:` setter and empty-comment read confirmed);
+  the standing verifier is E09-C05 itself, which executes the fence verbatim.
+- **Consequences:** guide audit run under this entry: the §5 placeholder was the
+  ONLY fake code in any guide (guides 1–3 swept for caret-comment and
+  placeholder patterns). Guide 1's fences stay marked ⟨verify⟩ until their M4
+  discharge (E15) — this ruling binds that pass: illustrative-only fences are
+  findings there. The realness requirement lands as method law (Drydock, both
+  lines) in the same stroke. E09-C05 unblocks; C06 follows; the E09 checkpoint
+  (= the M1 boundary) may close.
