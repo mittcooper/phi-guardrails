@@ -267,3 +267,86 @@ quickstart guides must be REAL — every fence genuine executable code doing the
 actual lesson. Guide 2 §5 amended to a complete working fix object
 (`AcmeCommentFix`); the realness requirement lands as Drydock law. E09-C05
 unblocks.
+
+## Q-36 · D-76's enriched guide-2 sample 5 outruns the accepted C04 harness parser — second class definition, mid-fence
+
+Filed by the orchestrator from the E09-C05 re-pick completion report
+(2026-07-26), **verified independently** (harness driven against the committed
+guide in a rebuilt work image at `e4ad139`: installing sample 5 verbatim
+raises a compile failure — `Syntax Error … 'Undeclared variable'` /
+`OCUndeclaredVariableNotice` on `AcmeCommentFix`, matching the implementer's
+caught `KeyNotFound: #AcmeCommentFix` and `NewUndeclaredWarning:
+AcmeClassCommentCheck>>fixCommandOn: (AcmeCommentFix is Undeclared)`).
+
+D-76 replaced sample 5's placeholder with a complete working fix object. The
+fence now carries **two class definitions**: method listings on the
+pre-existing `AcmeClassCommentCheck` (`canFix`, `fixCommandOn:`) **followed
+by** a *second* fluid class definition `Object << #AcmeCommentFix …` **placed
+mid-fence** (after those method listings), then five method listings on
+`AcmeCommentFix`. The accepted E09-C04 harness (`PGRQuickstartSampleHarness`,
+frozen at epic acceptance) installs a fluid class definition **only from the
+pre-header segment** — the lines before the first listing header. Its
+`isListingHeader:` matches only `Name >> sel` / `Name class >> sel`, so
+`Object << #AcmeCommentFix` is not recognized as a definition boundary; those
+lines are absorbed as body into the preceding `fixCommandOn:` segment,
+`AcmeCommentFix` is never created, and the subsequent `AcmeCommentFix class >>
+onPackages:` segment fails to resolve its target class. The harness's model is
+**one class definition per sample, pre-header only**; D-76's sample introduces
+a shape (two definitions, the second interior) that model does not cover.
+
+This is again the P-GUIDE-EXEC verifier doing its job (D-76's own words: "this
+very test is its verifier") — it caught that the enriched guide and the
+accepted harness surface are not yet reconciled. The three routes to green are
+all forbidden to the implementer: edit the guide (producer-owned, D-59), edit
+the frozen C04 harness (accepted surface — needs its own chunk + decision-log
+entry), or hand-parse sample 5 inside the test (executes *not through the
+harness*, defeating P-GUIDE-EXEC and the "verbatim through the C04 harness"
+letter). The implementer correctly stopped and reported.
+
+**Everything else is verified in-image and ready** (implementer probe,
+orchestrator-confirmed on the risk items): the Symbol/String risk does **not**
+bite (`#AcmeUncommentedFixture = 'AcmeUncommentedFixture'` → true, `cls name`
+is a `ByteSymbol`); an uncommented class answers `comment isNil` false /
+`comment isEmpty` true, so sample 1's `run` fires/silences correctly. Only
+sample 5's install shape blocks; the other four samples land per the work
+order once sample 5 is installable.
+
+**To rule** — pick how sample 5 is made installable verbatim (the orchestrator
+recommends (a)):
+
+- **(a) Reshape sample 5 in the guide so the `Object << #AcmeCommentFix`
+  definition leads the fence** (pre-header), with every method listing — for
+  both `AcmeClassCommentCheck` and `AcmeCommentFix` — following it. Installable
+  by the current harness **unchanged**: the pre-header segment installs
+  `AcmeCommentFix`; each following listing compiles into its named class
+  (`AcmeClassCommentCheck` already exists from sample 1's install in step 2;
+  `AcmeCommentFix` now exists). No accepted-surface change, no work-order
+  change, fence inventory unchanged (still one `smalltalk` fence → C04's pin
+  `#(smalltalk smalltalk smalltalk ston smalltalk)` holds). Cost: the guide's
+  narration order shifts (introduce the fix object first, then wire it onto the
+  check) — a producer/owner call on an accepted file. **Recommended** — minimal,
+  keeps every sample verbatim-executable, touches only the guide.
+- **(b) Extend the C04 harness** to recognize any `Super << #Name` line as a
+  class-definition boundary (multiple definitions, interleaved with method
+  listings), not only pre-header. A change to the frozen E09-C04 surface → a
+  new chunk + decision-log entry; larger blast radius, and it generalizes the
+  harness beyond what any current guide needs except this one.
+- **(c) Split sample 5 into two fences** (the check's `canFix`/`fixCommandOn:`;
+  and the `AcmeCommentFix` class). Changes guide 2's frozen fence inventory —
+  `samplesIn:` would answer 6 samples, not 5 — reddening C04's two accepted
+  inventory pin tests (`PGRQuickstartSampleHarnessTest`), so it drags an
+  amendment to accepted E09-C04 ground along with it.
+
+**Recommendation (orchestrator-relayed, implementer concurring):** (a). It
+satisfies D-76's realness law (the fence stays genuinely executable, and this
+test still verifies it), needs no change to any accepted code surface or work
+order, and is the smallest edit. (b) reshapes an accepted interface for one
+sample; (c) reddens accepted pins and amends E09-C04.
+
+**Impact / blocking:** E09-C05 remains `blocked`. E09-C06 stays blocked
+transitively (its `testBuildAKitSamples` is a scheduled addition to C05's
+file; note guide 3's own §5-style samples should be checked for the same
+two-definitions-per-fence shape before C06 runs). E09's exit checkpoint — the
+M1 milestone boundary — waits on both. C01–C04 remain accepted and green.
+
+**Status:** **OPEN** — awaiting owner ruling.

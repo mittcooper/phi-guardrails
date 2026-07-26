@@ -65,7 +65,7 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | E09-C02 | E09 | accepted | — | implementer-E09-C02 (picked @ 0dc0e82; committed @ f401511; accepted @ f401511, 183 run — verify green, reviewer accept) |
 | E09-C03 | E09 | accepted | — | implementer-E09-C03 (picked @ f401511; committed @ b3e384d; accepted @ b3e384d, 189 run + self-hosted gate exit 0 / 10 GREEN — both instruments verified, reviewer accept) |
 | E09-C04 | E09 | accepted | — | implementer-E09-C04 (picked @ b3e384d; committed @ ff8e473; accepted @ ff8e473, 193 run + self-hosted gate exit 0 — both legs verified, reviewer accept; SmalltalkCI-selector question → backlog B-26) |
-| E09-C05 | E09 | blocked | E09-C04 | implementer-E09-C05 (picked @ 8809f00; STOP-AND-REPORT — guide-2 sample 5 `fixCommandOn:` is a Pharo 13 syntax error, P-GUIDE-EXEC finding against producer-owned guide; escalated → Q-35, OPEN; steps 1–4 verified green, sample 5 sole blocker) |
+| E09-C05 | E09 | blocked | E09-C04 | implementer-E09-C05 (round 1 @ 8809f00 → Q-35 ruled D-76, guide 2 §5 amended @ e4ad139; re-pick round 2 @ e4ad139 → STOP-AND-REPORT: D-76's enriched sample 5 has a 2nd class def mid-fence that outruns the frozen C04 harness parser (one pre-header def only) — install fails `AcmeCommentFix` undeclared; verified independently; escalated → Q-36, OPEN. Other 4 samples verified ready; sample-5 install shape sole blocker) |
 | E09-C06 | E09 | todo | E09-C05 | — |
 
 ## Verify commands
