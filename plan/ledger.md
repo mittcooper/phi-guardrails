@@ -54,6 +54,13 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | E07-C04 | E07 | accepted | E07-C03 | implementer-E07-C04 (picked @ 51c6af7; accepted @ d1528c6, 138 run) |
 | E07-C05 | E07 | accepted | E07-C04 | implementer-E07-C05 (picked @ b8a0317; accepted @ 627cea1, 143 run; amendment table exact, 5 untouched byte-identical; nit to C06/backlog: suite-spec packages-reader truthfulness unpinned; B-17 corroborated by red-run fuel debris) |
 | E07-C06 | E07 | accepted | E07-C05 | implementer-E07-C06 (picked @ f528a23; accepted @ f569549, 144 run — E07 checkpoint leg 1) |
+| E05-C01 | E05 | todo | — | — |
+| E05-C02 | E05 | todo | — | — |
+| E05-C03 | E05 | todo | E05-C02 | — |
+| E05-C04 | E05 | todo | E05-C03 | — |
+| E05-C05 | E05 | todo | E05-C04, E05-C01 | — |
+| E05-C06 | E05 | todo | E05-C05 | — |
+| E05-C07 | E05 | todo | E05-C05 | — |
 
 ## Verify commands
 
@@ -99,6 +106,13 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 - **E07-C04** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 3 `PCKNoSkippedTestsMetaRuleTest` incl. both P-GATE-SKIP tests + every previously accepted suite, ≥102 run — membership + floor)
 - **E07-C05** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 4 new + 8 amended `PCKKitTest` and 4 `PCKTestSuiteCheckTest` + every previously accepted suite, ≥107 run — membership + floor)
 - **E07-C06** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; `testRecommendedBlockParsesAndConforms` + both amended stanza tests + every previously accepted suite, ≥108 run — the E07 exit-checkpoint leg 1; see `plan/04-epics/E07-behavioral-kind/chunks.md` §checkpoint)
+- **E05-C01** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 38 `PGRConfigurationTest` (35 accepted byte-identical + 3 new) + every previously accepted suite, ≥151 run — membership + floor, never an exact ceiling)
+- **E05-C02** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 7 `PGRReportTest` + every previously accepted suite, ≥155 run — membership + floor)
+- **E05-C03** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 4 `PGRGateTest` + 7 `PGRReportTest` + every previously accepted suite, ≥159 run — ≥162 once E05-C01's 3 tests are in per the listed serial pick order; membership + floor)
+- **E05-C04** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 8 `PGRGateTest` + every previously accepted suite, ≥163 run — ≥166 once E05-C01 is in per the listed serial pick order; membership + floor)
+- **E05-C05** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 12 `PGRGateTest` + every previously accepted suite, ≥170 run — membership + floor)
+- **E05-C06** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 16 `PGRGateTest` + every previously accepted suite, ≥174 run — membership + floor; the three new fixture classes appear in no test-run line)
+- **E05-C07** — the four shell arms of its work order's checkpoint section (clean→0 · red→1 · malformed→2 · unloadable image→3) plus `bash tools/verify.sh` still green (≥174) and `guardrails.sh` tracked executable; see `plan/04-epics/E05-gate-report-invocation/C07-reference-runner.md` §VERIFY
 
 ## Epic acceptance
 
@@ -202,6 +216,33 @@ used the intermediate text and was terminated under the owner's stop-and-report
 notice — standing rule adopted: foreign uncommitted tree state at pick time is a
 stop-and-report, never adopt-and-commit); one API-error implementer restart
 (no state lost); no fix round-trips. B-18/B-19 filed from this epic's reviews.
+
+**E05 rows (E05-C01–E05-C07) added by the sixth Prompt-4 run (2026-07-25; Gate 4
+pending; epic-qualified IDs per D-73 — the counter is local to E05, so no
+collision with any concurrent cut is possible by construction).** E05
+`accepted` when all seven rows are `accepted` and the exit checkpoint in
+`plan/04-epics/E05-gate-report-invocation/chunks.md` is filled in (the 26 new
+E05 tests — `PGRReportTest` 7 · `PGRGateTest` 16 · `PGRConfigurationTest` +3 —
+green with every previously accepted suite, ≥174 run, membership + floor · the
+E05-C07 runner leg's four shell arms exiting exactly 0/1/2/3 · D-67 precheck
+discipline with `E05-C##:`-prefixed commits · CI leg, on one head commit) — at
+which point E05's interface digest (the gate-caller SDK — `runHeadless:` /
+`runHeadless:on:` / `forConfiguration:` / `onVerdict:` / `run` /
+`PGRReport`'s five readers — the exit-code contract 0/1/2, and the reference
+runner's ∉{0,1,2}→3 mapping, tabled in that file) freezes, and **E09's entry
+check can pass on all three prerequisites (E05 · E07 · E08)**. Owner-scheduled
+ground riding this cut, placements annotated per D-61.a: B-15 → E05-C01 (the
+one chunk touching accepted files: `fromFile:` wrap widening with its scripted
+consumer table; accepted tests amended: zero, additive only); the E04
+validation ADVISORY → E05-C06 (kit-raised `PGRConfigurationError`, headless +
+direct arms). Cross-epic completions recorded in the chunk index: P-ERR-IS-RED,
+P-GATE-MISSING, and P-REG-FRESH all complete at E05-C04; P-CFG-STRICT gains
+two additive arms at E05-C01. [P] eligibility (disjoint manifests): E05-C01
+E05-C02 E05-C07; orchestrator runs them serialized — the COMMIT preconditions
+(clean tree at spawn) and the shared `.build/work` verify image make
+shared-tree concurrency unsound; disjointness stands as the reviewer's
+cross-check. C03–C06 are strictly serial (shared
+`PGRGate.class.st`/`PGRGateTest.class.st` file pair).
 
 **E06 rows (C12–C18) added by the third Prompt-4 run (2026-07-25).** E06
 `accepted` when all seven rows are `accepted` and the exit checkpoint in
