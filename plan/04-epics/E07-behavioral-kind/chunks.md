@@ -125,7 +125,24 @@ amendments need a decision-sheet entry):**
   `#lintRules` (the two catalog rules), `#metaRules`
   (`'PCKNoSkippedTestsMetaRule'`).
 
-Checkpoint result (filled at acceptance): —
+Checkpoint result (filled at acceptance, 2026-07-25): **PASS — all three legs
+green on head `f569549`.** Leg 1: orchestrator-run
+`bash tools/build-image.sh && bash tools/verify.sh` → exit 0, **144 run, 144
+passes, 0 failures, 0 errors** — the 20 new E07 tests
+(`PCKBehavioralFixturesTest` 5 · `PCKSuiteRunCacheTest` 3 ·
+`PCKTestSuiteCheckTest` 4 · `PCKNoSkippedTestsMetaRuleTest` 3 · `PCKKitTest`
++5, with the 9 scheduled amendments in final form) listed by name with every
+previously accepted suite; the four fixture classes appear in no test-run line
+(sweep exemption held). Properties discharged: P-GATE-SKIP (both named tests) ·
+P-SUITES-BEFORE-META · P-GATE-MISSING suite half (gate half → E05) ·
+P-STANZA-VALID · P-CAT-FIXTURES (behavioral — both R-37 pairs). Leg 2:
+`tools/precheck.sh` green at every pick (`c962f6c` · `6f9eea9` · `64b711f` ·
+`51c6af7` · `b8a0317` · `f528a23`); all six commits carry D-73 `E07-C##:` IDs.
+Leg 3: CI run **30181950983** `completed success` on `f569549`. No fix
+round-trips this epic; one implementer-session stall (E07-C03, post-commit —
+artifact unaffected, report recovered). The C05 amendment-scope law held under
+a deterministic check: the five untouched `PCKKitTest` methods byte-identical
+across the epic.
 
 ## Addendum — validation record and post-PASS punch list (2026-07-25)
 

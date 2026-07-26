@@ -53,7 +53,7 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | E07-C03 | E07 | accepted | E07-C02 | implementer-E07-C03 (picked @ 64b711f; accepted @ 4024f30, 132 run; stall post-commit, report recovered; advisory to C05: wiring test may also pin packages-reader truthfulness) |
 | E07-C04 | E07 | accepted | E07-C03 | implementer-E07-C04 (picked @ 51c6af7; accepted @ d1528c6, 138 run) |
 | E07-C05 | E07 | accepted | E07-C04 | implementer-E07-C05 (picked @ b8a0317; accepted @ 627cea1, 143 run; amendment table exact, 5 untouched byte-identical; nit to C06/backlog: suite-spec packages-reader truthfulness unpinned; B-17 corroborated by red-run fuel debris) |
-| E07-C06 | E07 | todo | E07-C05 | — |
+| E07-C06 | E07 | accepted | E07-C05 | implementer-E07-C06 (picked @ f528a23; accepted @ f569549, 144 run — E07 checkpoint leg 1) |
 
 ## Verify commands
 
@@ -164,6 +164,25 @@ only via decision-sheet entry while E05 is in flight. E05's entry check can pass
 (E04-C05 fix 1, inert mutation arm); the Gate-4 addendum's ADVISORY (kit-raised
 error propagation untested — obedient scratch kit) stands recorded for the E05
 cut. E04's B-17 (fuel-snapshot dirt) was filed at C01 acceptance.
+
+**E07: ACCEPTED 2026-07-25.** All six chunks accepted; exit checkpoint filled in
+(`plan/04-epics/E07-behavioral-kind/chunks.md`, three legs green on head `f569549`:
+the 20 new E07 tests within a 144/144 sweep discharging P-GATE-SKIP (both),
+P-SUITES-BEFORE-META, P-GATE-MISSING (suite half; gate half → E05),
+P-STANZA-VALID, and P-CAT-FIXTURES (behavioral) · precheck green at every pick
+with D-73-qualified commits · CI run 30181950983). E07's interface digest —
+behavioral registration naming incl. the `behavioral/tests-role` sentinel, the
+completed four-stage order law, `PCKSuiteRunCache`'s one-message protocol (one
+cache per `registrationsFrom:` call), the kit-side wiring spellings
+(`PCKTestSuiteCheck package:cache:` · `PCKNoSkippedTestsMetaRule packages:cache:`),
+and the complete three-key `recommendedBlock` (tabled in that file) — is hereby
+frozen; amendments need a decision-sheet entry. E09's entry check can count E07
+satisfied (E09 still needs E05 and E08). No fix round-trips this epic; one
+implementer-session stall (E07-C03, post-commit, report recovered); the C05
+amendment table applied exactly (five untouched methods byte-identical —
+deterministic check). B-20 filed at close (suite-spec `packages`-reader
+truthfulness unpinned — the C03→C05 carried nit, outside C06's manifest);
+B-17's fuel-debris hazard was corroborated live at C05's red run.
 
 **E06 rows (C12–C18) added by the third Prompt-4 run (2026-07-25).** E06
 `accepted` when all seven rows are `accepted` and the exit checkpoint in
