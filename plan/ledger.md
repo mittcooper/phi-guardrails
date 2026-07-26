@@ -52,7 +52,7 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | E07-C02 | E07 | accepted | E07-C01 | implementer-E07-C02 (picked @ 6f9eea9; accepted @ b2bcca4, 126 run) |
 | E07-C03 | E07 | accepted | E07-C02 | implementer-E07-C03 (picked @ 64b711f; accepted @ 4024f30, 132 run; stall post-commit, report recovered; advisory to C05: wiring test may also pin packages-reader truthfulness) |
 | E07-C04 | E07 | accepted | E07-C03 | implementer-E07-C04 (picked @ 51c6af7; accepted @ d1528c6, 138 run) |
-| E07-C05 | E07 | todo | E07-C04 | — |
+| E07-C05 | E07 | accepted | E07-C04 | implementer-E07-C05 (picked @ b8a0317; accepted @ 627cea1, 143 run; amendment table exact, 5 untouched byte-identical; nit to C06/backlog: suite-spec packages-reader truthfulness unpinned; B-17 corroborated by red-run fuel debris) |
 | E07-C06 | E07 | todo | E07-C05 | — |
 
 ## Verify commands
