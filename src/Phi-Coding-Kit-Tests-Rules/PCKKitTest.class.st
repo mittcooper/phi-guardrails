@@ -61,12 +61,89 @@ PCKKitTest >> testDerivesOneSuiteRegistrationPerTestsRolePackage [
 ]
 
 { #category : 'tests' }
+PCKKitTest >> testGenericArchitectureCheckStillUsesPackagesConstructor [
+	"R-21 / §4.3 regression: a non-owned arch check keeps the generic promised packages: path untouched by the PCKLayerMapCheck special case - resolved into an architecture spec whose check carries the handed production role."
+	| block specs spec |
+	block := Dictionary new.
+	block at: #architectureChecks put: #('PCKArchStubCheck').
+	specs := PCKKit
+		registrationsFrom: block
+		productionPackages: #('P-One' 'P-Two')
+		testsPackages: #().
+	self assert: specs size equals: 2.
+	spec := specs first.
+	self assert: spec name equals: 'architecture/PCKArchStubCheck'.
+	self assert: spec kind identicalTo: #architecture.
+	self assert: spec check class equals: PCKArchStubCheck.
+	self assert: spec check packages equals: #('P-One' 'P-Two')
+]
+
+{ #category : 'tests' }
+PCKKitTest >> testLayerMapCheckConstructedWithMapWhenRegistered [
+	"§4.3: the kit owns PCKLayerMapCheck and, when #architectureChecks names it with a present covering #layerMap over loaded packages, constructs it via layerMap: (richer than the generic packages:) into a resolved architecture spec whose check is a PCKLayerMapCheck of kind #architecture."
+	| block specs spec |
+	block := Dictionary new.
+	block at: #architectureChecks put: #('PCKLayerMapCheck').
+	block at: #layerMap put: { #layers -> ({ 'p' -> #('Phi-Coding-Kit-Architecture') } asDictionary). #allowed -> #() } asDictionary.
+	specs := PCKKit
+		registrationsFrom: block
+		productionPackages: #('Phi-Coding-Kit-Architecture')
+		testsPackages: #().
+	self assert: specs size equals: 2.
+	spec := specs first.
+	self assert: spec name equals: 'architecture/PCKLayerMapCheck'.
+	self assert: spec kind identicalTo: #architecture.
+	self assert: spec check class equals: PCKLayerMapCheck.
+	self assert: spec check kind identicalTo: #architecture.
+	"Discriminates the layerMap: construction from the inherited generic packages: path:
+	built via layerMap:, the inherited packages ivar is never set, so it is nil."
+	self assert: spec check packages isNil
+]
+
+{ #category : 'tests' }
+PCKKitTest >> testLayerMapCheckMissingWhenLayerPackageUnloaded [
+	"§1.5 unloaded arm: a declared layer package present in the handed production role (so the completeness law passes on names) but not loaded in the image yields the missing architecture spec, its reason naming the unloaded package - loaded-ness is the kit's gate, never the check's walk."
+	| block specs spec |
+	block := Dictionary new.
+	block at: #architectureChecks put: #('PCKLayerMapCheck').
+	block at: #layerMap put: { #layers -> ({ 'p' -> #('PCK-No-Such-Package') } asDictionary). #allowed -> #() } asDictionary.
+	specs := PCKKit
+		registrationsFrom: block
+		productionPackages: #('PCK-No-Such-Package')
+		testsPackages: #().
+	self assert: specs size equals: 2.
+	spec := specs first.
+	self assert: spec name equals: 'architecture/PCKLayerMapCheck'.
+	self assert: spec kind identicalTo: #architecture.
+	self assert: spec check isNil.
+	self assert: (spec missingReason includesSubstring: 'PCK-No-Such-Package')
+]
+
+{ #category : 'tests' }
+PCKKitTest >> testLayerMapCheckMissingWhenNoMap [
+	"§1.5: #layerMap is PCKLayerMapCheck's required parameter key; naming the check in #architectureChecks with no #layerMap yields the missing architecture spec (no check), its reason naming the absent key."
+	| block specs spec |
+	block := Dictionary new.
+	block at: #architectureChecks put: #('PCKLayerMapCheck').
+	specs := PCKKit
+		registrationsFrom: block
+		productionPackages: #('P-One')
+		testsPackages: #().
+	self assert: specs size equals: 2.
+	spec := specs first.
+	self assert: spec name equals: 'architecture/PCKLayerMapCheck'.
+	self assert: spec kind identicalTo: #architecture.
+	self assert: spec check isNil.
+	self assert: (spec missingReason includesSubstring: 'layerMap')
+]
+
+{ #category : 'tests' }
 PCKKitTest >> testLayerMapKeyProducesNoRegistrationsAndNoError [
-	"#layerMap is a parameter key, not a check list: a present map is carried, unread and unregistered until E10 gives it its consumer and its shape validation."
+	"#layerMap is a parameter key, not a check list: a present, valid, covering map is validated (E10-C06) but - absent a PCKLayerMapCheck entry in #architectureChecks - contributes no registration of its own; the specs are exactly the lint and behavioral-sentinel pair, no error."
 	| block specs |
 	block := Dictionary new.
 	block at: #lintRules put: #('PCKNoIsNilIfTrueRule').
-	block at: #layerMap put: { #layers -> Dictionary new } asDictionary.
+	block at: #layerMap put: { #layers -> ({ 'p' -> #('P-One') } asDictionary). #allowed -> #() } asDictionary.
 	specs := PCKKit
 		registrationsFrom: block
 		productionPackages: #('P-One')
@@ -150,6 +227,19 @@ PCKKitTest >> testOwnMetaRuleRidesTheRunCache [
 	self assert: metaSpec check class equals: PCKNoSkippedTestsMetaRule.
 	self assert: metaSpec check packages equals: #('Phi-Coding-Kit-Fixtures-Behavioral').
 	self assert: metaSpec check cache identicalTo: specs first check cache
+]
+
+{ #category : 'tests' }
+PCKKitTest >> testPresentButUncoveringLayerMapSignals [
+	"§4.1: a present #layerMap is validated at block-open - its layers and #unlayered must jointly cover the production role - regardless of whether PCKLayerMapCheck is registered. A map that leaves a production package covered nowhere raises a configuration error naming that uncovered package (here 'P-Two', the accepted C02 completeness law naming the offending production-role package)."
+	| block |
+	block := Dictionary new.
+	block at: #layerMap put: { #layers -> ({ 'p' -> #('P-One') } asDictionary). #allowed -> #() } asDictionary.
+	self
+		should: [ PCKKit registrationsFrom: block productionPackages: #('P-One' 'P-Two') testsPackages: #() ]
+		raise: PGRConfigurationError
+		withExceptionDo: [ :error |
+			self assert: (error messageText includesSubstring: 'P-Two') ]
 ]
 
 { #category : 'tests' }
