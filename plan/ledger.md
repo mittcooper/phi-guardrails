@@ -71,8 +71,8 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | E10-C02 | E10 | accepted | E10-C01 | implementer-E10-C02 (picked @ 91cac09; committed @ 3bbdb9d; accepted @ 3bbdb9d, 212 run + self-hosted gate exit 0 / 10 M1 registrations unchanged, C01 methods byte-intact 157/0 — verify + gate verified, reviewer accept; B-27 filed) |
 | E10-C03 | E10 | accepted | — | implementer-E10-C03 (picked @ 66b1c4e; committed @ a40cb6b; accepted @ a40cb6b, 216 run + self-hosted gate exit 0 / 10 M1 registrations unchanged, support class unswept — verify + gate verified, reviewer accept) |
 | E10-C04 | E10 | accepted | E10-C01, E10-C02, E10-C03 | implementer-E10-C04 (two prior spawns died to environment — infra stall, then a false foreign-dirt halt on a stale snapshot; re-spawned @ a40cb6b; committed @ 2b9791c; accepted @ 2b9791c, 221 run + self-hosted gate exit 0 / 10 M1 registrations unchanged, instanceSide confirmed — verify + gate verified, reviewer accept; §4.2/PGRVerdict advisory Q → Q-37, conservative arm implemented, owner-pending) |
-| E10-C05 | E10 | todo | E10-C02, E10-C03, E10-C04 | — |
-| E10-C06 | E10 | todo | E10-C02, E10-C04 | — |
+| E10-C05 | E10 | accepted | E10-C02, E10-C03, E10-C04 | implementer-E10-C05 (picked @ fe40b2f; committed @ afc582c; accepted @ afc582c, 225 run + self-hosted gate exit 0 / 10 M1 registrations unchanged, C04 methods byte-identical 73/0 — verify + gate verified, reviewer accept) |
+| E10-C06 | E10 | accepted | E10-C02, E10-C04 | implementer-E10-C06 (picked @ afc582c; committed @ b994a3e; accepted @ b994a3e, 230 run + self-hosted gate exit 0 / 10 M1 registrations unchanged; amendment table held — one accepted test amended, generic arch path byte-identical — verify + gate verified, reviewer accept) |
 
 ## Verify commands
 
@@ -383,6 +383,57 @@ advisories (guide-1 not-choking untested until M4; the harness's
 one-pre-header-definition-per-fence constraint, now a documented limit after
 D-77). **E10's entry check (M2) can pass; per the owner's standing notice,
 work stops here for the owner's M1 milestone gate.**
+
+**E10: ACCEPTED 2026-07-27 — M2's first epic (the layer-map check).** All six
+chunks accepted; the exit checkpoint (`plan/04-epics/E10-layer-map-check/chunks.md`
+§checkpoint) is met on head `b994a3e`, three legs: (1) **named suite** — the four
+E10 suites `PCKLayerMapTest` (17) · `PCKLayerMapFixtureTest` (4) ·
+`PCKLayerMapCheckTest` (9) · `PCKKitTest` (+5 new, 1 amended) within a **230/230**
+sweep, 0 failures/0 errors, discharging **P-LAYERMAP-TOTAL** (config arms +
+advisory arm), **P-FINDING-PRECISE**, **P-CAT-FIXTURES (arch)** (the fires/silent
+fixture pair), and the **D-79/D-79.a** semantics (the four C05 witnesses); (2)
+**self-hosted gate leg** — `./guardrails.sh guardrails.ston` → exit 0 with its
+**10 M1 registrations unchanged** (E10 adds no entry to the framework's own
+artifact — that is E11; this leg proves E10 did not disturb the self-hosted M1
+form); (3) **CI leg** — CI run **30284092618** `completed success` on `b994a3e`.
+Each leg re-run by the orchestrator independently, never on report.
+
+**Interface digest — frozen at acceptance (amendments need a decision-sheet
+entry):** the **`#layerMap` key format** (config-author surface) — the three-key
+sub-map `#layers` / `#allowed` / `#unlayered` with D-79/D-79.a semantics
+(self-reference implicit, allowed pairs directed one-way non-transitive, internal
+client→client only, layers + `#unlayered` total over the production role via the
+D-35 completeness law) — **E11 consumes this to self-host the map**; and the
+registration **`architecture/PCKLayerMapCheck`** (the kit's one shipped
+architecture check, resolved from an `#architectureChecks` entry naming
+`PCKLayerMapCheck` with a present `#layerMap`; absent map or unloaded layer package
+→ the missing sentinel of that name). Internal/unfrozen: `PCKLayerMap`'s selectors
+and `PCKLayerMapCheck class>>layerMap:` (the engine validates only `PGRCheck`'s E02
+contract); the walk's reflective spellings (`referencedClasses`, `instanceSide`
+P5-confirmed); `PCKLayerMapFixture`. **Amended accepted surface:** exactly one
+accepted test, in E10-C06 —
+`PCKKitTest>>testLayerMapKeyProducesNoRegistrationsAndNoError` (scheduled ground:
+the `#layerMap` consumer E06 deferred to E10); the enumeration was scripted over
+committed `src/` and the generic `packages:` arch path stayed byte-identical,
+reviewer-verified.
+
+Epic history: C01/C02/C03/C05/C06 landed on first review; **E10-C04's two prior
+implementer spawns died to the environment** — an infra stream-watchdog stall,
+then a false foreign-dirt stop-and-report on a stale session-start git snapshot
+(the tree was clean; precheck passed) — neither a fix round-trip; C04 landed green
+on the third spawn (the integrator now prefixes every implementer brief with an
+authoritative live pick-time tree-state note). **Q-37 filed** (E10-C04): §4.2 step
+4 vs the frozen `PGRVerdict` — the `#unlayered` advisory can attach only to green
+verdicts (no `redFindings:advisories:` constructor); the conservative
+advisory-on-green arm is implemented and green, owner-pending, non-blocking.
+E10-C06 carried two sound deviations (reviewer-verified): the uncovering-map test
+names `'P-Two'` not `'P-One'` (the frozen C02 fault-order makes the single-package
+case unreachable), and a `spec check packages isNil` assertion de-vacuifies the
+construction test (`PCKLayerMapCheck` inherits `packages:` from `PGRCheck`, so the
+generic path would pass every other assertion vacuously). **Not a milestone
+boundary** (E10 is M2's first epic) — no formal mining pass; **E11's entry check
+can pass.** Per the owner's E10 release notice, work stops here to report for epic
+acceptance.
 
 **E06 rows (C12–C18) added by the third Prompt-4 run (2026-07-25).** E06
 `accepted` when all seven rows are `accepted` and the exit checkpoint in
