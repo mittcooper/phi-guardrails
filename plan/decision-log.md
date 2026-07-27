@@ -2665,3 +2665,33 @@ the next free number with substance unchanged — flagged to the owner at apply 
 - **Roadmap steering: M2 re-confirmed as frozen** — E10 (layer-map check) → E11
   (src inventory + the completed §7.5 artifact). E09's veto-opens close with this
   gate per D-16.
+
+## D-79 · The layer-map semantics ruled (the M1-gate audit's finding; owner words 2026-07-26)
+
+- **From:** the D-78 unattributed-intent audit — ch. 4 §4.1's "Implicit rules,
+  fixed" stated three semantics tracing to no requirement or ruling, in the exact
+  chapter E10 executes next. Presented as three use-walk cases; ruled before any
+  producer runs.
+- **Ruling 1 — CONFIRMED:** a layer may always reference itself (intra-layer
+  references need no declaration).
+- **Ruling 2 — CONFIRMED, with the direction made explicit:** allowed pairs are
+  directed and **not transitive** (`ui→domain` + `domain→persistence` does not
+  grant `ui→persistence`) — **and a declared pair grants ONE direction only:
+  `ui→domain` does not infer `domain→ui`**; the reverse direction is a separate
+  declaration. Every permitted edge is written down; nothing is inferred.
+- **Ruling 3 — OVERRULED (the fabrication):** §4.1's "references to classes in no
+  declared layer (kernel, frameworks, anything unmapped) are ignored — the check
+  polices only declared layers" is **not the direction that was given**. Owner's
+  words: **"all dependencies must be declared."** Silent ignoring of unmapped
+  references is the silence-as-success hole at the layer level — the exact shape
+  D-25's scope law closed for roles (disjoint + total; an unassigned package is
+  loud). The layer walk must be total over its ground in the same spirit: an
+  undeclared dependency is a loud finding, never an invisible one.
+- **Consequences:** ch. 4 §4.1 gains its erratum under this entry. The operational
+  boundary of "all" (how declared-ness extends to non-client ground — kernel and
+  framework classes) is a design consequence put to the owner as a use-walk
+  BEFORE the E10 cut; its answer rides this entry as D-79.a. Ch. 9's
+  P-LAYERMAP-TOTAL reading (advisory line for unlayered packages) is reconciled
+  by the E10 cut against this ruling — if the letter conflicts, the cut files the
+  question rather than harmonizing silently. The E10 producer cites D-79, not
+  §4.1's original prose.

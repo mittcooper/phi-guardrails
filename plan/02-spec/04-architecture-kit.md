@@ -39,6 +39,15 @@ and **not** transitive (`ui→domain` and `domain→persistence` do not grant
 `ui→persistence`) · references to classes in no declared layer (kernel, frameworks,
 anything unmapped) are ignored — the check polices only declared layers.
 
+*Erratum (D-79, M1 gate — the unattributed-intent audit's finding; these three
+rules traced to no ruling):* rule 1 **confirmed**; rule 2 **confirmed and
+sharpened** — a declared pair grants one direction only (`ui→domain` does not
+infer `domain→ui`; the reverse is its own declaration); rule 3 **OVERRULED** —
+owner: "all dependencies must be declared." Unmapped references are not silently
+ignored; an undeclared dependency is loud (the D-25 scope-law spirit at the layer
+level). The boundary treatment of non-client ground rides D-79.a; E10 builds
+against D-79, not this paragraph's original text.*
+
 ## 4.2 The check (v1's one shipped architecture test, R-43)
 
 **`PCKLayerMapCheck`** — a `PGRCheck` (kind `#architecture`), registered by name in the
