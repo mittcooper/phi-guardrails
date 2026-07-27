@@ -67,8 +67,8 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | E09-C04 | E09 | accepted | — | implementer-E09-C04 (picked @ b3e384d; committed @ ff8e473; accepted @ ff8e473, 193 run + self-hosted gate exit 0 — both legs verified, reviewer accept; SmalltalkCI-selector question → backlog B-26) |
 | E09-C05 | E09 | accepted | E09-C04 | implementer-E09-C05 (round 1 @ 8809f00 → Q-35/D-76 guide amend; round 2 @ e4ad139 → Q-36/D-77 fence reshape; round 3 re-pick @ a568bf8; committed @ 4b42d0e; accepted @ 4b42d0e, 194 run + self-hosted gate exit 0 — both instruments verified, reviewer accept) |
 | E09-C06 | E09 | accepted | E09-C05 | implementer-E09-C06 (picked @ 4b42d0e; committed @ c50a064; accepted @ c50a064, 195 run + self-hosted gate exit 0, C05 methods byte-identical 92/0 — both instruments verified, reviewer accept) |
-| E10-C01 | E10 | todo | — | — |
-| E10-C02 | E10 | todo | E10-C01 | — |
+| E10-C01 | E10 | accepted | — | implementer-E10-C01 (picked @ 0a25d0d; committed @ 91cac09; accepted @ 91cac09, 205 run + self-hosted gate exit 0 / 10 M1 registrations unchanged — verify + gate verified, reviewer accept) |
+| E10-C02 | E10 | accepted | E10-C01 | implementer-E10-C02 (picked @ 91cac09; committed @ 3bbdb9d; accepted @ 3bbdb9d, 212 run + self-hosted gate exit 0 / 10 M1 registrations unchanged, C01 methods byte-intact 157/0 — verify + gate verified, reviewer accept; B-27 filed) |
 | E10-C03 | E10 | todo | — | — |
 | E10-C04 | E10 | todo | E10-C01, E10-C02, E10-C03 | — |
 | E10-C05 | E10 | todo | E10-C02, E10-C03, E10-C04 | — |
