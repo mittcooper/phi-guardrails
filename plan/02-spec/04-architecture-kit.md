@@ -74,6 +74,13 @@ client-supplied map, R-19; the client writes the entry, D-51). Registration name
    §4.1's line naming the `#unlayered` packages (D-35), restating in every report what
    the map declines to judge (property P-LAYERMAP-TOTAL, ch. 9).
 
+*Erratum (D-80, Q-37 ruled at E10 acceptance): "every report" here — and §4.1's
+echo of it — reads "every **clean** report." The frozen E02 `PGRVerdict` has no
+red-with-advisories constructor; the owner ruled advisory-on-green-only the
+permanent contract (a red verdict carries findings only; the advisory reappears
+on the next clean run). If every-report fidelity is ever wanted, B-24 (the
+full-fidelity STON report) is its home, not a `PGRVerdict` amendment.*
+
 **Finding precision (R-20):** each finding's target is the offending method printed as
 `Class>>#selector`; its message names both ends and the verdict of the map, e.g.
 `ToyWidget>>#render references ToyDatabase — layer 'ui' → 'persistence' is not allowed`.

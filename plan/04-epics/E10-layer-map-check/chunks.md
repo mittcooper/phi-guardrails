@@ -147,4 +147,10 @@ Internal / unfrozen: `PCKLayerMap`'s selectors and `PCKLayerMapCheck class>>laye
 generic contract the engine validates is `PGRCheck`'s, E02's); the walk's reflective
 spellings; `PCKLayerMapFixture`.
 
-Checkpoint result (filled at acceptance): _pending._
+Checkpoint result (filled at acceptance, 2026-07-27): **GREEN on head `b994a3e`**
+— leg 1: verify 230/230, 0 failures / 0 errors (`PCKLayerMapTest` 17 ·
+`PCKLayerMapFixtureTest` 4 · `PCKLayerMapCheckTest` 9 · `PCKKitTest`
++5/1-amended); leg 2: `./guardrails.sh guardrails.ston` exit 0, 10 M1
+registrations unchanged; leg 3: CI run 30284092618 success on the same head.
+Interface digest above **frozen**; Q-37 ruled at acceptance (D-80,
+advisory-on-green-only). E11's entry check can pass.

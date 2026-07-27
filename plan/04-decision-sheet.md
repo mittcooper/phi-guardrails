@@ -399,4 +399,6 @@ recorded either way.
 conservative arm; the epic proceeds. This is an owner-pending wording/surface
 question, not a gate on any E10 chunk.
 
-**Status:** **OPEN** — awaiting owner ruling.
+**Status:** **RULED — D-80, option (a)** (owner word 2026-07-27):
+advisory-on-green-only is the permanent contract; §4.2 step 4 erratum landed
+under D-80 ("every report" → "every clean report").

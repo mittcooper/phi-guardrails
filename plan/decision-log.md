@@ -2717,3 +2717,25 @@ the next free number with substance unchanged — flagged to the owner at apply 
   the marked-void pattern; nothing is unjudged silently.
 - **Consequences:** ch. 4 erratum extended with the seam line + B-02 pointer;
   the E10 producer builds against D-79 + D-79.a, never §4.1's original prose.
+
+## D-80 · Q-37 ruled: the `#unlayered` advisory rides clean reports only (option a; owner word 2026-07-27)
+
+- **From:** Q-37 (`plan/04-decision-sheet.md` — E10-C04 hit the frozen E02
+  `PGRVerdict`: it has no `redFindings:advisories:` constructor, so §4.2 step 4's
+  "advisory in every report" cannot be implemented on red verdicts. The
+  conservative arm was implemented and the conflict filed, not silently
+  harmonized.)
+- **Ruling — option (a):** advisory-on-green-only is the **permanent contract**.
+  A clean run's verdict carries the one advisory naming the `#unlayered`
+  packages; a red verdict carries findings only. §4.2 step 4 (and §4.1's echo of
+  "every report") gain the erratum under this entry: the wording is "every
+  **clean** report."
+- **Rationale (the use-walk that carried the recommendation):** the advisory is a
+  completeness note — "these client packages sit outside the map, unjudged." On a
+  red run the report already demands action on live violations; the note
+  reappears the moment the run is green. Option (b) would reopen a frozen E02
+  surface for a constructor nothing else in the framework needs.
+- **Consequences:** ch. 4 erratum beside §4.2 step 4; Q-37 closed on the sheet.
+  The `redFindings:advisories:` gap stays recorded; if every-report fidelity is
+  ever wanted, **B-24** (the full-fidelity STON report) is its natural home — not
+  a `PGRVerdict` amendment.
