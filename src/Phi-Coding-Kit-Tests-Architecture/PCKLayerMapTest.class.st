@@ -144,6 +144,100 @@ PCKLayerMapTest >> testParsesLayersAllowedAndUnlayered [
 ]
 
 { #category : 'tests' }
+PCKLayerMapTest >> testEmptyUnlayeredWithTotalLayersConstructsCleanly [
+	"Production fully partitioned by layers, no #unlayered: constructs clean, #unlayered empty."
+	| layersDict map |
+	layersDict := Dictionary new
+		at: 'ui' put: #( 'A-Ui' );
+		at: 'domain' put: #( 'A-Domain' );
+		yourself.
+	map := PCKLayerMap
+		fromLayerMap: (self layerMapWithLayers: layersDict allowed: #() unlayered: nil)
+		productionPackages: #( 'A-Ui' 'A-Domain' ).
+	self assert: map unlayered isEmpty
+]
+
+{ #category : 'tests' }
+PCKLayerMapTest >> testFullyCoveringMapConstructsCleanly [
+	"Layers cover A-Ui/A-Domain and #unlayered covers A-Glue: the map covers the production
+	role exactly once, so construction succeeds."
+	| layersDict map |
+	layersDict := Dictionary new
+		at: 'ui' put: #( 'A-Ui' );
+		at: 'domain' put: #( 'A-Domain' );
+		yourself.
+	map := PCKLayerMap
+		fromLayerMap: (self layerMapWithLayers: layersDict allowed: #() unlayered: #( 'A-Glue' ))
+		productionPackages: #( 'A-Ui' 'A-Domain' 'A-Glue' ).
+	self assert: (map layerOfPackageNamed: 'A-Ui') equals: 'ui'.
+	self assert: (map unlayered includes: 'A-Glue')
+]
+
+{ #category : 'tests' }
+PCKLayerMapTest >> testLayerNamesNonProductionPackageSignals [
+	"Fault 4: a layer naming a package outside the production role signals, naming it (D-25)."
+	| layersDict sub error |
+	layersDict := Dictionary new
+		at: 'ui' put: #( 'A-Foreign' );
+		at: 'domain' put: #( 'A-Domain' );
+		yourself.
+	sub := self layerMapWithLayers: layersDict allowed: #() unlayered: #().
+	error := nil.
+	[ PCKLayerMap fromLayerMap: sub productionPackages: #( 'A-Domain' ) ]
+		on: PGRConfigurationError do: [ :e | error := e ].
+	self assert: error notNil.
+	self assert: (error messageText includesSubstring: 'A-Foreign')
+]
+
+{ #category : 'tests' }
+PCKLayerMapTest >> testLayeredAndUnlayeredOverlapSignals [
+	"Fault 3 (P-LAYERMAP-TOTAL): a package both layered and in #unlayered signals, naming it."
+	| layersDict sub error |
+	layersDict := Dictionary new
+		at: 'domain' put: #( 'A-Domain' );
+		yourself.
+	sub := self layerMapWithLayers: layersDict allowed: #() unlayered: #( 'A-Domain' ).
+	error := nil.
+	[ PCKLayerMap fromLayerMap: sub productionPackages: #( 'A-Domain' ) ]
+		on: PGRConfigurationError do: [ :e | error := e ].
+	self assert: error notNil.
+	self assert: (error messageText includesSubstring: 'A-Domain')
+]
+
+{ #category : 'tests' }
+PCKLayerMapTest >> testPackageInTwoLayersSignals [
+	"Fault 2: a package declared in two layers breaks pairwise disjointness; the error names it."
+	| layersDict sub error |
+	layersDict := Dictionary new
+		at: 'ui' put: #( 'A-Ui' );
+		at: 'domain' put: #( 'A-Ui' );
+		yourself.
+	sub := self layerMapWithLayers: layersDict allowed: #() unlayered: #().
+	error := nil.
+	[ PCKLayerMap fromLayerMap: sub productionPackages: #( 'A-Ui' ) ]
+		on: PGRConfigurationError do: [ :e | error := e ].
+	self assert: error notNil.
+	self assert: (error messageText includesSubstring: 'A-Ui')
+]
+
+{ #category : 'tests' }
+PCKLayerMapTest >> testUnassignedProductionPackageSignals [
+	"Fault 1 (P-LAYERMAP-TOTAL): a production package in no layer and not in #unlayered signals,
+	naming it — the D-79 ruling-3 hole is loud, never invisibly ignored."
+	| layersDict sub error |
+	layersDict := Dictionary new
+		at: 'ui' put: #( 'A-Ui' );
+		at: 'domain' put: #( 'A-Domain' );
+		yourself.
+	sub := self layerMapWithLayers: layersDict allowed: #() unlayered: #().
+	error := nil.
+	[ PCKLayerMap fromLayerMap: sub productionPackages: #( 'A-Ui' 'A-Domain' 'A-Orphan' ) ]
+		on: PGRConfigurationError do: [ :e | error := e ].
+	self assert: error notNil.
+	self assert: (error messageText includesSubstring: 'A-Orphan')
+]
+
+{ #category : 'tests' }
 PCKLayerMapTest >> testUnlayeredDefaultsToEmptyWhenAbsent [
 	"Absent #unlayered reads as empty, never nil."
 	| map |
@@ -151,4 +245,19 @@ PCKLayerMapTest >> testUnlayeredDefaultsToEmptyWhenAbsent [
 		(self layerMapWithLayers: self layersUi allowed: #() unlayered: nil).
 	self assert: map unlayered notNil.
 	self assert: map unlayered isEmpty
+]
+
+{ #category : 'tests' }
+PCKLayerMapTest >> testUnlayeredNamesNonProductionSignals [
+	"Fault 5 (P-LAYERMAP-TOTAL): an #unlayered entry outside the production role signals, naming it."
+	| layersDict sub error |
+	layersDict := Dictionary new
+		at: 'ui' put: #( 'A-Ui' );
+		yourself.
+	sub := self layerMapWithLayers: layersDict allowed: #() unlayered: #( 'A-NotProduction' ).
+	error := nil.
+	[ PCKLayerMap fromLayerMap: sub productionPackages: #( 'A-Ui' ) ]
+		on: PGRConfigurationError do: [ :e | error := e ].
+	self assert: error notNil.
+	self assert: (error messageText includesSubstring: 'A-NotProduction')
 ]

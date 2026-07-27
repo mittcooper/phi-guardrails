@@ -43,9 +43,57 @@ PCKLayerMap class >> fromLayerMap: aLayerMapSubMap [
 			unlayered: (self validatedUnlayeredFrom: aLayerMapSubMap)
 ]
 
+{ #category : 'instance creation' }
+PCKLayerMap class >> fromLayerMap: aLayerMapSubMap productionPackages: aCollectionOfProductionNames [
+	"Answer the value read from a well-formed #layerMap sub-map that also satisfies the
+	completeness law (spec §4.1 / D-35) over the production role, or signal
+	PGRConfigurationError on the first fault. Shape-parses via fromLayerMap: (C01 faults
+	unchanged), then requires the layers and #unlayered to jointly cover every production-role
+	package exactly once: a package in two layers, a layered or #unlayered package outside the
+	production role, a package both layered and #unlayered, or an uncovered production package
+	each raises, naming the offender. Internal-only by D-79.a — external references are B-02's
+	ground, not judged here."
+	| map |
+	map := self fromLayerMap: aLayerMapSubMap.
+	self validate: map coversExactly: aCollectionOfProductionNames.
+	^ map
+]
+
 { #category : 'validating' }
 PCKLayerMap class >> isStringList: anObject [
 	^ anObject isArray and: [ anObject allSatisfy: [ :each | each isString ] ]
+]
+
+{ #category : 'validating' }
+PCKLayerMap class >> validate: aLayerMap coversExactly: aCollectionOfProductionNames [
+	"Enforce the completeness law of aLayerMap over the production-role names (D-35): the
+	layers and #unlayered jointly cover every production package exactly once. Raises the
+	first fault found, naming the offending package (and the conflict for the disjointness /
+	overlap faults). Faults, in check order: a package in more than one layer; a layered
+	package outside the production role; an #unlayered package outside the production role; a
+	package both layered and #unlayered; and, last, a production package covered nowhere."
+	| productionSet layerCounts unlayeredNames |
+	productionSet := aCollectionOfProductionNames asSet.
+	layerCounts := Dictionary new.
+	aLayerMap layers valuesDo: [ :packageNames |
+		packageNames do: [ :name |
+			layerCounts at: name put: (layerCounts at: name ifAbsent: [ 0 ]) + 1 ] ].
+	layerCounts keysAndValuesDo: [ :name :count |
+		count > 1 ifTrue: [
+			PGRConfigurationError signal: 'Package ' , name printString , ' is declared in more than one layer' ] ].
+	layerCounts keysDo: [ :name |
+		(productionSet includes: name) ifFalse: [
+			PGRConfigurationError signal: 'Layer names non-production-role package ' , name printString ] ].
+	unlayeredNames := aLayerMap unlayered.
+	unlayeredNames do: [ :name |
+		(productionSet includes: name) ifFalse: [
+			PGRConfigurationError signal: '#unlayered names non-production-role package ' , name printString ] ].
+	unlayeredNames do: [ :name |
+		(layerCounts includesKey: name) ifTrue: [
+			PGRConfigurationError signal: 'Package ' , name printString , ' is both layered and in #unlayered' ] ].
+	aCollectionOfProductionNames do: [ :name |
+		((layerCounts includesKey: name) or: [ unlayeredNames includes: name ]) ifFalse: [
+			PGRConfigurationError signal: 'Production-role package ' , name printString , ' is in no layer and not in #unlayered' ] ]
 ]
 
 { #category : 'validating' }
