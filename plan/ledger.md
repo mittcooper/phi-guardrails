@@ -67,6 +67,12 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | E09-C04 | E09 | accepted | — | implementer-E09-C04 (picked @ b3e384d; committed @ ff8e473; accepted @ ff8e473, 193 run + self-hosted gate exit 0 — both legs verified, reviewer accept; SmalltalkCI-selector question → backlog B-26) |
 | E09-C05 | E09 | accepted | E09-C04 | implementer-E09-C05 (round 1 @ 8809f00 → Q-35/D-76 guide amend; round 2 @ e4ad139 → Q-36/D-77 fence reshape; round 3 re-pick @ a568bf8; committed @ 4b42d0e; accepted @ 4b42d0e, 194 run + self-hosted gate exit 0 — both instruments verified, reviewer accept) |
 | E09-C06 | E09 | accepted | E09-C05 | implementer-E09-C06 (picked @ 4b42d0e; committed @ c50a064; accepted @ c50a064, 195 run + self-hosted gate exit 0, C05 methods byte-identical 92/0 — both instruments verified, reviewer accept) |
+| E10-C01 | E10 | todo | — | — |
+| E10-C02 | E10 | todo | E10-C01 | — |
+| E10-C03 | E10 | todo | — | — |
+| E10-C04 | E10 | todo | E10-C01, E10-C02, E10-C03 | — |
+| E10-C05 | E10 | todo | E10-C02, E10-C03, E10-C04 | — |
+| E10-C06 | E10 | todo | E10-C02, E10-C04 | — |
 
 ## Verify commands
 
@@ -125,6 +131,13 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 - **E09-C04** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 4 `PGRQuickstartSampleHarnessTest` + every previously accepted suite, ≥178 run — membership + floor)
 - **E09-C05** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; `testWriteACheckSamples` + 4 `PGRQuickstartSampleHarnessTest` + every previously accepted suite, ≥179 run — ≥194 once E09-C01–C03 are in per the listed serial pick order; membership + floor)
 - **E09-C06** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; both `PGRQuickstartSamplesTest` methods + every previously accepted suite, ≥195 run — membership + floor); then the E09 exit checkpoint = the M1 milestone boundary on the accepted head; see `plan/04-epics/E09-self-host-m1-freeze/chunks.md` §checkpoint
+
+- **E10-C01** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 10 `PCKLayerMapTest` + every previously accepted suite, ≥205 run — membership + floor, never an exact ceiling)
+- **E10-C02** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 17 `PCKLayerMapTest` incl. the three P-LAYERMAP-TOTAL config arms + every previously accepted suite, ≥212 run — membership + floor)
+- **E10-C03** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 4 `PCKLayerMapFixtureTest` + every previously accepted suite, ≥199 run — membership + floor; `PCKLayerMapFixture` appears in no test-run line)
+- **E10-C04** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 5 `PCKLayerMapCheckTest` incl. P-FINDING-PRECISE + P-CAT-FIXTURES(arch) + P-LAYERMAP-TOTAL advisory + every previously accepted suite, ≥221 run — membership + floor)
+- **E10-C05** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 9 `PCKLayerMapCheckTest` incl. the four D-79/D-79.a semantics witnesses + every previously accepted suite, ≥225 run — membership + floor)
+- **E10-C06** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; `PCKKitTest` with the amended `testLayerMapKeyProducesNoRegistrationsAndNoError` + 5 new dispatch tests, the generic-arch path green + every previously accepted suite, ≥226 run — membership + floor; C05's 4 independent of C06 — the E10 exit-checkpoint leg 1; see `plan/04-epics/E10-layer-map-check/chunks.md` §checkpoint) **and** `./guardrails.sh guardrails.ston` → exit 0, 10 M1 registrations unchanged (E10 adds none — regression leg)
 
 ## Epic acceptance
 
@@ -515,3 +528,39 @@ spawn) and the shared `.build/work` verify image make shared-tree
 concurrency unsound; disjointness stands as the reviewer's cross-check.
 C05→C06 strictly serial (shared `PGRQuickstartSamplesTest.class.st`; C05
 consumes C04's harness).
+
+**E10 rows (E10-C01–E10-C06) added by the eighth Prompt-4 run (2026-07-26;
+Gate 4 pending; epic-qualified IDs per D-73 — the counter is local to E10).**
+First M2 epic; **M1 closed (D-78)**. Entry check: roadmap approved and frozen
+(D-62); E10's roadmap dependencies **E06** (frozen @ `0c4fb7b`) and **E02**
+(frozen @ `5f2fc60`) are both `accepted` with frozen digests. E10 builds against
+**D-79 + D-79.a**, never ch. 4 §4.1's original prose (the M1-gate audit's
+fabricated-intent finding): the layer map judges internal client→client
+dependencies only (total over the production role via the D-35 completeness
+law), self-references implicit, allowed pairs directed one-way non-transitive;
+external references are B-02's separate ground, out of this epic by ruling.
+**Self-hosting the layer map is E11's, not E10's** — the M1 artifact form froze
+at E09; E10 delivers the mechanism and proves it on a scratch mini-fixture, and
+its exit checkpoint's self-hosted leg asserts the 10 M1 registrations are
+**unchanged** (E10 adds none). E10 `accepted` when all six rows are `accepted`
+and the exit checkpoint in `plan/04-epics/E10-layer-map-check/chunks.md` is
+filled in (the named suites — `PCKLayerMapTest` 17 · `PCKLayerMapFixtureTest` 4 ·
+`PCKLayerMapCheckTest` 9 · `PCKKitTest` +5/1-amended — green with every
+previously accepted suite, ≥230 run (195 + 35 net new), membership + floor · the
+self-hosted gate regression leg exit 0 with 10 registrations · CI leg, on one
+head commit) — at
+which point E10's interface digest (the `#layerMap` key format + the
+`architecture/PCKLayerMapCheck` registration, tabled in that file) freezes and
+**E11's entry check can pass**. **Amended accepted surface: exactly one test**,
+in E10-C06 (scheduled ground — the `#layerMap` consumer E06 deferred to E10):
+`PCKKitTest>>testLayerMapKeyProducesNoRegistrationsAndNoError`, enumerated by
+script (E10-C06's amendment table; no other consumer). **One question filed**
+(E10-C04): §4.2's every-report advisory vs the frozen `PGRVerdict` having no
+red+advisories constructor — implemented advisory-on-green-only, owner to rule;
+no frozen surface amended. `[P]` eligibility (disjoint manifests): E10-C01/C02
+(the `PCKLayerMap` file pair) run beside E10-C03 (the fixture file pair);
+orchestrator runs picks serialized — the COMMIT preconditions (clean tree at
+spawn) and the shared `.build/work` verify image make shared-tree concurrency
+unsound; disjointness stands as the reviewer's cross-check. C04 consumes
+C01+C02+C03; C05 extends C04's test file (and uses C02's
+`fromLayerMap:productionPackages:`); C06 consumes C02+C04 — strictly serial.
