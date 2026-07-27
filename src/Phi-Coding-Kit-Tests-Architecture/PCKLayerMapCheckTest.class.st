@@ -58,6 +58,61 @@ PCKLayerMapCheckTest >> subMapLayers: layersDict allowed: allowedArray unlayered
 ]
 
 { #category : 'tests' }
+PCKLayerMapCheckTest >> testAllowedPairIsNotTransitive [
+	"D-79 ruling 2 (transitivity): #allowed granting ui->domain and domain->persistence does NOT
+	infer ui->persistence; the ui view's persistence reach is a finding. Reddens if run ever
+	transitively closes allowed pairs."
+	PCKLayerMapFixture install.
+	[ | map verdict |
+	map := self mapFromLayers: self layersUiDomainPersistence
+		allowed: { { 'ui'. 'domain' }. { 'domain'. 'persistence' } }
+		unlayered: nil.
+	verdict := (PCKLayerMapCheck layerMap: map) run.
+	self assert: (verdict findings anySatisfy: [ :f |
+		f target = 'PCKScratchUiView>>#usesPersistence' ]) ]
+		ensure: [ PCKLayerMapFixture remove ]
+]
+
+{ #category : 'tests' }
+PCKLayerMapCheckTest >> testAllowedPairIsOneWay [
+	"D-79 ruling 2 (direction): #allowed = ['ui','domain'] grants ui->domain only (persistence
+	#unlayered so the map is total and the sole judged edges are ui<->domain). The domain->ui
+	reach IS a finding; the granted ui->domain reach is NOT. Reddens if run treats allowed pairs
+	as symmetric."
+	PCKLayerMapFixture install.
+	[ | map verdict |
+	map := self mapFromLayers: self layersUiDomain
+		allowed: { { 'ui'. 'domain' } }
+		unlayered: { PCKLayerMapFixture persistencePackageName }.
+	verdict := (PCKLayerMapCheck layerMap: map) run.
+	self assert: (verdict findings anySatisfy: [ :f |
+		f target = 'PCKScratchDomainModel>>#usesUi' ]).
+	self deny: (verdict findings anySatisfy: [ :f |
+		f target = 'PCKScratchUiView>>#usesDomain' ]) ]
+		ensure: [ PCKLayerMapFixture remove ]
+]
+
+{ #category : 'tests' }
+PCKLayerMapCheckTest >> testExternalReferenceIsOutOfScope [
+	"D-79 ruling 3 x D-79.a: a reference from a layered class to a kernel class (in no declared
+	layer) is never judged here - that is B-02's ground. Under a map whose declared ui->persistence
+	edge fires (so the walk is proven non-vacuous), no finding mentions OrderedCollection and none
+	targets the external reach. Reddens if run ever judges external references."
+	PCKLayerMapFixture install.
+	[ | map verdict |
+	map := self mapFromLayers: self layersUiDomainPersistence
+		allowed: { { 'ui'. 'domain' }. { 'domain'. 'persistence' } }
+		unlayered: nil.
+	verdict := (PCKLayerMapCheck layerMap: map) run.
+	self deny: verdict findings isEmpty.
+	self deny: (verdict findings anySatisfy: [ :f |
+		f message includesSubstring: 'OrderedCollection' ]).
+	self deny: (verdict findings anySatisfy: [ :f |
+		f target = 'PCKScratchUiView>>#usesExternal' ]) ]
+		ensure: [ PCKLayerMapFixture remove ]
+]
+
+{ #category : 'tests' }
 PCKLayerMapCheckTest >> testFiresOnForbiddenReference [
 	"P-CAT-FIXTURES bad / P-FINDING-PRECISE: with ui->persistence not granted (only ui->domain
 	and domain->persistence), the walk emits a precise finding for the ui view's persistence
@@ -98,6 +153,24 @@ PCKLayerMapCheckTest >> testKindIsArchitecture [
 	[ | map |
 	map := self mapFromLayers: self layersUiDomainPersistence allowed: #() unlayered: nil.
 	self assert: (PCKLayerMapCheck layerMap: map) kind equals: #architecture ]
+		ensure: [ PCKLayerMapFixture remove ]
+]
+
+{ #category : 'tests' }
+PCKLayerMapCheckTest >> testSelfReferenceNeedsNoDeclaration [
+	"D-79 ruling 1: an intra-layer reference needs no #allowed entry - the ui->ui usesSibling reach
+	is silently fine even though the map declares no ui->ui pair. The map grants every declared
+	edge the fixture uses, so it is otherwise green (a non-vacuous witness: were run to require a
+	self entry, usesSibling would redden this green map). No finding targets the self reach."
+	PCKLayerMapFixture install.
+	[ | map verdict |
+	map := self mapFromLayers: self layersUiDomainPersistence
+		allowed: { { 'ui'. 'domain' }. { 'ui'. 'persistence' }. { 'domain'. 'persistence' }. { 'domain'. 'ui' } }
+		unlayered: nil.
+	verdict := (PCKLayerMapCheck layerMap: map) run.
+	self assert: verdict isGreen.
+	self deny: (verdict findings anySatisfy: [ :f |
+		f target = 'PCKScratchUiView>>#usesSibling' ]) ]
 		ensure: [ PCKLayerMapFixture remove ]
 ]
 
