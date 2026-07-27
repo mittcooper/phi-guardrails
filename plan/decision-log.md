@@ -2695,3 +2695,25 @@ the next free number with substance unchanged — flagged to the owner at apply 
   by the E10 cut against this ruling — if the letter conflicts, the cut files the
   question rather than harmonizing silently. The E10 producer cites D-79, not
   §4.1's original prose.
+
+## D-79.a · Internal and external dependencies are separate concerns (owner word: "ruled.", 2026-07-26)
+
+- **From:** the D-79 boundary question ("all dependencies must be declared" — what
+  of kernel/framework ground?); the owner's design insight: *"should we separate
+  defined application layer checks (internal dependencies) from external
+  dependencies? These are two diff things."*
+- **Ruling:** they are two different things, separated by ruling. **(1) The layer
+  map judges INTERNAL dependencies only** — client class → client class, total
+  over client ground (an unmapped client package is loud), directed one-way
+  non-transitive pairs per D-79. E10 cuts exactly this; the frozen roadmap row
+  holds. **(2) External dependencies (kernel, frameworks) are a SEPARATE check**,
+  declared-allowance shape — a shared base list plus per-layer/scope allowances,
+  anything unmatched is loud — carried by backlog B-02, whose row is amended
+  under this entry from deny-list shape to allowance shape (the D-69/D-74
+  anti-deny-list pattern: declaredness by construction, default-deny with
+  explicit allowances); trigger unchanged (widening / phi-llm milestone 0,
+  whichever bites first). **(3) The seam is declared, not silent:** external
+  references are the other check's ground by ruling — a named owner and trigger,
+  the marked-void pattern; nothing is unjudged silently.
+- **Consequences:** ch. 4 erratum extended with the seam line + B-02 pointer;
+  the E10 producer builds against D-79 + D-79.a, never §4.1's original prose.

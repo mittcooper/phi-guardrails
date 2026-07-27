@@ -45,8 +45,13 @@ sharpened** — a declared pair grants one direction only (`ui→domain` does no
 infer `domain→ui`; the reverse is its own declaration); rule 3 **OVERRULED** —
 owner: "all dependencies must be declared." Unmapped references are not silently
 ignored; an undeclared dependency is loud (the D-25 scope-law spirit at the layer
-level). The boundary treatment of non-client ground rides D-79.a; E10 builds
-against D-79, not this paragraph's original text.*
+level). The boundary is ruled by
+**D-79.a**: internal and external dependencies are separate concerns — the layer
+map judges client-class→client-class references only, total over client ground;
+external references (kernel, frameworks) are the ground of a **separate
+declared-allowance check** (backlog B-02, amended to allowance shape under
+D-79.a; trigger: widening / phi-llm M0). E10 builds against D-79 + D-79.a, not
+this paragraph's original text.*
 
 ## 4.2 The check (v1's one shipped architecture test, R-43)
 
