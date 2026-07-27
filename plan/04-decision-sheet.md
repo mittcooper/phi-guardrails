@@ -352,3 +352,51 @@ M1 milestone boundary — waits on both. C01–C04 remain accepted and green.
 **Status:** **RULED** (owner word 2026-07-26) → **D-77**: option (a) — fence 5
 reshaped, definition leads, wiring last; advisor's drafting attributed on the
 record; guide 3 scanned clean. E09-C05 re-picks.
+
+## Q-37 · §4.2 step 4 vs frozen `PGRVerdict` — the `#unlayered` advisory can attach only to green verdicts
+
+Pre-filed in the E10-C04 work order and restated here by the integrator at
+E10-C04 acceptance (2026-07-27; commit `2b9791c`). **Owner-pre-ruled to the
+conservative arm and NOT a blocker** — E10-C04 shipped green implementing it;
+this entry records the open surface question for the owner's ruling, per the
+work order's instruction (the implementer did not escalate).
+
+Spec ch. 4 §4.2 step 4 reads that the layer-map check's verdict carries one
+advisory restating the `#unlayered` packages "in **every** report". But the
+frozen E02 `PGRVerdict` (D-15 inventory) offers **no `redFindings:advisories:`
+constructor** — its constructors are `green` · `greenAdvisories:` ·
+`redFindings:` · `missingReason:` · `skipped`, and `redFindings:` sets
+advisories to `#()`. So a **red** verdict structurally cannot carry the
+`#unlayered` advisory; only the green (clean) path can.
+
+**Implemented (the conservative arm, no surface change):** `PCKLayerMapCheck>>run`
+attaches the `#unlayered` advisory only on the green verdict
+(`PGRVerdict greenAdvisories: { advisory }`); a red verdict carries findings
+only (`PGRVerdict redFindings: findings`). Witnessed green by
+`testUnlayeredReportedAsAdvisory` (green + advisory names the unlayered
+package) and `testGreenWithNoUnlayeredHasNoAdvisory`. Amending `PGRVerdict` was
+forbidden in E10-C04 (frozen E02 surface).
+
+**To rule:** (a) **advisory-on-green-only** — accept the implemented behavior as
+the permanent contract; amend §4.2 step 4's "every report" wording to "every
+**clean** report" at the owner's next spec pass (a one-line erratum, the B-19
+pattern). No code or surface change. **[implemented]** · (b) **amend the frozen
+E02 `PGRVerdict`** with a `redFindings:advisories:` constructor (and have the
+check carry the advisory on red verdicts too), so the advisory truly rides
+every report as §4.2 step 4 literally reads — a decision-sheet amendment to a
+frozen surface, a follow-on chunk, and a re-freeze.
+
+**Recommendation (orchestrator-relayed, implementer concurring):** (a). The
+`#unlayered` advisory is a *completeness* note — "these client packages sit
+outside the map, unjudged"; on a red verdict the report already carries the
+blocking findings, and the unjudged-packages note is strictly less urgent than
+a live violation, so green-only loss is immaterial. (b) reopens a frozen E02
+surface and adds a constructor the rest of the framework does not need, for a
+note that only matters on the clean path. The `redFindings:advisories:` gap is
+recorded either way.
+
+**Impact / blocking:** none — E10-C04 is accepted and green with the
+conservative arm; the epic proceeds. This is an owner-pending wording/surface
+question, not a gate on any E10 chunk.
+
+**Status:** **OPEN** — awaiting owner ruling.

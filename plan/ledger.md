@@ -69,8 +69,8 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | E09-C06 | E09 | accepted | E09-C05 | implementer-E09-C06 (picked @ 4b42d0e; committed @ c50a064; accepted @ c50a064, 195 run + self-hosted gate exit 0, C05 methods byte-identical 92/0 — both instruments verified, reviewer accept) |
 | E10-C01 | E10 | accepted | — | implementer-E10-C01 (picked @ 0a25d0d; committed @ 91cac09; accepted @ 91cac09, 205 run + self-hosted gate exit 0 / 10 M1 registrations unchanged — verify + gate verified, reviewer accept) |
 | E10-C02 | E10 | accepted | E10-C01 | implementer-E10-C02 (picked @ 91cac09; committed @ 3bbdb9d; accepted @ 3bbdb9d, 212 run + self-hosted gate exit 0 / 10 M1 registrations unchanged, C01 methods byte-intact 157/0 — verify + gate verified, reviewer accept; B-27 filed) |
-| E10-C03 | E10 | todo | — | — |
-| E10-C04 | E10 | todo | E10-C01, E10-C02, E10-C03 | — |
+| E10-C03 | E10 | accepted | — | implementer-E10-C03 (picked @ 66b1c4e; committed @ a40cb6b; accepted @ a40cb6b, 216 run + self-hosted gate exit 0 / 10 M1 registrations unchanged, support class unswept — verify + gate verified, reviewer accept) |
+| E10-C04 | E10 | accepted | E10-C01, E10-C02, E10-C03 | implementer-E10-C04 (two prior spawns died to environment — infra stall, then a false foreign-dirt halt on a stale snapshot; re-spawned @ a40cb6b; committed @ 2b9791c; accepted @ 2b9791c, 221 run + self-hosted gate exit 0 / 10 M1 registrations unchanged, instanceSide confirmed — verify + gate verified, reviewer accept; §4.2/PGRVerdict advisory Q → Q-37, conservative arm implemented, owner-pending) |
 | E10-C05 | E10 | todo | E10-C02, E10-C03, E10-C04 | — |
 | E10-C06 | E10 | todo | E10-C02, E10-C04 | — |
 
