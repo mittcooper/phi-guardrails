@@ -51,9 +51,9 @@ PGRKitEnvironment >> testsPackages [
 
 { #category : 'private' }
 PGRKitEnvironment >> setProductionPackages: prodNames testsPackages: testsNames exemptPackages: exemptNames srcPath: aStringOrNil [
-	"Store construction-time copies so the view is a value, not a window onto caller collections (D-81)."
-	productionPackages := prodNames asArray.
-	testsPackages := testsNames asArray.
-	exemptPackages := exemptNames asArray.
+	"Store construction-time copies so the view is a value, not a window onto caller collections (D-81). Array withAll: always answers a fresh Array - unlike asArray, which is identity on an Array argument in Pharo 13."
+	productionPackages := Array withAll: prodNames.
+	testsPackages := Array withAll: testsNames.
+	exemptPackages := Array withAll: exemptNames.
 	srcPath := aStringOrNil
 ]

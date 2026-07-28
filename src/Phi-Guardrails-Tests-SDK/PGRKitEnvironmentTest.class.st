@@ -26,15 +26,24 @@ PGRKitEnvironmentTest >> testCollectionReadersAnswerFreshCopies [
 
 { #category : 'tests' }
 PGRKitEnvironmentTest >> testConstructionDoesNotAliasCallerCollections [
-	| callerProd view |
-	callerProd := OrderedCollection withAll: #('Prod-A' 'Prod-B').
-	view := PGRKitEnvironment
-		productionPackages: callerProd
+	"The law holds for both input types (D-81 value semantics): an OrderedCollection the caller grows, and a mutable Array the caller overwrites in place - Array>>asArray is identity in Pharo 13, so the store must copy defensively (Array withAll:)."
+	| callerOC callerArray ocView arrayView |
+	callerOC := OrderedCollection withAll: #('Prod-A' 'Prod-B').
+	ocView := PGRKitEnvironment
+		productionPackages: callerOC
 		testsPackages: #('Tests-A')
 		exemptPackages: #('Exempt-A')
 		srcPath: '/repo/src'.
-	callerProd add: 'Prod-C'.
-	self assert: view productionPackages equals: #('Prod-A' 'Prod-B')
+	callerOC add: 'Prod-C'.
+	self assert: ocView productionPackages equals: #('Prod-A' 'Prod-B').
+	callerArray := Array withAll: #('Prod-A' 'Prod-B').
+	arrayView := PGRKitEnvironment
+		productionPackages: callerArray
+		testsPackages: #('Tests-A')
+		exemptPackages: #('Exempt-A')
+		srcPath: '/repo/src'.
+	callerArray at: 1 put: 'mutated'.
+	self assert: arrayView productionPackages equals: #('Prod-A' 'Prod-B')
 ]
 
 { #category : 'tests' }
