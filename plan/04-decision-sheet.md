@@ -473,3 +473,45 @@ v1 checks' needs, not a generic protocol).
 **Impact / blocking:** blocking for E11-C02/E11-C03 in the sense that a veto
 reshapes their seam; not blocking for E11-C01 (the check class is
 seam-agnostic) or E11-C04's artifact form (ruled ground, §7.5).
+
+## Q-39 · M2 mining repeat: cut-time assertions that contradict in-image / frozen-surface ground, caught only at implementation
+
+**Filed:** 2026-07-28, integrator, the M2 milestone mining pass (operating rule 9
+over the E10 + E11 cycles' completion-report deviations and review findings).
+**Status:** open — recommendation below; owner rules.
+
+**The repeat (two instances in one milestone):**
+
+1. **E10-C04 → Q-37/D-80.** The work order carried §4.2's every-report
+   `#unlayered` advisory step, but the frozen `PGRVerdict` has no
+   red-with-advisories constructor — the assertion failed against the frozen
+   surface; the implementer implemented the conservative arm and filed; the owner
+   ruled (D-80) and the spec took an erratum.
+2. **E11-C01 → B-29.** The work-order skeleton asserted
+   `deny: (view respondsTo: #at:)`, but `Object` universally implements the
+   indexable primitive `#at:` — the assertion is unsatisfiable in any Pharo 13
+   image; the implementer substituted `includesSelector:` and filed the erratum
+   recommendation.
+
+Same shape both times: a producer-cut assertion (a skeleton predicate or a
+spec-step consumed into the order) was never probed against the ground it names
+— the live image's reflective behavior in one case, the frozen SDK surface in
+the other — and the contradiction surfaced only inside an implementer session,
+costing a detour, a filing, and (for Q-37) an owner ruling mid-epic.
+
+**Recommendation (the machine-enforced rule, P1 applied to the pipeline —
+the B-16 precedent):** extend the Prompt-4 producer self-check and the
+validator checklist with a mandatory **cut-time probe obligation**: every work
+order's test-skeleton assertion that names a reflective predicate
+(`respondsTo:`, `includesSelector:`, `inheritsFrom:`, …) or a frozen-surface
+selector/constructor is executed against the current work image (or checked
+against the frozen digest) before the cut is committed, with the probe
+transcript attached to the epic's validation record — exactly as B-16's
+amendment-table law made consumer enumeration scripted rather than recalled
+(phi `2552925`). Cheap (the work image already exists at cut time), scriptable,
+and it converts this repeat's whole class from implementer-discovered to
+producer-caught.
+
+**Impact / blocking:** not blocking any current row — E11 is closed and no epic
+is at the producer right now; ruling before the E12 cut would let the rule bind
+from M3's first epic onward.
