@@ -78,6 +78,11 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | E11-C03 | E11 | accepted | — | implementer-E11-C03 (picked @ 5e4f11a; committed @ 027f2d8; accepted @ 027f2d8, 241 run + self-hosted gate exit 0 / 10 M1 registrations unchanged — verify + gate verified, reviewer accept first pass; P5 record: allSubclasses + Symbol=String clause confirmed in-image; non-blocking reviewer notes — scratch-root staleness one-liner, tests-first witnessing skipped-and-disclosed — held for M2 mining) |
 | E11-C04 | E11 | accepted | E11-C01, E11-C03 | implementer-E11-C04 (picked @ b439e27; committed @ 0cb957a; accepted @ 0cb957a, 250 run + self-hosted gate exit 0 / 10 M1 registrations unchanged (gate now flows through the environment form live — PCKKit answers the probe), accepted kit-test methods byte-identical (95/0, 19/0) — verify + gate verified, reviewer accept first pass; non-blocking reviewer note — D-25 concatenation content unasserted, candidate one-line hardening — held for M2 mining) |
 | E11-C05 | E11 | accepted | E11-C02, E11-C04 | implementer-E11-C05 (picked @ 8f71cd5; committed @ 786bacf; accepted @ 786bacf — both instruments on one commit: verify 250 run 0F/0E + self-hosted gate exit 0 / **12 registrations** GATE: GREEN (10 → 12, the completed §7.5 artifact enforced live, no first-run violations — the budgeted risk did not materialize); amendment table held (pin-test file the only accepted test amended); tests-first red witnessed (2F against the M1 artifact) — verify + gate verified, reviewer accept first pass) |
+| E12-C01 | E12 | todo | — | — |
+| E12-C02 | E12 | todo | — | — |
+| E12-C03 | E12 | todo | E12-C01, E12-C02 | — |
+| E12-C04 | E12 | todo | E12-C01, E12-C02 | — |
+| E12-C05 | E12 | todo | E12-C01 | — |
 
 ## Verify commands
 
@@ -149,6 +154,12 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 - **E11-C03** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 5 `PCKSrcInventoryCheckTest` + every previously accepted suite, ≥235 run when picked first — membership + floor; [P] sibling E11-C01 raises the floor by 6 if picked earlier)
 - **E11-C04** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 5 new `PCKKitTest` + `PCKSrcInventoryCheckTest>>testMissingWithoutSrcKey` + every accepted kit-test method byte-identical + every previously accepted suite, ≥247 run once E11-C01/C03 are in per the listed serial pick order (230 + 6 + 5 + these 6) — membership + floor)
 - **E11-C05** — two instruments, same commit: `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; the 3 amended `PCKArtifactBlockM1FormTest` pins + every previously accepted suite, ≥250 run — membership + floor) **and** `PHARO_VM=.build/pharo/vm/Pharo.app/Contents/MacOS/Pharo IMAGE=.build/work/phi.image ./guardrails.sh guardrails.ston` → exit 0, **12 registrations**, `GATE: GREEN` (the completed §7.5 artifact enforced — the E11/M2 exit-checkpoint core; see `plan/04-epics/E11-src-inventory-full-artifact/chunks.md` §checkpoint)
+
+- **E12-C01** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 2 `PGRToyBaselineTest` + every previously accepted suite, ≥252 run when picked first — membership + floor, never an exact ceiling) **and** `./guardrails.sh guardrails.ston` → exit 0, 12 registrations unchanged, `GATE: GREEN` (regression leg — E12 adds nothing to the framework's artifact)
+- **E12-C02** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; no swept test added — ≥250 run, floor per pick order) **and** the unswept-pair eval arm (`ToyNoIsNilIfFalseRuleTest suite run` → 2 run, 2 passes, 0 failures, 0 errors) **and** the 12-registration gate regression leg (see its work order §VERIFY)
+- **E12-C03** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 5 `PGRToyPlantWitnessTest` + every previously accepted suite, ≥257 run once E12-C01 is in per the listed serial pick order — membership + floor; the sweep stays green WITH the six plants committed) **and** the 12-registration gate regression leg (the D-26 exempt guard live)
+- **E12-C04** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 2 `PGRToyArtifactTest` + every previously accepted suite, ≥254 run once E12-C01/C02 are in per the listed serial pick order, ≥259 once C03 is in — membership + floor) **and** the 12-registration gate regression leg
+- **E12-C05** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 4 `PGRConfigurationDraftTest` + the amended `PGRSurfaceConformanceTest` green in its five-audience/46-triple form (one accepted method renamed by schedule, all others byte-identical) + every previously accepted suite, ≥256 run once E12-C01 is in per the listed serial pick order, ≥263 once C02–C04 are in — membership + floor) **and** the 12-registration gate regression leg
 
 ## Epic acceptance
 
@@ -626,6 +637,45 @@ spawn) and the shared `.build/work` verify image make shared-tree concurrency
 unsound; disjointness stands as the reviewer's cross-check. C04 consumes
 C01+C02+C03; C05 extends C04's test file (and uses C02's
 `fromLayerMap:productionPackages:`); C06 consumes C02+C04 — strictly serial.
+
+**E12 rows (E12-C01–E12-C05) added by the tenth committed Prompt-4 run (2026-07-28;
+Gate 4 pending; epic-qualified IDs per D-73 — the counter is local to E12).** Entry
+check: roadmap approved and frozen (D-62); **M2 closed (D-82)** on head `786bacf`;
+E12's four roadmap dependencies — **E03** (@ `e26fc9c`) · **E06** (@ `0c4fb7b`) ·
+**E07** (@ `f569549`) · **E10** (@ `b994a3e`) — all `accepted` with frozen digests.
+M4's opening epic (absorbs the former E13 init tool, D-61.d). The **D-82/Q-39
+cut-time probe obligation is discharged**: every skeleton-named reflective predicate
+and frozen-surface spelling probed live against the work image at `bca7c9b` or
+digest-checked — transcripts in `plan/04-epics/E12-toy-client-init-tool/probes.md`
+(part of the epic's validation record). E12 `accepted` when all five rows are
+`accepted` and the exit checkpoint in
+`plan/04-epics/E12-toy-client-init-tool/chunks.md` is filled in — six legs: the ≥263
+named-suite sweep (250 at cut + 13 net new swept: `PGRToyBaselineTest` 2 ·
+`PGRToyPlantWitnessTest` 5 · `PGRToyArtifactTest` 2 · `PGRConfigurationDraftTest` 4 ·
+the amended `PGRSurfaceConformanceTest` net 0) · the self-hosted gate regression leg
+exit 0 with **12 registrations unchanged** (E12 adds nothing to the framework's own
+artifact; the exempt guard holds over the committed-red toy) · the committed-red eval
+arm (the toy's own six registrations all non-green — orchestrator-run, deliberately
+not a committed test: E14's ground is not pre-built) · the unswept-pair eval arm ·
+D-67 precheck discipline with `E12-C##:` prefixes · CI leg **step 1 only**
+(smalltalkci; the two-step upgrade is E15's scheduled edit — D-82 carry-forward 1) —
+at which point E12's interface digest freezes (tabled in that file:
+`BaselineOfToy class>>guardrailsSTON` + the six-registration shape, the six-plant
+inventory at its named homes, `ToyNoIsNilIfFalseRule`, the groupless `BaselineOfToy`,
+`PGRConfigurationDraft class>>draftFor:` on the now code-bearing config-author
+surface) and **E14's entry check can pass** (E14 also needs E11 — accepted — and
+E08 — accepted). **Amended accepted surface: exactly one test file**, in E12-C05
+(scheduled ground, two written schedules: the accepted test's own class/method
+comments naming E12's `draftFor:` cut, and the D-82 §0.3 erratum's
+next-test-touching-chunk line): `PGRSurfaceConformanceTest` — enumerated by script
+over `git ls-files 'src/**/*.st'` (110 files scanned; the manifest's only consumer is
+the amended file itself; zero other accepted files reference the manifest or
+`PGRConfigurationDraft` — probes.md P29). [P] eligibility (disjoint manifests):
+E12-C01 ∥ E12-C02, then E12-C03 ∥ E12-C04 ∥ E12-C05; the orchestrator runs all picks
+serialized — the COMMIT preconditions (clean tree at spawn) and the shared
+`.build/work` verify image make shared-tree concurrency unsound; disjointness stands
+as the reviewer's cross-check. Listed serial pick order C01→C02→C03→C04→C05 (verify
+floors stated against it).
 
 **E11 rows (E11-C01–E11-C05) added by the ninth committed Prompt-4 run
 (2026-07-27; Gate 4 pending; epic-qualified IDs per D-73 — the counter is local
