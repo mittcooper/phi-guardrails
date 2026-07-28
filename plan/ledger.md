@@ -73,6 +73,11 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | E10-C04 | E10 | accepted | E10-C01, E10-C02, E10-C03 | implementer-E10-C04 (two prior spawns died to environment — infra stall, then a false foreign-dirt halt on a stale snapshot; re-spawned @ a40cb6b; committed @ 2b9791c; accepted @ 2b9791c, 221 run + self-hosted gate exit 0 / 10 M1 registrations unchanged, instanceSide confirmed — verify + gate verified, reviewer accept; §4.2/PGRVerdict advisory Q → Q-37, conservative arm implemented, owner-pending) |
 | E10-C05 | E10 | accepted | E10-C02, E10-C03, E10-C04 | implementer-E10-C05 (picked @ fe40b2f; committed @ afc582c; accepted @ afc582c, 225 run + self-hosted gate exit 0 / 10 M1 registrations unchanged, C04 methods byte-identical 73/0 — verify + gate verified, reviewer accept) |
 | E10-C06 | E10 | accepted | E10-C02, E10-C04 | implementer-E10-C06 (picked @ afc582c; committed @ b994a3e; accepted @ b994a3e, 230 run + self-hosted gate exit 0 / 10 M1 registrations unchanged; amendment table held — one accepted test amended, generic arch path byte-identical — verify + gate verified, reviewer accept) |
+| E11-C01 | E11 | todo | — | — |
+| E11-C02 | E11 | todo | E11-C01 | — |
+| E11-C03 | E11 | todo | — | — |
+| E11-C04 | E11 | todo | E11-C01, E11-C03 | — |
+| E11-C05 | E11 | todo | E11-C02, E11-C04 | — |
 
 ## Verify commands
 
@@ -138,6 +143,12 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 - **E10-C04** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 5 `PCKLayerMapCheckTest` incl. P-FINDING-PRECISE + P-CAT-FIXTURES(arch) + P-LAYERMAP-TOTAL advisory + every previously accepted suite, ≥221 run — membership + floor)
 - **E10-C05** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 9 `PCKLayerMapCheckTest` incl. the four D-79/D-79.a semantics witnesses + every previously accepted suite, ≥225 run — membership + floor)
 - **E10-C06** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; `PCKKitTest` with the amended `testLayerMapKeyProducesNoRegistrationsAndNoError` + 5 new dispatch tests, the generic-arch path green + every previously accepted suite, ≥226 run — membership + floor; C05's 4 independent of C06 — the E10 exit-checkpoint leg 1; see `plan/04-epics/E10-layer-map-check/chunks.md` §checkpoint) **and** `./guardrails.sh guardrails.ston` → exit 0, 10 M1 registrations unchanged (E10 adds none — regression leg)
+
+- **E11-C01** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 6 `PGRKitEnvironmentTest` + every previously accepted suite, ≥236 run when picked first — membership + floor, never an exact ceiling; [P] sibling E11-C03 raises the floor by 5 if picked earlier)
+- **E11-C02** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 3 new `PGRRegistryTest` + every accepted `PGRRegistryTest` byte-identical + every previously accepted suite, ≥239 run once E11-C01 is in per the listed serial pick order — membership + floor)
+- **E11-C03** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 5 `PCKSrcInventoryCheckTest` + every previously accepted suite, ≥235 run when picked first — membership + floor; [P] sibling E11-C01 raises the floor by 6 if picked earlier)
+- **E11-C04** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 5 new `PCKKitTest` + `PCKSrcInventoryCheckTest>>testMissingWithoutSrcKey` + every accepted kit-test method byte-identical + every previously accepted suite, ≥247 run once E11-C01/C03 are in per the listed serial pick order (230 + 6 + 5 + these 6) — membership + floor)
+- **E11-C05** — two instruments, same commit: `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; the 3 amended `PCKArtifactBlockM1FormTest` pins + every previously accepted suite, ≥250 run — membership + floor) **and** `PHARO_VM=.build/pharo/vm/Pharo.app/Contents/MacOS/Pharo IMAGE=.build/work/phi.image ./guardrails.sh guardrails.ston` → exit 0, **12 registrations**, `GATE: GREEN` (the completed §7.5 artifact enforced — the E11/M2 exit-checkpoint core; see `plan/04-epics/E11-src-inventory-full-artifact/chunks.md` §checkpoint)
 
 ## Epic acceptance
 
@@ -615,3 +626,45 @@ spawn) and the shared `.build/work` verify image make shared-tree concurrency
 unsound; disjointness stands as the reviewer's cross-check. C04 consumes
 C01+C02+C03; C05 extends C04's test file (and uses C02's
 `fromLayerMap:productionPackages:`); C06 consumes C02+C04 — strictly serial.
+
+**E11 rows (E11-C01–E11-C05) added by the ninth committed Prompt-4 run
+(2026-07-27; Gate 4 pending; epic-qualified IDs per D-73 — the counter is local
+to E11).** Entry check: roadmap approved and frozen (D-62, M2 re-confirmed at
+D-78); E11's one roadmap dependency **E10** is `accepted` with its digest frozen
+(@ `b994a3e`: the `#layerMap` key format + `architecture/PCKLayerMapCheck`).
+This is the **re-cut from D-81** — Q-38's five-keyword option-(a) cut was
+owner-VETOED and retired uncommitted to `.build/superseded/`; the fresh cut
+builds the ruled shape: the read-only SDK environment view (`PGRKitEnvironment`,
+four named readers, built by the core, D-53.5 upheld) landing ADDITIVELY as
+`registrationsFrom:environment:` beside the frozen three-argument kit contract
+(engine `respondsTo:` probe with fallback; zero accepted consumers change; the
+`PGRKit` skeleton stays untouched — B-28 (4)). E11 `accepted` when all five rows
+are `accepted` and the exit checkpoint in
+`plan/04-epics/E11-src-inventory-full-artifact/chunks.md` is filled in — and
+**E11's acceptance IS the M2 milestone boundary** (roadmap M2 exit): both
+instruments green over the COMPLETED §7.5 artifact — the ≥250 named-suite sweep
+(230 at cut + 20 net new: `PGRKitEnvironmentTest` 6 · `PGRRegistryTest` +3 ·
+`PCKSrcInventoryCheckTest` 6 · `PCKKitTest` +5 · the 3 amended pins net 0) **and**
+the self-hosted gate at **12 registrations** `GATE: GREEN` · D-67 precheck
+discipline with `E11-C##:`-prefixed commits · CI leg, on one head commit — at
+which point E11's interface digest freezes (tabled in that file:
+`PGRKitEnvironment` + its growth path, the optional probed kit-protocol message,
+`architecture/PCKSrcInventoryCheck`, the completed artifact form) and the epic
+ends at the owner's milestone gate (M2 mining pass at close per operating rule
+9). Properties owed and discharged here: **P-NO-DEAD-SRC** (all three ch.-9-named
+legs) and **P-SELF-HOSTED (full form)**. **Amended accepted surface: exactly one
+test file**, in E11-C05 (scheduled ground — the pin test's own class comment
+schedules it): `PCKArtifactBlockM1FormTest`, enumerated by script over the
+committed code + product-doc + infra scope (`git ls-files 'src/**/*.st'
+'docs/**/*.md' 'tools/*' 'guardrails.sh' '.github/workflows/*'
+'.smalltalk.ston'`, 116 files scanned; validator re-confirmed over the full
+237-file tree; every other `guardrails.ston` reference is a scratch/decoy
+fixture, comment, or client-sample guide; zero committed files assert the
+10-registration count — table inlined in C05). Roadmap-budgeted risk
+carried in C05: a first-run genuine violation is fixed or filed, the map never
+weakened. [P] eligibility (disjoint manifests): E11-C01 E11-C03; orchestrator
+runs them serialized — the COMMIT preconditions (clean tree at spawn) and the
+shared `.build/work` verify image make shared-tree concurrency unsound;
+disjointness stands as the reviewer's cross-check. C02→C04→C05 strictly serial
+(C02 consumes C01's view; C04 consumes C01+C03 and cedes no file; C05 consumes
+both doors live and the artifact).
