@@ -138,4 +138,17 @@ engine validates only `PGRCheck`'s contract), the walk's spellings,
 `PGRScratchEnvKit`, the engine's delegation/probe implementation shape, the pin
 test's helpers.
 
-Checkpoint result (filled at acceptance): _pending._
+Checkpoint result (filled at acceptance, 2026-07-28): **GREEN on head `786bacf`**
+— leg 1: verify 250/250, 0 failures / 0 errors (`PGRKitEnvironmentTest` 6 ·
+`PGRRegistryTest` +3 · `PCKSrcInventoryCheckTest` 6 incl. the C04-added missing
+leg · `PCKKitTest` +5 · the 3 amended `PCKArtifactBlockM1FormTest` pins; 230 at
+cut + 20 net new; P-NO-DEAD-SRC discharged on all three ch.-9-named legs);
+leg 2: `./guardrails.sh guardrails.ston` exit 0, `PhiGuardrails`, **12
+registrations** (10 M1 + both architecture entries), `GATE: GREEN 0 blocking
+of 12` — P-SELF-HOSTED full form, no first-run violation (the budgeted risk
+did not materialize; nothing weakened); leg 3: precheck green at every pick,
+`E11-C##:` prefixes throughout (C01 carried one reviewer fix round-trip,
+commit `318f46c`); leg 4: CI run 30326283281 success on the same head (step 1
+only — smalltalkCI; the gate-as-step-2 is E15's scheduled edit). Interface
+digest above **frozen**. E11 accepted — **M2 closes at this boundary** (the
+mining pass and milestone report follow at the owner's gate).
