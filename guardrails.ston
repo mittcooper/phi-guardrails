@@ -2,6 +2,7 @@
 	#schemaVersion : 2,
 	#project : 'PhiGuardrails',
 	#baseline : 'BaselineOfPhiGuardrails',
+	#src : 'src',
 	#roles : {
 		#production : [ 'production' ],
 		#tests : [ 'tests' ],
@@ -10,5 +11,18 @@
 	#kits : [ {
 		#kit : 'PCKKit',
 		#lintRules : [ 'PCKNoIsNilIfTrueRule', 'ReCodeCruftLeftInMethodsRule' ],
+		#architectureChecks : [ 'PCKLayerMapCheck', 'PCKSrcInventoryCheck' ],
+		#layerMap : {
+			#layers : {
+				'sdk' : [ 'Phi-Guardrails-SDK' ],
+				'core' : [ 'Phi-Guardrails-Core' ],
+				'gate' : [ 'Phi-Guardrails-Gate' ],
+				'kit' : [ 'Phi-Coding-Kit', 'Phi-Coding-Kit-Rules',
+					'Phi-Coding-Kit-Architecture', 'Phi-Coding-Kit-Behavioral' ] },
+			#allowed : [
+				[ 'core', 'sdk' ],
+				[ 'gate', 'core' ],
+				[ 'gate', 'sdk' ],
+				[ 'kit', 'sdk' ] ] },
 		#metaRules : [ 'PCKNoSkippedTestsMetaRule' ] } ]
 }
