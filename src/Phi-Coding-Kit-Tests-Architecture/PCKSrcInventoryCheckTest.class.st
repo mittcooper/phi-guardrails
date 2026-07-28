@@ -60,6 +60,25 @@ PCKSrcInventoryCheckTest >> testGreenOnCleanRoot [
 ]
 
 { #category : 'tests' }
+PCKSrcInventoryCheckTest >> testMissingWithoutSrcKey [
+	"P-NO-DEAD-SRC missing leg (ch. 9, §1.5): a block registering PCKSrcInventoryCheck with a
+	view declaring no #src (srcPath nil) yields the missing 'architecture/PCKSrcInventoryCheck'
+	spec - no check, a #src-naming reason - never green, never an error."
+	| block view specs spec |
+	block := Dictionary new.
+	block at: #architectureChecks put: #('PCKSrcInventoryCheck').
+	view := PGRKitEnvironment
+		productionPackages: #('Known-Package')
+		testsPackages: #()
+		exemptPackages: #()
+		srcPath: nil.
+	specs := PCKKit registrationsFrom: block environment: view.
+	spec := specs detect: [ :each | each name = 'architecture/PCKSrcInventoryCheck' ].
+	self assert: spec check isNil.
+	self assert: (spec missingReason includesSubstring: '#src')
+]
+
+{ #category : 'tests' }
 PCKSrcInventoryCheckTest >> testNonexistentRootIsRed [
 	"The D-45 run-time judgment: a check constructed with a never-created path reds with
 	one finding whose message names the declared path - a dangling declaration is loud."

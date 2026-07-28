@@ -1,5 +1,5 @@
 "
-The coding kit (name ruled D-56), implementing the frozen PGRKit contract. Stateless - all class-side, no class-side variables. It validates its own block strictly against the canonical five-key schema (ch. 1 par. 1.4; D-51: blocks are opaque to the core, so only the kit can) and answers its specs in the canonical four-stage order (frozen at E06 acceptance, completed E07): all lint, then all architecture, then all derived behavioral suites, then all meta, in-key block order preserved. #lintRules becomes PCKLintRuleCheck registrations targeting the production role (D-25); #architectureChecks and #metaRules resolve via the promised packages: constructor (D-60), role-by-block-key (production and tests respectively). #layerMap is a parameter key (E10): when present it is parsed and validated against the production role at block-open (§4.1) and, when #architectureChecks names the kit's own PCKLayerMapCheck, handed to it via layerMap: (§4.3, richer than packages:); absent map or an unloaded layer package makes that one registration missing (§1.5), while every other architecture check keeps the generic packages: path. Behavioral suites have no block key (D-25): one derived registration per tests-role package - or the behavioral/tests-role missing sentinel on an empty expansion (R-24) - and every behavioral check of a call closes over that call's one PCKSuiteRunCache (par. 5.4, D-36), the kit's own PCKNoSkippedTestsMetaRule named in #metaRules riding the same cache. recommendedBlock answers the published stanza (C18; E07-C06 appends its #metaRules line).
+The coding kit (name ruled D-56), implementing the frozen PGRKit contract. Stateless - all class-side, no class-side variables. It validates its own block strictly against the canonical five-key schema (ch. 1 par. 1.4; D-51: blocks are opaque to the core, so only the kit can) and answers its specs in the canonical four-stage order (frozen at E06 acceptance, completed E07): all lint, then all architecture, then all derived behavioral suites, then all meta, in-key block order preserved. #lintRules becomes PCKLintRuleCheck registrations targeting the production role (D-25); #architectureChecks and #metaRules resolve via the promised packages: constructor (D-60), role-by-block-key (production and tests respectively). Two entry points answer one pipeline (D-81): registrationsFrom:environment: is the implementation, sourcing every role off the read-only PGRKitEnvironment view (kits never receive the configuration object, D-53.5); the frozen three-argument registrationsFrom:productionPackages:testsPackages: delegates through a degenerate view (the two roles, exempt #(), no #src), staying byte-equivalent for every block that consumes no envelope fact. #layerMap is a parameter key (E10): when present it is parsed and validated against the production role at block-open (§4.1) and, when #architectureChecks names the kit's own PCKLayerMapCheck, handed to it via layerMap: (§4.3, richer than packages:); absent map or an unloaded layer package makes that one registration missing (§1.5). #src is an envelope key, never a block key (§1.5): PCKSrcInventoryCheck, the kit's own dead-source check, is constructed over the view's srcPath and full baseline inventory (production + tests + exempt, D-25) when #architectureChecks names it and the view declares #src, or goes missing when srcPath is nil. Every other architecture check keeps the generic packages: path. Behavioral suites have no block key (D-25): one derived registration per tests-role package - or the behavioral/tests-role missing sentinel on an empty expansion (R-24) - and every behavioral check of a call closes over that call's one PCKSuiteRunCache (par. 5.4, D-36), the kit's own PCKNoSkippedTestsMetaRule named in #metaRules riding the same cache. recommendedBlock answers the published stanza (C18; E07-C06 appends its #metaRules line).
 "
 Class {
 	#name : 'PCKKit',
@@ -9,21 +9,27 @@ Class {
 }
 
 { #category : 'private' }
-PCKKit class >> architectureSpecFor: aName layerMap: aLayerMapOrNil packages: productionNames [
-	"The #architectureChecks dispatch for one name (§4.3). The kit owns PCKLayerMapCheck,
-	so - by class identity, not kinship (== PCKLayerMapCheck, the accepted own-meta-rule
-	pattern) - it is constructed richer than the generic packages: path: over the parsed
-	#layerMap handed at block-open. #layerMap is this check's required parameter key (§1.5):
-	absent (aLayerMapOrNil nil) it is a missing spec; a declared layer package not loaded
-	is a missing spec naming it (loaded-ness is the kit's gate, never the check's walk);
-	else the resolved check over the map. Every other arch name - a check the kit does not
-	own - keeps the generic promised packages: path (R-21) untouched."
-	(Smalltalk globals at: aName asSymbol ifAbsent: [ nil ]) == PCKLayerMapCheck ifFalse: [
+PCKKit class >> architectureSpecFor: aName layerMap: aLayerMapOrNil environment: anEnvironment [
+	"The #architectureChecks dispatch for one name (§4.3). The kit owns two checks and
+	special-cases each by class identity, not kinship (== ..., the accepted own-check
+	pattern). PCKSrcInventoryCheck consumes the #src envelope fact off the view (§1.5): a
+	nil srcPath makes it a missing spec naming the absent key; else it is constructed over
+	the view's srcPath and the full baseline inventory (production + tests + exempt, D-25).
+	PCKLayerMapCheck is constructed richer than the generic packages: path over the parsed
+	#layerMap handed at block-open (§1.5): absent map (aLayerMapOrNil nil) or a declared
+	layer package not loaded is a missing spec; else the resolved check over the map. Every
+	other arch name - a check the kit does not own - keeps the generic promised packages:
+	path over the view's production role (R-21) untouched."
+	| resolved |
+	resolved := Smalltalk globals at: aName asSymbol ifAbsent: [ nil ].
+	resolved == PCKSrcInventoryCheck ifTrue: [
+		^ self srcInventorySpecFor: anEnvironment ].
+	resolved == PCKLayerMapCheck ifFalse: [
 		^ self
 			promisedSpecFor: aName
 			prefix: 'architecture/'
 			kind: #architecture
-			packages: productionNames ].
+			packages: anEnvironment productionPackages ].
 	aLayerMapOrNil ifNil: [
 		^ PGRRegistrationSpec
 			missing: 'architecture/PCKLayerMapCheck'
@@ -161,23 +167,27 @@ PCKKit class >> recommendedBlock [
 ]
 
 { #category : 'registering' }
-PCKKit class >> registrationsFrom: aBlock productionPackages: productionNames testsPackages: testsNames [
-	"The frozen contract (E02 digest). The answered order is the canonical four-stage
-	one, completed here (ch. 1 par. 1.4): all lint, then all architecture, then all
-	derived behavioral suites (par. 5.1 - no block key), then all #metaRules specs,
-	in-key block order preserved. One PCKSuiteRunCache per call closes every
-	behavioral check of the call over one shared suite run (par. 5.4, D-36) -
+PCKKit class >> registrationsFrom: aBlock environment: anEnvironment [
+	"The environment-form pipeline (D-81): the one implementation, sourcing every role
+	off the read-only view (anEnvironment productionPackages / testsPackages / ... ), so
+	the architecture pass can reach the view's srcPath and full inventory. The answered
+	order is the canonical four-stage one (ch. 1 par. 1.4): all lint, then all
+	architecture, then all derived behavioral suites (par. 5.1 - no block key), then all
+	#metaRules specs, in-key block order preserved. One PCKSuiteRunCache per call closes
+	every behavioral check of the call over one shared suite run (par. 5.4, D-36) -
 	run-scoped, discarded with its checks, never global (R-35). Role-by-block-key:
-	#architectureChecks hands the production list, #metaRules the tests list.
-	#layerMap is E10's consumed parameter (§4.1): present, it is parsed and validated
-	against the production role at block-open - a malformed or non-covering map raises
-	here, whether or not PCKLayerMapCheck is registered - then routed, run-scoped and
-	discarded with the specs, to the kit's own PCKLayerMapCheck in the architecture pass
-	(§4.3); every other arch name keeps the generic packages: path (R-21)."
-	| specs cache layerMap |
+	#architectureChecks rides the production role, #metaRules the tests role. #layerMap is
+	E10's consumed parameter (§4.1): present, it is parsed and validated against the
+	production role at block-open - a malformed or non-covering map raises here, whether or
+	not PCKLayerMapCheck is registered - then routed, run-scoped and discarded with the
+	specs, to the kit's own PCKLayerMapCheck in the architecture pass (§4.3); every other
+	arch name keeps the generic packages: path (R-21)."
+	| specs cache layerMap productionNames testsNames |
 	self validateBlock: aBlock.
 	specs := OrderedCollection new.
 	cache := PCKSuiteRunCache new.
+	productionNames := anEnvironment productionPackages.
+	testsNames := anEnvironment testsPackages.
 	layerMap := aBlock
 		at: #layerMap
 		ifPresent: [ :sub | PCKLayerMap fromLayerMap: sub productionPackages: productionNames ]
@@ -185,11 +195,49 @@ PCKKit class >> registrationsFrom: aBlock productionPackages: productionNames te
 	(aBlock at: #lintRules ifAbsent: [ #() ]) do: [ :each |
 		specs add: (self lintSpecFor: each productionPackages: productionNames) ].
 	(aBlock at: #architectureChecks ifAbsent: [ #() ]) do: [ :each |
-		specs add: (self architectureSpecFor: each layerMap: layerMap packages: productionNames) ].
+		specs add: (self architectureSpecFor: each layerMap: layerMap environment: anEnvironment) ].
 	specs addAll: (self behavioralSpecsFor: testsNames cache: cache).
 	(aBlock at: #metaRules ifAbsent: [ #() ]) do: [ :each |
 		specs add: (self metaRuleSpecFor: each packages: testsNames cache: cache) ].
 	^ specs
+]
+
+{ #category : 'registering' }
+PCKKit class >> registrationsFrom: aBlock productionPackages: productionNames testsPackages: testsNames [
+	"The frozen three-argument contract (E02 digest), now a delegation to the environment
+	form (D-81, additive landing): it stays complete for kits that consume no envelope
+	fact. A degenerate view carries the two roles, exempt #(), and no #src - so behavior is
+	byte-equivalent for every block the M1/E10 ground admits, and a block naming
+	PCKSrcInventoryCheck gets the honest §1.5 answer: missing (no #src fact on this path).
+	PCKKit referencing PGRKitEnvironment is lawful - kit -> sdk is an allowed edge (§4.4)."
+	^ self
+		registrationsFrom: aBlock
+		environment: (PGRKitEnvironment
+			productionPackages: productionNames
+			testsPackages: testsNames
+			exemptPackages: #()
+			srcPath: nil)
+]
+
+{ #category : 'private' }
+PCKKit class >> srcInventorySpecFor: anEnvironment [
+	"The PCKSrcInventoryCheck arm of the architecture dispatch (§7.5, D-81). #src is an
+	envelope key, never a block key: the view carries it. A nil srcPath is the missing
+	spec naming the absent #src key (§1.5 - no check exists to ask). Else the check is
+	constructed over the resolved srcPath and the full baseline inventory: production +
+	tests + exempt concatenated, which by the D-25 scope law (roles disjoint + jointly
+	total) IS the baseline's whole package inventory."
+	anEnvironment srcPath ifNil: [
+		^ PGRRegistrationSpec
+			missing: 'architecture/PCKSrcInventoryCheck'
+			kind: #architecture
+			reason: 'PCKSrcInventoryCheck requires the #src envelope key, which is absent' ].
+	^ PGRRegistrationSpec
+		name: 'architecture/PCKSrcInventoryCheck'
+		kind: #architecture
+		check: (PCKSrcInventoryCheck
+			srcPath: anEnvironment srcPath
+			packages: anEnvironment productionPackages , anEnvironment testsPackages , anEnvironment exemptPackages)
 ]
 
 { #category : 'private' }

@@ -61,6 +61,30 @@ PCKKitTest >> testDerivesOneSuiteRegistrationPerTestsRolePackage [
 ]
 
 { #category : 'tests' }
+PCKKitTest >> testEnvironmentFormMatchesThreeArgumentForm [
+	"D-81 delegation witness: one pipeline, two doors. The three-argument form and the environment form over a degenerate view (same roles, exempt #(), srcPath nil) answer the same spec list pairwise - equal names, kinds, and missing-nesses - for a block that consumes no envelope fact."
+	| block threeArg envForm view |
+	block := Dictionary new.
+	block at: #lintRules put: #('PCKNoIsNilIfTrueRule' 'ReCodeCruftLeftInMethodsRule').
+	block at: #metaRules put: #('PCKNoSkippedTestsMetaRule').
+	threeArg := PCKKit
+		registrationsFrom: block
+		productionPackages: #('Phi-Guardrails-SDK')
+		testsPackages: #('Phi-Coding-Kit-Fixtures-Behavioral').
+	view := PGRKitEnvironment
+		productionPackages: #('Phi-Guardrails-SDK')
+		testsPackages: #('Phi-Coding-Kit-Fixtures-Behavioral')
+		exemptPackages: #()
+		srcPath: nil.
+	envForm := PCKKit registrationsFrom: block environment: view.
+	self assert: threeArg size equals: envForm size.
+	threeArg with: envForm do: [ :a :b |
+		self assert: a name equals: b name.
+		self assert: a kind equals: b kind.
+		self assert: a check isNil equals: b check isNil ]
+]
+
+{ #category : 'tests' }
 PCKKitTest >> testGenericArchitectureCheckStillUsesPackagesConstructor [
 	"R-21 / §4.3 regression: a non-owned arch check keeps the generic promised packages: path untouched by the PCKLayerMapCheck special case - resolved into an architecture spec whose check carries the handed production role."
 	| block specs spec |
@@ -151,6 +175,25 @@ PCKKitTest >> testLayerMapKeyProducesNoRegistrationsAndNoError [
 	self assert: specs size equals: 2.
 	self assert: specs first name equals: 'lint/PCKNoIsNilIfTrueRule'.
 	self assert: specs last name equals: 'behavioral/tests-role'
+]
+
+{ #category : 'tests' }
+PCKKitTest >> testLayerMapPathIntactUnderEnvironmentForm [
+	"D-81: the E10 layer-map arm rides the view's production list unchanged. A view (srcPath nil) whose production is #('P-One') and a block whose #layerMap covers that role at block-open but whose layer package is unloaded in the verify image answers the missing sentinel naming 'P-One' - byte-equivalent to testLayerMapCheckMissingWhenLayerPackageUnloaded, reproduced through the environment door."
+	| block view specs spec |
+	block := Dictionary new.
+	block at: #architectureChecks put: #('PCKLayerMapCheck').
+	block at: #layerMap put: { #layers -> ({ 'p' -> #('P-One') } asDictionary). #allowed -> #() } asDictionary.
+	view := PGRKitEnvironment
+		productionPackages: #('P-One')
+		testsPackages: #()
+		exemptPackages: #()
+		srcPath: nil.
+	specs := PCKKit registrationsFrom: block environment: view.
+	spec := specs detect: [ :each | each name = 'architecture/PCKLayerMapCheck' ].
+	self assert: spec kind identicalTo: #architecture.
+	self assert: spec check isNil.
+	self assert: (spec missingReason includesSubstring: 'P-One')
 ]
 
 { #category : 'tests' }
@@ -322,6 +365,43 @@ PCKKitTest >> testRuleWithoutOwnSeveritySignals [
 ]
 
 { #category : 'tests' }
+PCKKitTest >> testSrcInventoryCheckConstructedFromView [
+	"§7.5 / D-81: named in #architectureChecks with a view declaring #src, PCKSrcInventoryCheck is constructed over the view's srcPath into a resolved architecture spec whose check is a PCKSrcInventoryCheck of kind #architecture."
+	| block view specs spec |
+	block := Dictionary new.
+	block at: #architectureChecks put: #('PCKSrcInventoryCheck').
+	view := PGRKitEnvironment
+		productionPackages: #('P-One')
+		testsPackages: #('T-One')
+		exemptPackages: #('X-One')
+		srcPath: (FileSystem workingDirectory / 'pck-e11-c04-scratch') fullName.
+	specs := PCKKit registrationsFrom: block environment: view.
+	spec := specs detect: [ :each | each name = 'architecture/PCKSrcInventoryCheck' ].
+	self assert: spec kind identicalTo: #architecture.
+	self deny: spec check isNil.
+	self assert: spec check class equals: PCKSrcInventoryCheck.
+	self assert: spec check kind identicalTo: #architecture
+]
+
+{ #category : 'tests' }
+PCKKitTest >> testSrcInventoryCheckMissingWithoutSrc [
+	"§1.5: PCKSrcInventoryCheck's #src is an envelope key; naming the check with a view whose srcPath is nil yields the missing architecture spec (no check), its reason naming the absent #src key."
+	| block view specs spec |
+	block := Dictionary new.
+	block at: #architectureChecks put: #('PCKSrcInventoryCheck').
+	view := PGRKitEnvironment
+		productionPackages: #('P-One')
+		testsPackages: #('T-One')
+		exemptPackages: #('X-One')
+		srcPath: nil.
+	specs := PCKKit registrationsFrom: block environment: view.
+	spec := specs detect: [ :each | each name = 'architecture/PCKSrcInventoryCheck' ].
+	self assert: spec kind identicalTo: #architecture.
+	self assert: spec check isNil.
+	self assert: (spec missingReason includesSubstring: '#src')
+]
+
+{ #category : 'tests' }
 PCKKitTest >> testSuiteRegistrationsPrecedeMetaRules [
 	"P-SUITES-BEFORE-META (ch. 9): every derived suite spec's index in the answer is lower than every #metaRules spec's index - the suites a meta-rule reads over are registered before it."
 	| block specs lastSuiteIndex firstMetaIndex |
@@ -336,6 +416,21 @@ PCKKitTest >> testSuiteRegistrationsPrecedeMetaRules [
 	self assert: lastSuiteIndex > 0.
 	self assert: firstMetaIndex > 0.
 	self assert: lastSuiteIndex < firstMetaIndex
+]
+
+{ #category : 'tests' }
+PCKKitTest >> testThreeArgumentFormAnswersSrcInventoryMissing [
+	"D-81: the frozen three-argument form stays complete and honest. Its degenerate delegation view carries no #src fact, so a block naming PCKSrcInventoryCheck answers the §1.5 missing spec, its reason naming #src."
+	| block specs spec |
+	block := Dictionary new.
+	block at: #architectureChecks put: #('PCKSrcInventoryCheck').
+	specs := PCKKit
+		registrationsFrom: block
+		productionPackages: #('P-One')
+		testsPackages: #('T-One').
+	spec := specs detect: [ :each | each name = 'architecture/PCKSrcInventoryCheck' ].
+	self assert: spec check isNil.
+	self assert: (spec missingReason includesSubstring: '#src')
 ]
 
 { #category : 'tests' }
