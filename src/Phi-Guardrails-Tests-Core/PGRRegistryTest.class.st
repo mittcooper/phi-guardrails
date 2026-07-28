@@ -24,6 +24,22 @@ PGRRegistryTest >> artifactWithKitsFragment: aStonKitsArrayString [
 ]
 
 { #category : 'fixtures' }
+PGRRegistryTest >> artifactWithSrc: anAbsolutePathString kitsFragment: aStonKitsArrayString [
+	"The canonical scratch envelope with a top-level absolute #src spliced in beside the given #kits array - the #src-carrying variant for the environment-view srcPath witness. An absolute #src is recorded as-is via fromString: (D-45 ruling 2); the path need not exist, existence being judged only by the walk this chunk never runs."
+	^ '{
+	#schemaVersion : 2,
+	#project : ''Scratch'',
+	#baseline : ''BaselineOfPGRScratchGrouped'',
+	#src : ''' , anAbsolutePathString , ''',
+	#roles : {
+		#production : [ ''scratch-prod'' ],
+		#tests : [ ''scratch-tst'' ],
+		#exempt : [ ''scratch-ghost'' ] },
+	#kits : ' , aStonKitsArrayString , '
+}'
+]
+
+{ #category : 'fixtures' }
 PGRRegistryTest >> plainBaselineArtifactString [
 	"The second, distinct artifact for P-REG-FRESH: E03's plain baseline - no groups, so roles are assigned by exact package-name matchers - and one spec, scratch/P1. The plain baseline declares no ghost package, so no exempt role is needed."
 	^ '{
@@ -80,6 +96,48 @@ PGRRegistryTest >> testDuplicateRegistrationNameSignals [
 		raise: PGRConfigurationError
 		withExceptionDo: [ :error |
 			self assert: (error messageText includesSubstring: 'scratch/G1') ]
+]
+
+{ #category : 'tests' }
+PGRRegistryTest >> testEnvironmentFormKitReceivesResolvedView [
+	"D-81 ruling 3 / D-53.5: the core builds one PGRKitEnvironment from the resolved configuration and hands it to a kit that answers the environment form. The env kit's missing reason echoes the view's four facts - the resolved production and tests lists, the exempt list, and srcPath nil (no #src in this envelope). Read off the spec, never off captured state (R-35)."
+	| verdict |
+	verdict := (self registryFromKitsFragment: '[ { #kit : ''PGRScratchEnvKit'' } ]')
+		registrations first run.
+	self assert: verdict status equals: #missing.
+	self assert: verdict missingReason
+		equals: 'environment | production: Phi-Guardrails-SDK, Phi-Guardrails-Core | tests: Phi-Guardrails-Tests-SDK | exempt: PGR-Scratch-Ghost | srcPath: nil'
+]
+
+{ #category : 'tests' }
+PGRRegistryTest >> testEnvironmentViewCarriesResolvedSrcPath [
+	"D-45 ruling 2 relayed through the view: a #src-carrying envelope resolves an absolute path, and that path crosses the kit boundary through the environment view and only through it. The env kit's reason encodes exactly that absolute path (srcPath printString wraps the String in quotes, so the raw path is a substring)."
+	| srcPath verdict |
+	srcPath := (FileSystem workingDirectory / 'pgr-e11c02-src') fullName.
+	verdict := (PGRRegistry fromConfiguration:
+		(PGRConfiguration fromString: (self artifactWithSrc: srcPath kitsFragment: '[ { #kit : ''PGRScratchEnvKit'' } ]')))
+		registrations first run.
+	self assert: verdict status equals: #missing.
+	self assert: (verdict missingReason includesSubstring: 'srcPath: ').
+	self assert: (verdict missingReason includesSubstring: srcPath)
+]
+
+{ #category : 'tests' }
+PGRRegistryTest >> testKitWithoutEnvironmentFormStillServedByFrozenForm [
+	"D-81 additive: the probe is per-kit. One envelope holds an env-form kit and a frozen-only spec kit (distinct name); the env kit takes the environment path (its reason marks it), the spec kit gets exactly its accepted three-argument missing result, and order follows the #kits array - the fallback is intact for kits that answer no envelope fact."
+	| registry registrations frozen |
+	registry := self registryFromKitsFragment: '[
+		{ #kit : ''PGRScratchEnvKit'' },
+		{ #kit : ''PGRScratchSpecKit'', #specs : [
+			{ #name : ''scratch/S1'', #kind : ''scratch'', #missing : ''frozen form'' } ] } ]'.
+	self assert: registry size equals: 2.
+	registrations := registry registrations.
+	self assert: (registrations collect: [ :each | each name ]) equals: #( 'scratch/env' 'scratch/S1' ).
+	self assert: (registrations first run missingReason includesSubstring: 'environment |').
+	frozen := registrations at: 2.
+	self deny: frozen isResolved.
+	self assert: frozen kind equals: #scratch.
+	self assert: frozen run missingReason equals: 'frozen form'
 ]
 
 { #category : 'tests' }
