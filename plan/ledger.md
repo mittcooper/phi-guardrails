@@ -75,7 +75,7 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | E10-C06 | E10 | accepted | E10-C02, E10-C04 | implementer-E10-C06 (picked @ afc582c; committed @ b994a3e; accepted @ b994a3e, 230 run + self-hosted gate exit 0 / 10 M1 registrations unchanged; amendment table held — one accepted test amended, generic arch path byte-identical — verify + gate verified, reviewer accept) |
 | E11-C01 | E11 | accepted | — | implementer-E11-C01 (picked @ 0592afd; committed @ c73dbb4; fix 1 — asArray-identity aliasing → `Array withAll:` — @ 318f46c; accepted @ 318f46c, 236 run + self-hosted gate exit 0 / 10 M1 registrations unchanged — verify + gate verified, reviewer accept; name kept `PGRKitEnvironment`; respondsTo:-skeleton erratum → backlog B-29) |
 | E11-C02 | E11 | todo | E11-C01 | — |
-| E11-C03 | E11 | todo | — | — |
+| E11-C03 | E11 | accepted | — | implementer-E11-C03 (picked @ 5e4f11a; committed @ 027f2d8; accepted @ 027f2d8, 241 run + self-hosted gate exit 0 / 10 M1 registrations unchanged — verify + gate verified, reviewer accept first pass; P5 record: allSubclasses + Symbol=String clause confirmed in-image; non-blocking reviewer notes — scratch-root staleness one-liner, tests-first witnessing skipped-and-disclosed — held for M2 mining) |
 | E11-C04 | E11 | todo | E11-C01, E11-C03 | — |
 | E11-C05 | E11 | todo | E11-C02, E11-C04 | — |
 
