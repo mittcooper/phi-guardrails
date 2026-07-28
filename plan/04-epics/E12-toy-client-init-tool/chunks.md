@@ -34,7 +34,7 @@ checkpoint's six-red arm is an orchestrator-run eval, not a committed test.
 | E12-C01 | The toy mini app and its groupless baseline | — | yes | ~110 | `PGRToyBaselineTest` (2) green — five packages declared, zero groups (R-47), the three-layer app real and clean |
 | E12-C02 | `ToyNoIsNilIfFalseRule` and its fixture pair | — | yes | ~100 | `testFiresOnBadFixture`/`testSilentOnGoodFixture` green by eval arm (unswept home) — the client-convention model, flag-only, `#error` |
 | E12-C03 | The six plants, committed red, with check-level witnesses | E12-C01, E12-C02 | no | ~140 | `PGRToyPlantWitnessTest` (5) green in a green sweep — every plant live and caught by its check; gate leg still 12 GREEN (exempt guard held) |
-| E12-C04 | The toy's committed artifact: `guardrailsSTON` | E12-C01, E12-C02 | yes | ~90 | `PGRToyArtifactTest` (2) green — §1.1's example verbatim parses, validates, yields the six resolved registrations in order, no `run` sent |
+| E12-C04 | The toy's committed artifact: `guardrailsSTON` | E12-C01, E12-C02 | yes | ~90 | `PGRToyArtifactTest` (2) green — §1.1's example (content-identical) parses, validates, yields the six resolved registrations in order, no `run` sent |
 | E12-C05 | `PGRConfigurationDraft` + the scheduled §0.3 mirror amendment | E12-C01 | yes | ~170 | `PGRConfigurationDraftTest` (4) green + the amended conformance manifest green (five audiences, 46 triples) — draft parses/validates for the toy, stanza byte-derived |
 
 Sum ≈ 610 LOC — the roadmap's "~7 chunks" cut as five: the toy app, its rule, its
@@ -128,7 +128,8 @@ E12 is provable by, on one head commit:
 **Frozen at acceptance (E12's interface digest — later epics build on these;
 amendments need a decision-sheet entry):**
 - **`BaselineOfToy class>>guardrailsSTON`** — the committed toy artifact, §1.1's
-  example verbatim (no `#src`, no comments); **E14 consumes it** via
+  example **content-identical** (reader annotations stripped; the pins assert
+  structure, never bytes — ADVISORY-2 swept at Gate 4); **E14 consumes it** via
   `PGRConfiguration fromString:`. Registry shape pinned: the six registrations, in
   order — `lint/PCKNoIsNilIfTrueRule` · `lint/ReCodeCruftLeftInMethodsRule` ·
   `lint/ToyNoIsNilIfFalseRule` · `architecture/PCKLayerMapCheck` ·
