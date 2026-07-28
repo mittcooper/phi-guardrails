@@ -112,9 +112,12 @@ PGRArchSelfTest >> referencedClassOffendersIn: aMethodCollection banned: aBanBlo
 
 { #category : 'helpers' }
 PGRArchSelfTest >> ruledFileAccessSelectors [
-	"The M1 allowlist for the file-triad and Zinc/Network/Zodiac arms: exactly the three ch. 9
-	 ruled artifact-read sites (D-53/D-55/D-45). PCKSrcInventoryCheck joins at M2 by that
-	 epic's scheduled edit - not pre-added here."
+	"The allowlist for the file-triad and Zinc/Network/Zodiac arms: exactly the three ch. 9
+	 ruled artifact-read sites (D-53/D-55/D-45). PCKSrcInventoryCheck - section 7.6's second
+	 ruled file access, the src walk - joined at M2 needing NO entry: its walk uses
+	 String-extension sends only and compiles no file-triad class literal (D-82 doc pass).
+	 A future implementation needing a triad literal is a stop-and-report, never a silent
+	 entry here."
 	^ #(
 		'PGRConfiguration class>>#fromFile:'
 		'PGRGate class>>#runHeadless:'

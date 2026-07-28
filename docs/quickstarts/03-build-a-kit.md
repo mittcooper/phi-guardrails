@@ -108,6 +108,18 @@ packages only — engine vocabulary never crosses into the core) · the
 `recommendedBlock` stanza · your block schema, strictly validated by you · a
 bad/good fixture pair for every shipped check, with named tests (see Quickstart 2 §3).
 
+**Completeness note (D-81, M2).** Kits that consume *envelope facts* — the
+resolved `#src` path, the exempt package list — implement one more message beside
+the two taught above: the optional, engine-probed
+`registrationsFrom: block environment: env`, where `env` is the read-only
+`PGRKitEnvironment` view (named readers: `productionPackages` · `testsPackages` ·
+`exemptPackages` · `srcPath`; you still never receive the configuration object).
+The engine probes for it and falls back to the three-argument form, so everything
+this guide teaches stays correct and complete for kits that consume no envelope
+fact — and new kits with envelope needs should prefer the environment form
+(backlog B-28 records the convergence path). The coding kit's own
+`registrationsFrom:environment:` is the in-repo example.
+
 ---
 *Spec citations: ch. 1 §1.3 (kit protocol row, `PGRRegistrationSpec`), §1.4 (kit
 contract and duty, registry construction, spec-level validation), §1.1 (`#kits`

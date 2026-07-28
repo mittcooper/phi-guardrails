@@ -478,7 +478,8 @@ seam-agnostic) or E11-C04's artifact form (ruled ground, §7.5).
 
 **Filed:** 2026-07-28, integrator, the M2 milestone mining pass (operating rule 9
 over the E10 + E11 cycles' completion-report deviations and review findings).
-**Status:** open — recommendation below; owner rules.
+**Status:** **RULED — D-82** (owner word 2026-07-28): the cut-time probe
+obligation is adopted as method law, both lines; binds the E12 cut onward.
 
 **The repeat (two instances in one milestone):**
 

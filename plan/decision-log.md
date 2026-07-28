@@ -2780,3 +2780,48 @@ the next free number with substance unchanged — flagged to the owner at apply 
   E11 re-cuts from this ruling. The E02 digest's "two messages" line gains the
   erratum under this entry; guide 3's completeness note rides the owner's next
   doc pass (no sample changes — the three-argument teaching stays correct).
+
+## D-82 · M2 GATE: milestone closed; the mining rulings (owner word 2026-07-28)
+
+- **M2 CLOSED** on head `786bacf` (acceptance `5e3a730`): both instruments green
+  over the completed §7.5 artifact — 250/250 named suites · self-hosted gate **12
+  registrations, GATE: GREEN, exit 0** · CI step-1 run 30326283281 on the same
+  head. The budgeted first-run risk did not materialize; nothing weakened. E11's
+  digest frozen: `PGRKitEnvironment` + growth path · the probed
+  `registrationsFrom:environment:` message · `architecture/PCKSrcInventoryCheck` ·
+  the completed artifact form.
+- **Q-39 RULED — the cut-time probe obligation adopted:** every work-order
+  skeleton assertion naming a reflective predicate (`respondsTo:`,
+  `includesSelector:`, `inheritsFrom:`, …) or a frozen-surface
+  selector/constructor is executed against the work image — or checked against
+  the frozen digest — before the cut commits, probe transcript attached to the
+  epic's validation record. The B-16/amended-surface precedent: scripted, never
+  recalled. Method law both lines (v0.1 Prompt-4 self-check + validation item;
+  v0.2 stage-5 twins); binds the E12 cut onward. (The milestone's two instances:
+  E10-C04's §4.2-vs-`PGRVerdict` → Q-37/D-80; E11-C01's unsatisfiable
+  `respondsTo: #at:` → B-29.)
+- **CARRY-FORWARD RULED** (advisor mining find): paste-base regeneration carries
+  forward every validator- and gate-caught **ground-fact correction** as
+  owner-note lines. Root cause on record: the fabricated "CI step 2 exists"
+  claim recurred across two independent cuts after its correction retired with
+  the superseded cut — the detector went 1-for-2; only the Gate-4 review caught
+  the recurrence. Method law both lines (v0.1 H4; v0.2 milestone-gate handoff).
+- **CLEANUPS-SWEEP RULED** standing mining law: at every milestone gate, sweep
+  the rulings since the last gate for deferred consequences without a filed
+  home (its first manual run found the B-24/D-80 and B-28/`PGRKit` linkage
+  gaps). Both lines.
+- **B-26 SETTLED — guarded form permanent:** three green CI legs (E09/E10/E11)
+  all ran via the image-directory fallback; the exact `SmalltalkCI` selector
+  stays unobservable locally; the `respondsTo:` guard makes a wrong spelling
+  inert. Row closed.
+- **VALIDATOR-RESUME: on watch, not ruled** — one occurrence, disclosed, and its
+  round was a reject. The hazard shape to watch: a *resumed* validator run
+  delivering a PASS.
+- **DOC PASS AUTHORIZED** and executed under this entry (each edit citing its
+  warrant): `PGRArchSelfTest` allowlist comment corrected (the promised M2 edit
+  proved unnecessary — the src walk compiles no triad literal; §7.6's second
+  ruled access named) · ch. 0 §0.3 roster note (the view's readers; the
+  conformance-test mirror rides the next test-touching chunk) · guide 3
+  environment-form completeness note (D-81 / B-28 stage 1, prose only) · ch. 2
+  §2.3 erratum extended (B-18a, the D-72 residue) · B-29's erratum blessed:
+  `includesSelector:` is the canonical no-generic-lookup guard shape.

@@ -87,3 +87,10 @@ from inside this repo's swept tests. The verify command
 spelling ⟨verify⟩, D-57) is the acceptance instrument for
 every chunk; the self-hosted gate — invoked directly, §7.4 step 2 — is the second
 instrument from M1 onward.
+
+*Erratum (B-29/D-82, M2): deliberate-absence guards ("this class must NOT answer
+selector X") use `includesSelector:` — locally-defined-method inspection — never
+`respondsTo:`: `Object`'s indexable primitives make `respondsTo: #at:` universally
+true, so a `respondsTo:`-shaped denial can be unsatisfiable. `includesSelector:` is
+false today and reds the moment the guarded selector is added, which is exactly the
+contract (the D-81 no-generic-lookup guard is the exemplar, E11-C01).*

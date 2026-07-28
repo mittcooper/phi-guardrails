@@ -266,6 +266,15 @@ conformance before any check runs (§1.4).
 | **Check-author SDK** | the check **protocol**: the promised class-side constructor **`packages:`** (spelling veto-open, D-60) — the kit that names a check instantiates it, handing its target package names at construction; `run` stays argument-less and a check never pulls context from anywhere — everything it knows, it was given; the skeleton carries the default implementation — then `run` → verdict, `kind`, and the fix capability, two messages (D-54): `canFix` (skeleton default false) + `fixCommandOn:` (required when `canFix`; answers an object conforming to the fix-invocation protocol — spellings veto-open, shape ruled); the `PGRVerdict` constructors (`green`, `greenAdvisories:`, `redFindings:`, `missingReason:`); the `PGRFinding` constructors (`target:message:`, `target:message:rationale:`); **`PGRConfigurationError`, signalling side** (construction-time parameter validation — the layer-map laws are the exemplar, D-60); class-side `severity` mandatory for registered lint rules (D-41); the fixture-pair requirement (R-37/R-46) |
 | **Kit-author SDK** | contains the Check-author SDK, **plus** the kit **protocol**, **two messages** (D-53/D-54 as amended by D-60 — `kitName` dropped: no consumer existed; the class name is the identity) — `registrationsFrom:productionPackages:testsPackages:` (its verbatim block + the resolved role package lists; **never the configuration object** — over-reach is impossible, not caught) answering **`PGRRegistrationSpec`** values · `recommendedBlock` (the published stanza, single-sourced on the class, answering **STON text** (D-60) — the init tool composes that text into the draft, docs quote it — self-validated by P-STANZA-VALID) — plus the `PGRRegistrationSpec` constructors (`name:kind:check:` / `missing:kind:reason:`) and **`PGRConfigurationError`, signalling side** (D-60): a kit that cannot resolve or validate its own block raises it |
 
+*Erratum (D-81/D-82, M2): the kit protocol's "two messages" gains one **optional**
+engine-probed third — `registrationsFrom:environment:` (block + the read-only
+`PGRKitEnvironment` view: named readers `productionPackages` · `testsPackages` ·
+`exemptPackages` · `srcPath`; kits still never receive the configuration object).
+The three-argument form stays complete for kits consuming no envelope fact. The
+view's readers join this roster's conformance-test mirror at the next
+test-touching chunk (the spec note is the D-82 doc pass; spec and mirror move
+together).*
+
 **Consumer side (split by mutation rights):**
 
 | SDK | Contents |
