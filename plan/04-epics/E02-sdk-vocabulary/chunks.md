@@ -99,6 +99,12 @@ amendments need a decision-sheet entry):**
   `registrationsFrom:productionPackages:testsPackages:` (answers ordered
   `PGRRegistrationSpec`s; never the configuration object) · `recommendedBlock`
   (STON text). (`PGRKit` optional.)
+  *Erratum (D-81, Q-38 ruled at the E11 cut): plus one **optional**
+  engine-probed message `registrationsFrom:environment:` for kits that consume
+  envelope facts — the environment is a read-only SDK view with named readers
+  (the defined-API boundary), built by the core; kits still never receive the
+  configuration object. The three-argument form stays complete for kits that
+  consume no envelope fact. E11 lands the view.*
 
 Checkpoint result (filled at acceptance): **2026-07-24, all three legs green on head
 `5f2fc60`** (orchestrator-run at epic acceptance) · leg 1: `tools/build-image.sh &&

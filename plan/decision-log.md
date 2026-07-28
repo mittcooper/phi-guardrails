@@ -2739,3 +2739,44 @@ the next free number with substance unchanged — flagged to the owner at apply 
   The `redFindings:advisories:` gap stays recorded; if every-report fidelity is
   ever wanted, **B-24** (the full-fidelity STON report) is its natural home — not
   a `PGRVerdict` amendment.
+
+## D-81 · Q-38 ruled: kits query a published environment view — a defined API, not a growing selector (owner words 2026-07-27)
+
+- **From:** Q-38 (`plan/04-decision-sheet.md` — the E11 cut's filed seam: the
+  frozen three-argument kit contract can carry neither `#src` nor the exempt
+  inventory to `PCKSrcInventoryCheck`). The cut rode recommendation (a) — a
+  five-keyword extended message — veto-open on the C24/Q-31 precedent.
+- **The arc (crystallized intent):** the owner VETOED (a): *"that is a bad idea
+  and design. it means changing api every time something needs something. We
+  need a more generalized solution."* Probed *"what if we make the Config
+  queryable vs passing? that feels more extensible?"*; of the three queryable
+  shapes (the raw configuration · a curated view with named readers · a generic
+  key-value query) ruled the curated view: *"option #2 exposes a defined api,
+  that is the right approach. approved."*
+- **Ruling:**
+  1. A new **SDK value object — the kit environment view** (working name
+     `PGRKitEnvironment`; the producer may refine the name, veto-open):
+     read-only, built by the core, carrying every resolved fact the core
+     publishes to kits — `productionPackages` · `testsPackages` ·
+     `exemptPackages` · `srcPath` (nil when the envelope declares no `#src`).
+     **Named readers only — no generic key lookup:** the published set is
+     deliberate and enumerable in one class; a misquery fails loudly.
+  2. **D-53.5 upheld:** kits still never receive the configuration object. The
+     view is a curated projection; over-reach stays structurally impossible.
+  3. **Additive landing:** `registrationsFrom:environment:` (block + view)
+     lands BESIDE the frozen three-argument message; the engine probes each kit
+     once (`respondsTo:`, the established D-53/D-60 reflective-conformance
+     family) and falls back to the frozen form otherwise. Zero accepted
+     consumers change; the three-argument contract remains complete for kits
+     that consume no envelope fact. Internal delegation shape is the cut's.
+  4. **Growth path:** a future published fact = **one new reader** on the view —
+     after E11 freezes it, a decision-sheet-recorded amendment like any frozen
+     surface — never a new selector, never a probe arm.
+- **Consequences:** the superseded option-(a) cut (four work orders + the
+  validation report, never committed) is retired to `.build/superseded/` — its
+  validation history is preserved for the M2 mining sweep (round 1's BLOCKING
+  catch: the fabricated "the gate already runs as CI step 2" claim, caught by
+  the intent-attribution item — the detector's third live catch; round 2 PASS).
+  E11 re-cuts from this ruling. The E02 digest's "two messages" line gains the
+  erratum under this entry; guide 3's completeness note rides the owner's next
+  doc pass (no sample changes — the three-argument teaching stays correct).

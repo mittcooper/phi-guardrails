@@ -402,3 +402,74 @@ question, not a gate on any E10 chunk.
 **Status:** **RULED — D-80, option (a)** (owner word 2026-07-27):
 advisory-on-green-only is the permanent contract; §4.2 step 4 erratum landed
 under D-80 ("every report" → "every clean report").
+
+## Q-38 · The envelope-parameter seam: how `#src` (and the baseline inventory) reach the kit for `PCKSrcInventoryCheck`
+
+**Filed by:** the E11 cut (Prompt 4, 2026-07-27) · **Status: RULED — D-81**
+(owner words 2026-07-27): recommendation (a) **VETOED** — *"it means changing
+api every time something needs something. We need a more generalized
+solution"* — and the generalized shape ruled from the owner's queryable-config
+probe: kits query a **read-only environment view with named readers** (a
+defined API — `PGRKitEnvironment`, SDK), built by the core, landed additively
+beside the frozen three-argument message with a one-time engine probe;
+D-53.5 upheld; future published facts = one new reader each, never a new
+selector. The option-(a) cut below is superseded (retired to
+`.build/superseded/`); E11 re-cuts from D-81.
+
+**The conflict (spec-internal, surfaced by the cut's entry analysis):** §1.5's
+architecture row makes `architecture/PCKSrcInventoryCheck` **missing** when the
+config declares no `#src` — "an envelope key, §1.1; D-45" — and §7.5's walk
+judges directories against "a package the baseline defines." But the kit is the
+only party that can answer that missing spec (blocks are opaque to the core,
+D-51/D-60), and the frozen E02 kit contract hands kits exactly
+`registrationsFrom: block productionPackages: names testsPackages: names` —
+never the configuration object (D-53.5). Under the frozen three-argument
+handoff the kit can see **neither** the resolved `#src` path **nor** the
+baseline's full package inventory (the exempt role is absent). No ruling
+settles the seam; `PGRConfiguration>>srcPath`'s accepted comment says only
+"E11's src-inventory wiring consumes it."
+
+**To rule:**
+
+- **(a) — recommended, and what the E11 cut builds:** an **additive, opt-in
+  extended kit message** beside the frozen contract:
+  `registrationsFrom:productionPackages:testsPackages:exemptPackages:srcPath:`
+  (the two role-family additions: the resolved exempt package-name list, and
+  the resolved-absolute `#src` path String or nil). `PGRRegistry
+  fromConfiguration:` probes each kit class with `respondsTo:` — the
+  established D-53/D-60 reflective-conformance family, not the banned type
+  predicate — and calls the extended form when answered, else the frozen
+  three-argument form. `PCKKit` implements the extended form; its frozen
+  three-argument message survives byte-compatible as a delegation with
+  `exemptPackages: #() srcPath: nil` (identical behavior on every accepted
+  input — no accepted block names `PCKSrcInventoryCheck`; scripted sweep in the
+  E11 cut). Kits still never receive the configuration object (D-53.5 upheld);
+  external kits that consume no envelope parameter implement nothing new (the
+  frozen two-message contract remains complete for them). `#src` reaches the
+  kit resolved per D-45 ruling 2; the baseline inventory reaches it as
+  production ∪ tests ∪ exempt, which **equals** "the packages the baseline
+  defines" by D-25's scope law (roles are pairwise disjoint and jointly total
+  over the baseline inventory) — the check never asks Metacello at run time.
+- **(b)** widen the frozen three-argument signature itself (every kit,
+  including every accepted scratch kit, must change). Scripted enumeration:
+  **19 committed files** send or implement
+  `registrationsFrom:productionPackages:testsPackages:` — a breaking amendment
+  with a 19-file consumer table, for a parameter only one kit consumes.
+  Recommend against.
+- **(c)** hand kits the configuration object. Overrules D-53.5's
+  "over-reach is impossible, not caught." Recommend against.
+
+**Consequences if (a) is ratified:** the E02 digest's "the whole contract, two
+messages" gains a one-line erratum ("…plus one optional engine-probed extended
+message for kits that consume envelope parameters"); guide 3
+(`docs/quickstarts/03-build-a-kit.md`) earns a one-sentence completeness note
+at the owner's next doc pass (no sample changes — its three-argument teaching
+stays correct for kits that consume no envelope parameter); `PGRKit` (the
+optional SDK skeleton) stays untouched in v1 — the extended form is documented
+kit-author surface, skeleton support is a widening candidate. A future third
+envelope parameter re-opens this entry (the D-32 v1-trade pattern: encode the
+v1 checks' needs, not a generic protocol).
+
+**Impact / blocking:** blocking for E11-C02/E11-C03 in the sense that a veto
+reshapes their seam; not blocking for E11-C01 (the check class is
+seam-agnostic) or E11-C04's artifact form (ruled ground, §7.5).
