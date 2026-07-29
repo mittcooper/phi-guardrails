@@ -50,6 +50,31 @@ ToyDemoTest >> expectedRegistrationNames [
 ]
 
 { #category : 'fixtures' }
+ToyDemoTest >> fixedPlantSources [
+	"The six { class. selector. fixedSource } triples (spec 8.3, probed P5): each fixedSource
+	is the full method source - selector line then tab-indented body - that turns its plant
+	clean under every registered check. The four fix species: the isNil ifTrue:/ifFalse:
+	rewrites, the Transcript cruft and the ui->persistence reference removed, the failing
+	assertion corrected (an empty order totals 0), the skip replaced by a real assertion (an
+	empty order's item count is 0). Compiled transiently by testAllFixedThenClean, then
+	restored on the block's return - nothing committed changes (D-43/D-26)."
+	^ {
+		{ ToyOrder. #totalOrZero. 'totalOrZero
+	items ifNil: [ ^ 0 ].
+	^ self total' }.
+		{ ToyOrder. #logTotal. 'logTotal
+	^ self total' }.
+		{ ToyOrder. #itemCountOrZero. 'itemCountOrZero
+	^ items ifNil: [ 0 ] ifNotNil: [ items size ]' }.
+		{ ToyOrderView. #storeSnapshot. 'storeSnapshot
+	^ nil' }.
+		{ ToyOrderTest. #testTotalIsFortyTwo. 'testTotalIsFortyTwo
+	self assert: ToyOrder empty total equals: 0' }.
+		{ ToyOrderTest. #testSkippedOnPurpose. 'testSkippedOnPurpose
+	self assert: ToyOrder empty itemCount equals: 0' } }
+]
+
+{ #category : 'fixtures' }
 ToyDemoTest >> plantedShapes [
 	"The six { class. selector. marker } triples of the toy's plants, in registry order:
 	row i pairs with registration i of expectedRegistrationNames. The marker is the
@@ -156,4 +181,36 @@ ToyDemoTest >> testLintAutofixThenGreen [
 		self assert: greenVerdict isGreen.
 		self assert: report blockingVerdicts size equals: 5 ].
 	self assert: (ToyOrder >> #totalOrZero) sourceCode equals: before
+]
+
+{ #category : 'tests' }
+ToyDemoTest >> testAllFixedThenClean [
+	"R-32/R-43/R-44 demonstration half, spec 8.3 test-3 (D-43/D-80): with every plant fixed
+	in-image - the six probed fixed sources compiled over the plants (the widest mutation) -
+	the same gate over the same artifact answers GREEN (isClean, exit code 0), carrying only
+	the one #unlayered advisory (D-80, target 'architecture/PCKLayerMapCheck') that rides the
+	clean report without blocking it. Then restoration returns the committed red state
+	byte-identically - each method's sourceCode back to its pre-test snapshot - completing
+	red -> fixed -> green inside one test class. No third gate run after restoration: the
+	neighboring tests and every setUp guard pin post-restore red continuously (P5)."
+	| pairs snapshots |
+	pairs := self plantedShapes collect: [ :shape | { shape first. shape second } ].
+	snapshots := pairs collect: [ :pair | (pair first >> pair last) sourceCode ].
+	self restoringSourcesOf: pairs during: [
+		| report advisory |
+		self fixedPlantSources do: [ :triple |
+			| targetClass selector |
+			targetClass := triple first.
+			selector := triple second.
+			targetClass
+				compile: triple third
+				classified: (targetClass >> selector) protocolName ].
+		report := self runToyGate.
+		self assert: report isClean.
+		self assert: report exitCode equals: 0.
+		self assert: report advisories size equals: 1.
+		advisory := report advisories first.
+		self assert: advisory target equals: 'architecture/PCKLayerMapCheck' ].
+	pairs with: snapshots do: [ :pair :snapshot |
+		self assert: (pair first >> pair last) sourceCode equals: snapshot ]
 ]
