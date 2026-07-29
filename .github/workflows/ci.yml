@@ -8,6 +8,31 @@ jobs:
       - uses: hpi-swa/setup-smalltalkCI@v1
         with:
           smalltalk-image: Pharo64-13
-      - run: smalltalkci -s Pharo64-13
+      - name: "step 1 · validation — smalltalkCI (spec §7.4)"
+        run: smalltalkci -s Pharo64-13
         shell: bash
         timeout-minutes: 30
+      - name: "assemble the gate image (spec §7.3 recipe — the D-60.a executable copy)"
+        run: |
+          mkdir -p .build/gate && cd .build/gate
+          curl -sSLo image.zip https://files.pharo.org/get-files/130/pharoImage-x86_64.zip
+          curl -sSLo vm.zip https://files.pharo.org/get-files/130/pharo-vm-Linux-x86_64-stable.zip
+          echo "897668dd548864f74730065de3fa2b1f4b5d3636d4c7d14f91945f0a5ce22590  image.zip" | sha256sum -c -
+          echo "b4b344a8236f43f08eedad205ca6a292f85bbcbe107f5d68aed04595c43e83ed  vm.zip" | sha256sum -c -
+          unzip -q image.zip && unzip -q vm.zip -d vm
+          mv Pharo13.0-*.image gate.image
+          mv Pharo13.0-*.changes gate.changes
+          ./vm/bin/pharo --headless gate.image eval "Metacello new baseline: 'PhiGuardrails'; repository: 'github://mittcooper/phi-guardrails:main/src'; load: 'CI'. Smalltalk snapshot: true andQuit: true"
+        shell: bash
+        timeout-minutes: 20
+      - name: "step 2 · enforcement — the gate headless on the framework's own artifact (spec §7.4)"
+        run: PHARO_VM=.build/gate/vm/bin/pharo IMAGE=.build/gate/gate.image ./guardrails.sh guardrails.ston
+        shell: bash
+        timeout-minutes: 10
+      - name: "wrapper-guard self-test (P-WRAPPER-GUARD, D-49)"
+        run: |
+          code=0
+          PHARO_VM=/nonexistent-vm IMAGE=/nonexistent.image ./guardrails.sh guardrails.ston || code=$?
+          test "$code" -eq 3
+        shell: bash
+        timeout-minutes: 5
