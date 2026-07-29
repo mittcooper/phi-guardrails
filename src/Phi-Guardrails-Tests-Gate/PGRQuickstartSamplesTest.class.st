@@ -11,6 +11,15 @@ E08-C04 discipline); the harnesses are tracked so a mid-arm failure still tears 
 down. Verified spellings (in-image, this chunk): a fresh class's `comment` is an empty
 ByteString (not nil), so `comment isNil or: [ comment isEmpty ]` flags it; `cls name` answers
 a Symbol yet `aSymbol = 'aString'` is true here, so sample 3's `f target = '...'` holds.
+
+testAdoptAndRunSamples is the adopt-and-run leg (D-59, guide 1's M4 anchor): guide 1's four
+samples execute verbatim through the C04 harness - sample 1's config drives the gate to the
+four guide-named registrations green, the draft-prose claim parses back, the Metacello sample
+compiles to the OCParser boundary and is pinned textually equal to the CI workflow it mirrors
+(no in-image network load - the live load is E15-C01's hosted step, D-76/B-26), samples 3 and 4
+run under a scratch path binding, and the two §5 first-run failures raise PGRConfigurationError
+/ answer a missing verdict exactly as documented. A scratch Acme world (BaselineOfAcme + three
+role packages) is built and removed in-test via the tracked harness.
 "
 Class {
 	#name : 'PGRQuickstartSamplesTest',
@@ -61,6 +70,50 @@ PGRQuickstartSamplesTest >> envelopeWithKits: aKitsKeyValue [
 ]
 
 { #category : 'fixtures' }
+PGRQuickstartSamplesTest >> acmeWorldSources [
+	"The harness-install: source strings for the scratch Acme world guide 1's sample 1 targets:
+	a BaselineOfAcme declaring three role packages via a <baseline>-pragma baseline: method (the
+	P3-probed fluid shape), and one clean class per package - two production classes clean under
+	both catalog lint rules and one passing TestCase clean under the no-skips meta-rule. Ordered
+	baseline-first so the role packages exist by the time fromString: introspects the baseline."
+	^ {
+		'BaselineOf << #BaselineOfAcme package: ''BaselineOfAcme''
+BaselineOfAcme >> baseline: spec
+	<baseline>
+	spec for: #common do: [ spec package: ''Acme-Core''; package: ''Acme-Server''; package: ''Acme-Tests'' ]'.
+		'Object << #AcmeCore package: ''Acme-Core''
+AcmeCore >> ping
+	^ 42'.
+		'Object << #AcmeServer package: ''Acme-Server''
+AcmeServer >> start
+	^ true'.
+		'TestCase << #AcmeSmokeTest package: ''Acme-Tests''
+AcmeSmokeTest >> testTruth
+	self assert: 3 + 4 = 7' }
+]
+
+{ #category : 'fixtures' }
+PGRQuickstartSamplesTest >> committedWorkflowText [
+	"Read .github/workflows/ci.yml via the same three-stage locator chain the harness's own
+	guideNamed: uses (the working-directory walk is not the CI path - B-26 - so all three stages
+	are chained); a nil after all three is a loud error, never a skip."
+	| harness parts found |
+	harness := PGRQuickstartSampleHarness new.
+	parts := { '.github'. 'workflows'. 'ci.yml' }.
+	found := (harness locateUpwardFrom: FileSystem workingDirectory for: parts)
+		ifNil: [ (harness smalltalkCILocateFor: parts)
+			ifNil: [ harness locateUpwardFrom: FileLocator imageDirectory for: parts ] ].
+	found ifNil: [ ^ self error: 'committed workflow not found: .github/workflows/ci.yml' ].
+	^ found contents
+]
+
+{ #category : 'fixtures' }
+PGRQuickstartSamplesTest >> installAcmeWorldOn: aHarness [
+	"Install every acmeWorldSources string through aHarness (tracked for teardown by the caller)."
+	self acmeWorldSources do: [ :source | aHarness install: source ]
+]
+
+{ #category : 'fixtures' }
 PGRQuickstartSamplesTest >> newHarness [
 	"A fresh harness, tracked for teardown so tearDown removes everything it installed even if
 	an arm fails mid-test."
@@ -92,6 +145,103 @@ PGRQuickstartSamplesTest >> setUp [
 PGRQuickstartSamplesTest >> tearDown [
 	harnesses do: [ :each | each removeInstalled ].
 	super tearDown
+]
+
+{ #category : 'tests' }
+PGRQuickstartSamplesTest >> testAdoptAndRunSamples [
+	"Ch.-9-named, P-GUIDE-EXEC (adopt-and-run leg, D-59): guide 1's four samples execute verbatim
+	through the C04 harness and each behaves as the guide states. One method, the D-59 shape; its
+	arms fail individually with named assertions. The scratch Acme world is tracked (newHarness),
+	so a mid-arm failure still tears it down; the Metacello sample is executed only to the
+	OCParser boundary - its live load is E15-C01's hosted step - and this arm pins the guide's
+	load coordinates textually equal to the CI workflow so the two cannot diverge."
+	| harness acmeHarness samples s1 s2 s3 s4 gate report names scratchDir missingVerdict |
+	harness := self newHarness.
+
+	"1 - inventory pin: exactly four samples, in the config-then-three-smalltalk order."
+	samples := harness samplesIn: (harness guideNamed: '01-adopt-and-run.md').
+	self assert: samples size = 4 description: 'guide 1 must offer its four samples'.
+	self assert: (samples collect: [ :each | each key ]) asArray = #(ston smalltalk smalltalk smalltalk)
+		description: 'the samples are the config, the Metacello load, the in-image run, and the defective-config handler'.
+	s1 := (samples at: 1) value.
+	s2 := (samples at: 2) value.
+	s3 := (samples at: 3) value.
+	s4 := (samples at: 4) value.
+
+	"2 - install the scratch Acme world sample 1 targets (tracked; tearDown removes all)."
+	acmeHarness := self newHarness.
+	self installAcmeWorldOn: acmeHarness.
+
+	"3 - sample 1 runs the gate: the four guide-named registrations in order, all green, exit 0."
+	gate := PGRGate forConfiguration: (PGRConfiguration fromString: s1).
+	report := gate run.
+	names := (report verdicts collect: [ :each | each registrationName ]) asArray.
+	self assert: names = #('lint/PCKNoIsNilIfTrueRule' 'lint/ReCodeCruftLeftInMethodsRule' 'behavioral/Acme-Tests' 'behavioral/PCKNoSkippedTestsMetaRule')
+		description: 'the gate answers exactly the guide-named registrations, in order'.
+	self assert: report isClean description: 'the clean scratch world is green'.
+	self assert: report exitCode = 0 description: 'a clean run exits 0'.
+
+	"4 - the draft-prose claim: draftFor: the scratch baseline answers a draft fromString: accepts."
+	self assert: (PGRConfiguration fromString: (PGRConfigurationDraft draftFor: 'BaselineOfAcme')) project = 'Acme'
+		description: 'the draft the guide promises parses back into a usable configuration'.
+
+	"5 - sample 2 compiles clean and cannot diverge from the workflow it mirrors."
+	self deny: (OCParser parseExpression: s2) isFaulty
+		description: 'the Metacello load sample is syntactically clean'.
+	self assert: (s2 includesSubstring: 'baseline: ''PhiGuardrails''')
+		description: 'the sample names the real baseline'.
+	self assert: (s2 includesSubstring: 'repository: ''github://mittcooper/phi-guardrails:main/src''')
+		description: 'the sample names the real repository coordinates'.
+	self assert: (self committedWorkflowText includesSubstring: 'baseline: ''PhiGuardrails''')
+		description: 'the CI workflow loads the same baseline - the guide cannot diverge'.
+	self assert: (self committedWorkflowText includesSubstring: 'repository: ''github://mittcooper/phi-guardrails:main/src''')
+		description: 'the CI workflow loads the same repository - the guide cannot diverge'.
+
+	"6 + 7 - samples 3 and 4 execute verbatim under a scratch path binding."
+	scratchDir := FileSystem workingDirectory / 'pgr-e15-scratch'.
+	scratchDir ensureCreateDirectory.
+	[ | goodPath badPath defectText result |
+		goodPath := (scratchDir / 'acme.ston') fullName.
+		(scratchDir / 'acme.ston') writeStreamDo: [ :stream | stream nextPutAll: s1 ].
+		badPath := (scratchDir / 'bad.ston') fullName.
+		(scratchDir / 'bad.ston') writeStreamDo: [ :stream | stream nextPutAll: '{ #schemaVersion : 2, #junk }' ].
+
+		"6 - the in-image run answers empty blockingVerdicts on the clean world."
+		self assert: ((OpalCompiler new evaluate: '[:path | ' , s3 , ' ]') value: goodPath) isEmpty
+			description: 'the in-image run sample answers empty blockingVerdicts on the clean world'.
+
+		"7 - the defective-config handler, both ways, plus the raw raise it wraps."
+		defectText := (OpalCompiler new evaluate: '[:path | ' , s4 , ' ]') value: badPath.
+		self assert: (defectText isString and: [ defectText notEmpty ])
+			description: 'a bad path drives the handler to answer a non-empty error message text'.
+		result := (OpalCompiler new evaluate: '[:path | ' , s4 , ' ]') value: goodPath.
+		self assert: result project = 'Acme'
+			description: 'a good path flows through the handler-wrapped sample to the parsed configuration'.
+		self should: [ PGRConfiguration fromFile: badPath ] raise: PGRConfigurationError
+			description: 'the malformed config file raises a configuration error before anything runs'
+	] ensure: [ scratchDir ensureDeleteAll ].
+
+	"8 - §5 failure 2: a check-name typo resolves to nothing (one missing verdict, exit 1); a
+	name resolving to a loaded but non-conforming class is a configuration error at fromString:."
+	gate := PGRGate forConfiguration: (PGRConfiguration fromString: (s1 copyReplaceAll: 'PCKNoIsNilIfTrueRule' with: 'PCKNoIsNilIfTrue')).
+	report := gate run.
+	missingVerdict := report verdicts detect: [ :each | each registrationName = 'lint/PCKNoIsNilIfTrue' ].
+	self assert: missingVerdict status = #missing
+		description: 'a check name resolving to no loaded class is a missing verdict'.
+	self assert: report exitCode = 1 description: 'a missing verdict fails the gate, exit 1'.
+	self should: [ PGRGate forConfiguration: (PGRConfiguration fromString: (s1 copyReplaceAll: 'PCKNoIsNilIfTrueRule' with: 'OrderedCollection')) ]
+		raise: PGRConfigurationError
+		description: 'a name resolving to a loaded but non-conforming class is a configuration error (the guide §5 exit-2 case) - raised as the registry builds eagerly, not at fromString:, since kit-block rule names are opaque to config parsing (D-51)'.
+
+	"9 - §5 failure 1 (last: it mutates the scratch baseline): a package the baseline declares but
+	no role covers fails the scope law. Grow the baseline with an unmatched Acme-Benchmarks and
+	recompile its baseline: method; no restoration - teardown removes the world, no arm follows."
+	acmeHarness install: 'Object << #AcmeBenchmark package: ''Acme-Benchmarks'''.
+	acmeHarness install: 'BaselineOfAcme >> baseline: spec
+	<baseline>
+	spec for: #common do: [ spec package: ''Acme-Core''; package: ''Acme-Server''; package: ''Acme-Tests''; package: ''Acme-Benchmarks'' ]'.
+	self should: [ PGRConfiguration fromString: s1 ] raise: PGRConfigurationError
+		description: 'a package the baseline declares but no role covers fails the scope law'
 ]
 
 { #category : 'tests' }

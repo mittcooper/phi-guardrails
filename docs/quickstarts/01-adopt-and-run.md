@@ -2,11 +2,10 @@
 
 *Audience: a Pharo developer adopting the gate for an existing project (config author),
 and anyone invoking it (gate caller). Derived from spec ch. 1 §1.1, ch. 7 §7.1–§7.5,
-ch. 8 §8.1. Samples are unexecutable until milestone **M4** and are marked ⟨verify⟩;
-*(M1-gate note: the sample harness's "must not choke on this guide" claim is itself
-untested until M4 — recorded E09 advisory; the D-76 realness law binds this guide's
-fences at their M4 discharge.)*
-at that milestone a test executes each sample verbatim (spec ch. 9, P-GUIDE-EXEC).*
+ch. 8 §8.1.*
+*Every sample below is executed verbatim on every test run by
+`PGRQuickstartSamplesTest>>#testAdoptAndRunSamples` (spec ch. 9, P-GUIDE-EXEC) — a sample
+the framework no longer satisfies is a red test, not a stale document.*
 
 phi-guardrails is a standalone checking tool for Pharo 13. You point it at a
 configuration file; it reads your loaded code, runs exactly the checks the file names,
@@ -19,7 +18,7 @@ may run it.
 
 One file declares everything. It can live anywhere (you always pass its path
 explicitly); the root of your repo is the recommended spot for a project that owns its
-config. It is pure-data STON — no comments, no class tags. ⟨verify⟩
+config. It is pure-data STON — no comments, no class tags.
 
 ```ston
 {
@@ -57,23 +56,23 @@ Reading it:
 
 You don't have to write this by hand: with your baseline loaded,
 `PGRConfigurationDraft draftFor: 'BaselineOfAcme'` answers a draft of this file for
-your review. The draft may guess; the running gate never does. ⟨verify⟩
+your review. The draft may guess; the running gate never does.
 
 ## 2 · Run the gate headless
 
 The reference runner is `guardrails.sh`, and the recipe from zero to a runnable gate
 is three steps (spec ch. 7 §7.3 — the framework's own CI workflow is the executable,
-tested copy of the same steps): ⟨verify⟩
+tested copy of the same steps):
 
 1. Fetch a Pharo 13 headless VM and image.
-2. Load the framework, then your project the way it normally loads: ⟨verify⟩
+2. Load the framework, then your project the way it normally loads:
 
-   ```smalltalk
-   Metacello new
-       baseline: 'PhiGuardrails';
-       repository: 'github://<org>/phi-guardrails:main/src';
-       load.
-   ```
+```smalltalk
+Metacello new
+    baseline: 'PhiGuardrails';
+    repository: 'github://mittcooper/phi-guardrails:main/src';
+    load.
+```
 
 3. Point the runner at the pieces and the config:
 
@@ -92,7 +91,7 @@ Exit codes — the machine contract:
 | 3 | (wrapper only) the gate did not run at all — image or VM failure |
 
 The report streams to stdout, one line per registration. The printed text is for
-humans — script against the exit code, never the wording. Illustrative shape ⟨verify⟩:
+humans — script against the exit code, never the wording. Illustrative shape:
 
 ```
 PGR gate · Acme · 4 registrations
@@ -108,11 +107,12 @@ GATE: RED — 1 blocking of 4 · exit 1
 ## 3 · Run it in-image
 
 The same gate, the same verdicts, from a Playground or an agent loop. There is no
-default output — the gate writes only to what you give it: ⟨verify⟩
+default output — the gate writes only to what you give it, with `path` holding your
+config file's location as a string:
 
 ```smalltalk
 | config gate report |
-config := PGRConfiguration fromFile: '/path/to/acme/guardrails.ston'.
+config := PGRConfiguration fromFile: path.
 gate := PGRGate forConfiguration: config.
 gate onVerdict: [ :v | Transcript crShow: v printString ].   "optional live stream"
 report := gate run.
@@ -126,12 +126,12 @@ Each verdict answers `status`, `isGreen`, `registrationName`, `kind`,
 `message`, and `rationale` — the rationale is written to tell you (or your agent) what
 to do instead.
 
-A defective configuration signals before anything runs: ⟨verify⟩
+A defective configuration signals before anything runs:
 
 ```smalltalk
 [ PGRConfiguration fromFile: path ]
     on: PGRConfigurationError
-    do: [ :err | "one line naming the offending key, package, or class" ]
+    do: [ :err | err messageText "one line naming the offending key, package, or class" ]
 ```
 
 ## 4 · What "missing" means — silence never passes
@@ -144,7 +144,7 @@ The tool's standing rule: nothing registered may quietly not run.
 ## 5 · The two most likely first-run failures
 
 Error wording is human-facing and not frozen — the texts below are representative,
-not contractual. ⟨verify⟩
+not contractual.
 
 1. **A package in no role** (exit 2). You added `Acme-Benchmarks` to the baseline and
    no `#roles` matcher covers it:
