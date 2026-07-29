@@ -647,8 +647,11 @@ M4's opening epic (absorbs the former E13 init tool, D-61.d). The **D-82/Q-39
 cut-time probe obligation is discharged**: every skeleton-named reflective predicate
 and frozen-surface spelling probed live against the work image at `bca7c9b` or
 digest-checked — transcripts in `plan/04-epics/E12-toy-client-init-tool/probes.md`
-(part of the epic's validation record). E12 `accepted` when all five rows are
-`accepted` and the exit checkpoint in
+(part of the epic's validation record). **E12 OWNER-ACCEPTED (2026-07-28, word to
+the advisor): all five rows accepted, the exit checkpoint GREEN on `2d5d661`, the
+interface digest FROZEN, and the cut's veto-open agent calls closed on the D-16
+precedent.** The acceptance criterion, as released: E12 `accepted` when all five
+rows are `accepted` and the exit checkpoint in
 `plan/04-epics/E12-toy-client-init-tool/chunks.md` is filled in — six legs: the ≥263
 named-suite sweep (250 at cut + 13 net new swept: `PGRToyBaselineTest` 2 ·
 `PGRToyPlantWitnessTest` 5 · `PGRToyArtifactTest` 2 · `PGRConfigurationDraftTest` 4 ·
