@@ -86,6 +86,9 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | E14-C01 | E14 | accepted | — | implementer-E14-C01 (picked @ cd548a7; spawn died mid-run to a transient API connection error and was resumed in place, no work lost; committed @ b963403; accepted @ b963403, sweep 264 run 0F/0E (the demo's exact-six assertions passed live in the sweep) + self-hosted gate exit 0 / 12 registrations unchanged GATE: GREEN with the nesting LIVE and terminating (behavioral/Phi-Guardrails-Tests-Toy 0ms → 84ms, D-46 held), footprint exactly the 1-file manifest 115/0, zero accepted files touched — verify + gate integrator-verified, reviewer accept first pass; reviewer marker probes independently confirmed all six body-distinguishing claims; two non-blocking notes (deleted-plant walkback path, eager description strings) held for mining) |
 | E14-C02 | E14 | accepted | E14-C01 | implementer-E14-C02 (picked @ ed9ba67; committed @ 18a0cee; accepted @ 18a0cee, sweep 265 run 0F/0E (the fix arm ran live: mutation, gate-under-fix 6/1-green/5-blocking exact, byte-identical restoration) + self-hosted gate exit 0 / 12 registrations unchanged GATE: GREEN (Tests-Toy nesting 84ms → 149ms with the fix arm, D-42 composition held, no hang), footprint the one growing E14 file 44/0 pure addition — C01 methods byte-identical — verify + gate integrator-verified, reviewer accept first pass; 3-element snapshot judged faithful simplification (selector implicit in compile:classified:); non-blocking note — detect: without ifNone: in the green-verdict lookup — held for mining) |
 | E14-C03 | E14 | accepted | E14-C02 | implementer-E14-C03 (picked @ c37ab5a; committed @ e09cd6b; accepted @ e09cd6b, sweep 266 run 0F/0E (the widest mutation ran live: six fixes compiled, gate GREEN under fix — isClean/exit 0/one D-80 advisory exact — all six restored byte-identically, neighbors re-proving committed red) + self-hosted gate exit 0 / 12 registrations unchanged GATE: GREEN (the full red → fixed → green cycle nested and terminating, Tests-Toy ~200ms, D-46 exercised in earnest), footprint the one growing E14 file 57/0 pure addition — C01/C02 methods byte-identical, fixed-source table verbatim — verify + gate integrator-verified, reviewer accept first pass; two cosmetic reviewer notes held for mining) |
+| E15-C01 | E15 | todo | — | — |
+| E15-C02 | E15 | todo | E15-C01 | — |
+| E15-C03 | E15 | todo | E15-C01, E15-C02 | — |
 
 ## Verify commands
 
@@ -167,6 +170,10 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 - **E14-C01** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; `ToyDemoTest>>#testGateIsRedOnPlantedViolations` + every previously accepted suite, ≥264 run — membership + floor, never an exact ceiling; the exact-six assertion lives inside the test by ruled design) **and** the self-hosted gate regression leg `./guardrails.sh guardrails.ston` → exit 0, 12 registrations unchanged, `GATE: GREEN` (now nesting the demo — D-46; a hang is a stop-and-report)
 - **E14-C02** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; both `ToyDemoTest` cases + every previously accepted suite, ≥265 run — membership + floor) **and** the 12-registration gate regression leg (the nested demo now includes the fix arm)
 - **E14-C03** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; all three `ToyDemoTest` cases + every previously accepted suite, ≥266 run — membership + floor; the E14 exit-checkpoint leg 1; see `plan/04-epics/E14-demonstration-test/chunks.md` §checkpoint) **and** the 12-registration gate regression leg (the full red → fixed → green cycle nested and terminating)
+
+- **E15-C01** — `gh run list --workflow=ci.yml --limit 1` → `completed success` on the chunk head with all six steps green (step-2 log `GATE: GREEN` / 12 registrations; wrapper self-test green); plus the local exit-3 arm, the ≥266 sweep, and the self-hosted gate leg — see its work order §VERIFY
+- **E15-C02** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; all three `PGRQuickstartSamplesTest` methods incl. `testAdoptAndRunSamples` + every previously accepted suite, ≥267 run — membership + floor) **and** the 12-registration gate regression leg **and** guide-1 ⟨verify⟩ count 0 **and** CI green on the head
+- **E15-C03** — measurements.md complete (CI steps · local ×3 · in-image ×2, raw outputs) + Q-41 appended citing D-13/§7.6 with a recommendation + the ≥267 sweep / gate / CI legs standing — see its work order §VERIFY
 
 ## Epic acceptance
 
@@ -775,3 +782,48 @@ shared `.build/work` verify image make shared-tree concurrency unsound;
 disjointness stands as the reviewer's cross-check. C02→C04→C05 strictly serial
 (C02 consumes C01's view; C04 consumes C01+C03 and cedes no file; C05 consumes
 both doors live and the artifact).
+
+**E15 rows (E15-C01–E15-C03) added by the twelfth committed Prompt-4 run
+(2026-07-28; Gate 4 pending; epic-qualified IDs per D-73 — the counter is local
+to E15).** M4's closing epic — **E15's acceptance IS the M4 milestone boundary**
+(roadmap M4 exit; the walking skeleton complete). Entry check: roadmap approved
+and frozen (D-62); E15's one roadmap dependency **E14** is `accepted` with its
+digest frozen (@ `2f4cccb`: the demo contract — the three named `ToyDemoTest`
+tests, the exact-six law red-test-enforced, the D-43 pair standing; D-83). The
+**D-82/Q-39 cut-time probe obligation is discharged**: wrapper/shell arms run
+against the actual committed scripts, guide-1 fence inputs probed end-to-end
+through the committed harness and gate, the Linux CI toolchain fetched and
+checksummed (the x86_64 image zip is byte-identical to the D-66 pin), every
+skeleton-named spelling exercised live — transcripts in
+`plan/04-epics/E15-ci-wrapper-guide1/probes.md`. Two probe discoveries on the
+record: guide 1's indented (harness-invisible) Metacello fence drives the C02
+reshape, and the wrapper's missing-image **false-green** hole is filed as
+**Q-40** (veto-open; no chunk touches `guardrails.sh` unless ruled — E15-C01's
+self-test uses the missing-VM 127→3 arm regardless). E15 `accepted` when all
+three rows are `accepted` and the exit checkpoint in
+`plan/04-epics/E15-ci-wrapper-guide1/chunks.md` is filled in — five legs on one
+head commit: the **CI leg** (the committed `.github/workflows/ci.yml` green on
+a real run: smalltalkCI step + `./guardrails.sh guardrails.ston` step +
+P-WRAPPER-GUARD shell self-test; step-2 log `GATE: GREEN` / 12 registrations —
+P-SELF-HOSTED CI form, D-60.a discharged against the D-63/D-64 hosted-load
+record) · the **named-suite leg** (≥267 sweep: 266 at cut + `testAdoptAndRunSamples`,
+all three `PGRQuickstartSamplesTest` methods — P-GUIDE-EXEC complete — and all
+three `ToyDemoTest` cases driving red → fixed → green; guide 1 at zero ⟨verify⟩
+markers) · the **self-hosted gate regression leg** (exit 0, 12 registrations
+unchanged — E15 adds no registration) · the **D-13 filing**
+(measurements.md + Q-41 on the decision sheet for the budget ruling) · **D-67
+precheck discipline** with `E15-C##:` prefixes — at which point E15's interface
+digest freezes (tabled in that file: the five-step two-step CI contract with
+its D-66 pins and the real load form, guide 1's red-test-enforced 4-sample
+executable form, `.smalltalk.ston` confirmed final) and **the epic ends at the
+owner's M4 milestone gate** (mining sweep with queued B-31/B-32 evidence, the
+D-13 budget ruling from Q-41, the roadmap re-entry cutting M5 — none pre-built).
+**Amended accepted surface: none** — the infra amendments (`ci.yml`,
+`.smalltalk.ston` confirm-only) are the roadmap-scheduled deliverable itself
+(scripted 136-file reference sweep: no committed file pins step-1-only as
+permanent, zero committed tests read the workflow); guide 1 has zero committed
+src consumers (D-76 schedules its amendment); E15-C02 extends
+`PGRQuickstartSamplesTest` purely additively (accepted methods byte-identical,
+reviewer-diffed). No `[P]`: C02's guide↔workflow equivalence pin reads the
+workflow C01 commits, and C03 measures C01/C02's runs — strictly serial picks
+C01 → C02 → C03 (verify floors stated against that order).

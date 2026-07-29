@@ -516,3 +516,38 @@ producer-caught.
 **Impact / blocking:** not blocking any current row — E11 is closed and no epic
 is at the producer right now; ruling before the E12 cut would let the rule bind
 from M3's first epic onward.
+
+## Q-40 · Wrapper false-green: a nonexistent image file makes the VM exit 0 — `guardrails.sh` relays success
+
+**Filed:** 2026-07-28, the E15 task-writing run (cut-time probe obligation,
+D-82/Q-39 — probes in `plan/04-epics/E15-ci-wrapper-guide1/probes.md` P1).
+**Status:** open, veto-open on the cut — E15-C01 proceeds regardless (its
+self-test uses the missing-VM arm, 127 → 3, unaffected by any ruling here).
+
+**The probed fact (darwin VM, build `4f7563dfe5`):** invoking the committed
+`guardrails.sh` with a real `$PHARO_VM` and a **nonexistent** `$IMAGE` path
+makes the VM log `Image file not found` — and exit **0**. The wrapper relays
+0: a missing image reads as *every registered check ran green*. This is
+distinct from D-75's ruled limitation (empty/corrupt image → VM exit 1 —
+loud, merely mislabeled): arm B is **silent false success**, the exact
+outcome §7.3/D-45 says must never happen ("the image failing to load … must
+never read as success"). §7.3's premise — that such failures produce codes
+∉{0,1,2} — does not hold for this failure mode on this toolchain.
+
+**Exposure:** any caller who typos or loses the image path. CI is sequenced
+around it (E15's step 2 only runs after its own assembly step succeeds), and
+the local legs use tooling-checked paths — but the wrapper's contract is for
+*any* caller (P7).
+
+**Options:** (a) rule it into D-75's known-v1-limitation bucket (record the
+erratum in §7.3, B-23 carries the hardening to M5); (b) schedule a one-line
+guard as an E15 amendment chunk against the accepted `guardrails.sh` —
+`[ -f "$IMAGE" ] || { echo "guardrails: no image at $IMAGE" >&2; exit 3; }`
+before the invocation — closing the file-missing case now (the corrupt-image
+1-collision stays B-23/M5 as the owner's E15 scope line already rules).
+
+**Recommendation:** (b) — false green is the framework's own named worst
+outcome (§7.3: "a crashed gate that CI reads as success"), the guard is one
+probed line of D-65 infra, and it leaves every ruled mapping untouched.
+Agents recommend, humans rule; (a) costs nothing today but leaves the
+standing instrument capable of silent success.
