@@ -1,5 +1,5 @@
 "
-Machine-witnesses the published-surface freeze (R-04 machine half; ch. 0 §0.3; ch. 9 §9.1 P-SURFACE-CONFORMS). The class-side manifest mirrors ch. 0 §0.3's audience surfaces as (class · #class|#instance · selector) triples, grouped by audience; the tests assert every promised member resolves against the loaded image on its stated side, so a renamed or dropped member is a red test, not a client surprise. Arity note: a selector's arity is intrinsic to its spelling, so asserting successful implements-or-inherits lookup of the exact selector IS the arity assertion (class side via `cls class canUnderstand:`, instance side via `cls canUnderstand:` — both fold in inheritance; subclassResponsibility bodies count as implemented). Existence/side/arity only — behaviour is other suites' subject. The manifest is a class-side method answering fresh data (no class-side variable, R-35); it grows like the configuration artifact (constitution §3): the config-author audience has no code member at M1 (PGRConfigurationDraft is E12), and PGRVerdict class>>skipped is deliberately off every surface (D-21/D-32).
+Machine-witnesses the published-surface freeze (R-04 machine half; ch. 0 §0.3; ch. 9 §9.1 P-SURFACE-CONFORMS). The class-side manifest mirrors ch. 0 §0.3's audience surfaces as (class · #class|#instance · selector) triples, grouped by audience; the tests assert every promised member resolves against the loaded image on its stated side, so a renamed or dropped member is a red test, not a client surprise. Arity note: a selector's arity is intrinsic to its spelling, so asserting successful implements-or-inherits lookup of the exact selector IS the arity assertion (class side via `cls class canUnderstand:`, instance side via `cls canUnderstand:` — both fold in inheritance; subclassResponsibility bodies count as implemented). Existence/side/arity only — behaviour is other suites' subject. The manifest is a class-side method answering fresh data (no class-side variable, R-35); it grows like the configuration artifact (constitution §3): the config-author audience's one code member landed at E12 (PGRConfigurationDraft class>>draftFor:), and PGRVerdict class>>skipped is deliberately off every surface (D-21/D-32).
 "
 Class {
 	#name : 'PGRSurfaceConformanceTest',
@@ -24,6 +24,14 @@ PGRSurfaceConformanceTest class >> checkAuthorSurface [
 		{ 'PGRVerdict'. #class. #missingReason: }.
 		{ 'PGRFinding'. #class. #target:message: }.
 		{ 'PGRFinding'. #class. #target:message:rationale: } }
+]
+
+{ #category : 'manifest' }
+PGRSurfaceConformanceTest class >> configAuthorSurface [
+	"The config-author surface (ch. 0 §0.3): the init tool is its one code member — PGRConfigurationDraft class>>draftFor: composes discovered kits' stanzas into a draft artifact (E12; the M1 schedule that deferred this row is now discharged)."
+
+	^ {
+		{ 'PGRConfigurationDraft'. #class. #draftFor: } }
 ]
 
 { #category : 'manifest' }
@@ -75,24 +83,29 @@ PGRSurfaceConformanceTest class >> gateCallerSurface [
 
 { #category : 'manifest' }
 PGRSurfaceConformanceTest class >> kitAuthorSurface [
-	"The kit-author SDK, beyond the check-author rows: build a kit's registrations and its recommended block."
+	"The kit-author SDK, beyond the check-author rows: build a kit's registrations and its recommended block, plus the read-only PGRKitEnvironment view's four named readers (ch. 0 §0.3 erratum, D-82 — the view joins this mirror at the next test-touching chunk). The optional registrationsFrom:environment: is per-kit optional with an engine probe and the PGRKit skeleton deliberately does not implement it, so it joins no roster (E11 ground)."
 
 	^ {
 		{ 'PGRKit'. #class. #registrationsFrom:productionPackages:testsPackages: }.
 		{ 'PGRKit'. #class. #recommendedBlock }.
 		{ 'PGRRegistrationSpec'. #class. #name:kind:check: }.
-		{ 'PGRRegistrationSpec'. #class. #missing:kind:reason: } }
+		{ 'PGRRegistrationSpec'. #class. #missing:kind:reason: }.
+		{ 'PGRKitEnvironment'. #instance. #productionPackages }.
+		{ 'PGRKitEnvironment'. #instance. #testsPackages }.
+		{ 'PGRKitEnvironment'. #instance. #exemptPackages }.
+		{ 'PGRKitEnvironment'. #instance. #srcPath } }
 ]
 
 { #category : 'manifest' }
 PGRSurfaceConformanceTest class >> manifest [
-	"The four M1 code audiences, keyed by audience name, each mapping to its surface triples. Ordered associations so callers can read keys and values; answered fresh (no class-side state)."
+	"The five code audiences (the four M1 audiences plus config-author, whose one member landed at E12), keyed by audience name, each mapping to its surface triples. Ordered associations so callers can read keys and values; answered fresh (no class-side state)."
 
 	^ {
 		'gate-caller' -> self gateCallerSurface.
 		'check-author' -> self checkAuthorSurface.
 		'kit-author' -> self kitAuthorSurface.
-		'fix-invoker' -> self fixInvokerSurface }
+		'fix-invoker' -> self fixInvokerSurface.
+		'config-author' -> self configAuthorSurface }
 ]
 
 { #category : 'accessing' }
@@ -153,14 +166,13 @@ PGRSurfaceConformanceTest >> testEverySurfaceSelectorExistsWithRightArity [
 ]
 
 { #category : 'tests' }
-PGRSurfaceConformanceTest >> testManifestSpansTheFourCodeSurfacesAtM1 [
-	"The M1-form pin: exactly the four code audiences present and each non-empty, and no config-author code member yet (E12's draftFor: cut amends this by schedule)."
+PGRSurfaceConformanceTest >> testManifestSpansTheFiveAudiences [
+	"The E12-form pin: exactly the five code audiences present and each non-empty. config-author joined here — E12's draftFor: cut discharged the M1 schedule that had deferred it."
 
 	| audiences |
 	audiences := self class manifest collect: [ :each | each key ].
 	self
 		assert: audiences asSet
-		equals: (Set withAll: #( 'gate-caller' 'check-author' 'kit-author' 'fix-invoker' )).
-	self class manifest do: [ :each | self deny: each value isEmpty ].
-	self deny: (audiences includes: 'config-author')
+		equals: (Set withAll: #( 'gate-caller' 'check-author' 'kit-author' 'fix-invoker' 'config-author' )).
+	self class manifest do: [ :each | self deny: each value isEmpty ]
 ]
