@@ -552,3 +552,70 @@ outcome (§7.3: "a crashed gate that CI reads as success"), the guard is one
 probed line of D-65 infra, and it leaves every ruled mapping untouched.
 Agents recommend, humans rule; (a) costs nothing today but leaves the
 standing instrument capable of silent success.
+
+## Q-41 · The D-13 gate budget: §7.6's working targets measured at M4 — harden as binding, or hold advisory?
+
+**Filed:** 2026-07-28, E15-C03 (R-09 measurement half · D-13 · roadmap M4 exit
+criterion). The REQUIRED entry this cut files by design (owner release notice:
+"the D-13 timings land as Q-41 by design — a deliverable, not an escalation").
+Full raw record, commands, run ids, and per-check output:
+`plan/04-epics/E15-ci-wrapper-guide1/measurements.md`.
+
+**D-13 / §7.6 ask:** §7.6 sets two *non-binding working targets* — full gate in
+CI **< 60 s**, in-image incremental **< 10 s** — and says "At M4, with the full
+gate running in CI, timings are measured and the budget becomes a ruled
+decision-log entry." D-13: measure at M4, then rule — evidence-first, never
+invented precision. This entry carries the evidence; the owner rules the budget
+at the M4 gate.
+
+**Measured (head `99d2a73`; work image build `4f7563dfe5`; 12 registrations,
+framework + toy in one gate):**
+
+| §7.6 target | measured | source |
+|---|---|---|
+| full gate in CI **< 60 s** (= step-2 enforcement) | **2 s** (both green runs) | CI runs 30421725514 (C01/d8851e2) · 30422826304 (C02/8ca0549), `gh run view --json jobs` |
+| in-image incremental **< 10 s** (proxy = warm in-image) | **0.911 s** (cold 0.906 s) | `Time millisecondsToRun: [ (PGRGate forConfiguration: …) run ]`, one eval session |
+| — local full gate (context, not a §7.6 number) | median **0.986 s** of 3 (`time ./guardrails.sh`) | 1.002 / 0.986 / 0.965 s |
+
+Reported beside the budget numbers (not the budget itself): total CI job
+wall-clock **37–47 s** (also < 60 s, dominated by bootstrap — smalltalkCI 16–19 s
++ gate-image assembly 13–17 s — not by the gate, which is the 2 s); the
+in-image warm number is a **proxy** — v1 has no incremental gate mode (every
+`run` rebuilds the full registry; cold ≈ warm confirms it), so "in-image
+incremental" is measured as a full in-image run, the closest honest analogue.
+
+**Both targets are met with wide headroom** (~30× under for CI, ~11× under for
+in-image) — but on a **narrow catalog** (one kit, 12 registrations, one toy
+gate). Gate time scales with catalog width (M5 widens it).
+
+**To rule** (the M4 budget entry — pick one; agents recommend, humans rule):
+
+- **(a) harden §7.6's targets as binding at their current stated values**
+  (< 60 s CI step-2, < 10 s in-image) — **recommended.** The stated ceilings
+  already carry ~30×/~11× headroom over today's measured numbers, so they bind
+  meaningfully without threatening M5 catalog growth, and a binding budget is a
+  usable regression tripwire (a future cut that pushes the gate past 60 s CI
+  fails a real check) where an advisory one is not. Record today's measured
+  baseline (2 s / 0.911 s) in the ruling so M5 can re-measure against real
+  headroom.
+- **(b) harden at measured-value × headroom** (e.g. CI step-2 ≤ 10 s, in-image
+  ≤ 3 s) — tighter tripwire, catches regressions sooner, but risks a false red
+  the first time the catalog widens materially; premature on a 12-registration
+  surface.
+- **(c) keep the targets advisory until the catalogs widen (M5)** — most
+  conservative; defers the binding budget to a representative catalog. Costs the
+  regression tripwire in the interim; §7.6's own "until the catalogs widen"
+  phrasing licenses it.
+
+**Observations (D-13: file, don't act — no optimization this chunk):** the gate
+itself is cheap (2 s CI, ~0.9 s in-image); the CI wall-clock is bootstrap-bound
+(smalltalkCI + image assembly ≈ 30–36 s of the 37–47 s job) — if CI-minutes ever
+pinch, the lever is bootstrap caching, not the gate. No incremental mode exists
+to measure in v1 — a real "in-image incremental" number awaits an incremental
+gate mode (widening candidate, not v1).
+
+**Impact / blocking:** none — E15-C03 is a measurement chunk (nothing under
+`src/`/`docs`/infra touched); the epic proceeds regardless of the ruling.
+
+**Status:** awaiting the owner's **M4 milestone gate** (D-13 names that gate as
+the ruling point); no chunk waits on it.
