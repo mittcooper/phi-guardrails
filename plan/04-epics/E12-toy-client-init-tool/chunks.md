@@ -156,4 +156,24 @@ discovery anchor, the `-Tests` suffix role guess, the `BaselineOf`-prefix projec
 guess — documented guesses per D-45 ruling 4, revisable without surface amendment),
 the toy domain classes' behavior details, the witness/pin test helpers.
 
-Checkpoint result (to be filled at acceptance): —
+Checkpoint result (filled at epic close, 2026-07-28): **GREEN on head `2d5d661`**
+(src-defining chunk head `3333062`; the two commits differ only in `plan/ledger.md`
+bookkeeping) — leg 1: verify 263/263, 0 failures / 0 errors (`PGRToyBaselineTest` 2 ·
+`PGRToyPlantWitnessTest` 5 · `PGRToyArtifactTest` 2 · `PGRConfigurationDraftTest` 4 ·
+the amended `PGRSurfaceConformanceTest` green in its five-audience/46-triple form with
+`testManifestSpansTheFiveAudiences` renamed by schedule; 250 at cut + 13 net new
+swept; the sweep GREEN with all six plants committed — D-57 held on every pick);
+leg 2: `./guardrails.sh guardrails.ston` exit 0, **12 registrations unchanged**,
+`GATE: GREEN 0 blocking of 12` on every pick and at close — E12 added nothing to the
+framework's artifact; the exempt-role guard held over the committed-red toy and the
+walls held over the grown `-Core`; leg 3 (orchestrator-run eval): the read-only
+registry run over `BaselineOfToy guardrailsSTON` answered the six associations in
+registry order, **every value false** — all six plants committed red under the toy's
+own artifact; leg 4 (orchestrator-run eval): `ToyNoIsNilIfFalseRuleTest suite run` →
+2 ran, 2 passed, 0 failures, 0 errors in its unswept home; leg 5: precheck green at
+every pick, `E12-C##:` prefixes throughout (C03 carried one reviewer fix round-trip,
+amended in place to `749ef34`); leg 6: CI run 30412261519 success on the same head
+`2d5d661` (step 1 only — smalltalkCI; the two-step upgrade stays E15's scheduled
+edit, D-82 carry-forward 1). Interface digest above **frozen**. E12 closed —
+**NOT a milestone boundary** (M4 closes after E12 → E14 → E15); reported to the
+owner for epic acceptance.
