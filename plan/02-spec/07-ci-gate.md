@@ -177,6 +177,15 @@ red report is lost exactly when it matters most. Asserted in the headless test: 
 report text, including its last line, reached the stream before the exit code was
 answered.
 
+*Erratum (D-84, E15 gate — a cut-time probe finding, Q-40): §7.3's premise that
+a failed image load exits ∉{0,1,2} does not fully hold on this toolchain — a
+NONEXISTENT image path makes the VM exit 0, which the wrapper relays as
+all-green (silent false success), distinct from D-75's corrupt-image exit-1
+(loud, mislabeled). Ruled a known v1 limitation; B-23 (M5) closes it first among
+its arms. Until then: callers must ensure the image path exists before invoking
+the wrapper — our CI sequences enforcement after image assembly, and the local
+tooling computes the path.*
+
 ## 7.4 CI is just a caller (R-29 as amended by D-45)
 
 Any CI system is one more caller of §7.3's contract — nothing in the framework knows or

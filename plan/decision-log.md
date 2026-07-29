@@ -2844,3 +2844,24 @@ the next free number with substance unchanged — flagged to the owner at apply 
   frozen roadmap's letter; D-43's `PGRToyDemoTest` was an incidental spelling in
   an older entry, superseded prose. The `PGRToy*` sibling-prefix mix is
   cosmetic, on the record.
+
+## D-84 · Q-40 ruled option (a): the missing-image false-green arm is a KNOWN v1 LIMITATION; E15 released as cut (owner word 2026-07-28)
+
+- **From:** Q-40 (`plan/04-decision-sheet.md` — the E15 cut-time probes found
+  that a real VM handed a nonexistent `$IMAGE` path exits **0** on this
+  toolchain; `guardrails.sh` relays it as all-green. Independently reproduced by
+  the round-1 validator.)
+- **Ruling — option (a):** recorded as a known v1 limitation beside D-75's
+  corrupt-image arm; **no wrapper change in v1**. §7.3 gains the erratum under
+  this entry. **B-23's M5 scope is amended under this entry to carry the
+  false-green closure explicitly** (previously diagnostic-labeling only): the
+  M5 hardening must close BOTH arms — the exit-1 label collision (D-75) and
+  the exit-0 false green (this entry) — the false-green arm first.
+- **Exposure boundary, on the record:** our CI sequences step 2 after image
+  assembly and the local tooling computes the path — the exposure is external
+  callers (P7); until B-23 lands, the wrapper's contract carries the erratum's
+  caution.
+- **E15 released as cut** (three chunks; the CI self-test uses the
+  probe-confirmed missing-VM arm and is unaffected). The ch. 9
+  "unloadable image exits 3" wording erratum stays queued for the M4 gate's
+  doc pass.

@@ -521,8 +521,9 @@ from M3's first epic onward.
 
 **Filed:** 2026-07-28, the E15 task-writing run (cut-time probe obligation,
 D-82/Q-39 — probes in `plan/04-epics/E15-ci-wrapper-guide1/probes.md` P1).
-**Status:** open, veto-open on the cut — E15-C01 proceeds regardless (its
-self-test uses the missing-VM arm, 127 → 3, unaffected by any ruling here).
+**Status:** **RULED — D-84, option (a)** (owner word 2026-07-28): known v1
+limitation beside D-75's; no wrapper change in v1; §7.3 erratum landed; B-23's
+M5 scope amended to close the false-green arm first. E15 released as cut.
 
 **The probed fact (darwin VM, build `4f7563dfe5`):** invoking the committed
 `guardrails.sh` with a real `$PHARO_VM` and a **nonexistent** `$IMAGE` path
