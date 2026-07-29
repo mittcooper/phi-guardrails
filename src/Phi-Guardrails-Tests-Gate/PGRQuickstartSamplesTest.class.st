@@ -155,7 +155,7 @@ PGRQuickstartSamplesTest >> testAdoptAndRunSamples [
 	so a mid-arm failure still tears it down; the Metacello sample is executed only to the
 	OCParser boundary - its live load is E15-C01's hosted step - and this arm pins the guide's
 	load coordinates textually equal to the CI workflow so the two cannot diverge."
-	| harness acmeHarness samples s1 s2 s3 s4 gate report names scratchDir missingVerdict |
+	| harness acmeHarness samples s1 s2 s3 s4 gate report names scratchDir missingVerdict nonconformingConfig |
 	harness := self newHarness.
 
 	"1 - inventory pin: exactly four samples, in the config-then-three-smalltalk order."
@@ -222,16 +222,18 @@ PGRQuickstartSamplesTest >> testAdoptAndRunSamples [
 	] ensure: [ scratchDir ensureDeleteAll ].
 
 	"8 - §5 failure 2: a check-name typo resolves to nothing (one missing verdict, exit 1); a
-	name resolving to a loaded but non-conforming class is a configuration error at fromString:."
+	name resolving to a loaded but non-conforming class is a configuration error at registry
+	build (`PGRGate forConfiguration:`), not at `fromString:` (D-51)."
 	gate := PGRGate forConfiguration: (PGRConfiguration fromString: (s1 copyReplaceAll: 'PCKNoIsNilIfTrueRule' with: 'PCKNoIsNilIfTrue')).
 	report := gate run.
 	missingVerdict := report verdicts detect: [ :each | each registrationName = 'lint/PCKNoIsNilIfTrue' ].
 	self assert: missingVerdict status = #missing
 		description: 'a check name resolving to no loaded class is a missing verdict'.
 	self assert: report exitCode = 1 description: 'a missing verdict fails the gate, exit 1'.
-	self should: [ PGRGate forConfiguration: (PGRConfiguration fromString: (s1 copyReplaceAll: 'PCKNoIsNilIfTrueRule' with: 'OrderedCollection')) ]
+	nonconformingConfig := PGRConfiguration fromString: (s1 copyReplaceAll: 'PCKNoIsNilIfTrueRule' with: 'OrderedCollection').
+	self should: [ PGRGate forConfiguration: nonconformingConfig ]
 		raise: PGRConfigurationError
-		description: 'a name resolving to a loaded but non-conforming class is a configuration error (the guide §5 exit-2 case) - raised as the registry builds eagerly, not at fromString:, since kit-block rule names are opaque to config parsing (D-51)'.
+		description: 'a name resolving to a loaded but non-conforming class is a configuration error (the guide §5 exit-2 case) - the parse above already succeeded (kit-block rule names are opaque to config parsing, D-51), so the error is raised only as the registry builds eagerly'.
 
 	"9 - §5 failure 1 (last: it mutates the scratch baseline): a package the baseline declares but
 	no role covers fails the scope law. Grow the baseline with an unmatched Acme-Benchmarks and
