@@ -83,6 +83,9 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 | E12-C03 | E12 | accepted | E12-C01, E12-C02 | implementer-E12-C03 (picked @ ce40b97; committed @ b5dcb7f; fix 1 — reviewer revise: testToyRulePlantIsCaught's production-scope clause was prose, strengthened with `verdict findings size = 1` — amended to 749ef34; accepted @ 749ef34, sweep 257 run 0F/0E GREEN WITH THE SIX PLANTS COMMITTED (D-57 shape held) + self-hosted gate exit 0 / 12 registrations unchanged GATE: GREEN (D-26 exempt-role guard witnessed live), five witnesses by name, footprint exactly the 4-file manifest 169/0 — verify + gate integrator-verified on the revised head, reviewer accept on re-verdict; layers-sub-map-as-Dictionary deviation judged the faithful reading, no ruling needed) |
 | E12-C04 | E12 | accepted | E12-C01, E12-C02 | implementer-E12-C04 (picked @ b314b3c; committed @ 542c0d5; accepted @ 542c0d5, sweep 259 run 0F/0E + self-hosted gate exit 0 / 12 registrations unchanged GATE: GREEN, both artifact pins by name, footprint exactly the 2-file manifest 69/0 pure addition — C01's baseline: byte-identical — verify + gate integrator-verified, reviewer accept first pass) |
 | E12-C05 | E12 | accepted | E12-C01 | implementer-E12-C05 (picked @ 4f19fad; committed @ 3333062; accepted @ 3333062, sweep 263 run 0F/0E + self-hosted gate exit 0 / 12 registrations unchanged GATE: GREEN (PCKLayerMapCheck green over the grown -Core — no-kit-literal law held live), four draft cases + renamed testManifestSpansTheFiveAudiences by name, amendment exactly the four scheduled points / all other conformance methods byte-identical, footprint exactly the 3-file manifest 231/10 — verify + gate integrator-verified, reviewer accept first pass; two deviations accepted (Symbol-vs-String name assertion; select:/reject: double regex); non-blocking reviewer notes — unused discoveredKitsIn: baseline arg, no quote-escaping in quotedListOf:, future-tense mirror comment — held for milestone mining) |
+| E14-C01 | E14 | todo | — | — |
+| E14-C02 | E14 | todo | E14-C01 | — |
+| E14-C03 | E14 | todo | E14-C02 | — |
 
 ## Verify commands
 
@@ -160,6 +163,10 @@ from the collision D-73 answers. No ID is ever renamed or reused.*
 - **E12-C03** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 5 `PGRToyPlantWitnessTest` + every previously accepted suite, ≥257 run once E12-C01 is in per the listed serial pick order — membership + floor; the sweep stays green WITH the six plants committed) **and** the 12-registration gate regression leg (the D-26 exempt guard live)
 - **E12-C04** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 2 `PGRToyArtifactTest` + every previously accepted suite, ≥254 run once E12-C01/C02 are in per the listed serial pick order, ≥259 once C03 is in — membership + floor) **and** the 12-registration gate regression leg
 - **E12-C05** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; 4 `PGRConfigurationDraftTest` + the amended `PGRSurfaceConformanceTest` green in its five-audience/46-triple form (one accepted method renamed by schedule, all others byte-identical) + every previously accepted suite, ≥256 run once E12-C01 is in per the listed serial pick order, ≥263 once C02–C04 are in — membership + floor) **and** the 12-registration gate regression leg
+
+- **E14-C01** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; `ToyDemoTest>>#testGateIsRedOnPlantedViolations` + every previously accepted suite, ≥264 run — membership + floor, never an exact ceiling; the exact-six assertion lives inside the test by ruled design) **and** the self-hosted gate regression leg `./guardrails.sh guardrails.ston` → exit 0, 12 registrations unchanged, `GATE: GREEN` (now nesting the demo — D-46; a hang is a stop-and-report)
+- **E14-C02** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; both `ToyDemoTest` cases + every previously accepted suite, ≥265 run — membership + floor) **and** the 12-registration gate regression leg (the nested demo now includes the fix arm)
+- **E14-C03** — `bash tools/build-image.sh && bash tools/verify.sh` (exit 0; all three `ToyDemoTest` cases + every previously accepted suite, ≥266 run — membership + floor; the E14 exit-checkpoint leg 1; see `plan/04-epics/E14-demonstration-test/chunks.md` §checkpoint) **and** the 12-registration gate regression leg (the full red → fixed → green cycle nested and terminating)
 
 ## Epic acceptance
 
@@ -679,6 +686,47 @@ serialized — the COMMIT preconditions (clean tree at spawn) and the shared
 `.build/work` verify image make shared-tree concurrency unsound; disjointness stands
 as the reviewer's cross-check. Listed serial pick order C01→C02→C03→C04→C05 (verify
 floors stated against it).
+
+**E14 rows (E14-C01–E14-C03) added by the eleventh committed Prompt-4 run
+(2026-07-28; Gate 4 pending; epic-qualified IDs per D-73 — the counter is local to
+E14).** Entry check: roadmap approved and frozen (D-62); E14's three roadmap
+dependencies — **E12** (@ `2d5d661`: `BaselineOfToy class>>guardrailsSTON`, the
+six-registration shape in order, the six-plant inventory) · **E11** (@ `786bacf`:
+the full 12-registration gate) · **E08** (@ `19beb68`: the `PCKFixCommand`
+fix-invocation surface) — all `accepted` with frozen digests. The **D-82/Q-39
+cut-time probe obligation is discharged**: every skeleton-named frozen-surface
+spelling probed live against the work image at HEAD `1f7c80f` (src byte-identical
+to E12's src head `3333062`) or digest-checked — including full round-trip probes
+of the fix arm and the source-mutation/restoration idioms (the roadmap's risk
+row) — transcripts in `plan/04-epics/E14-demonstration-test/probes.md` (part of
+the epic's validation record). E14 `accepted` when all three rows are `accepted`
+and the exit checkpoint in `plan/04-epics/E14-demonstration-test/chunks.md` is
+filled in — four legs: the ≥266 named-suite sweep (263 at cut + the 3 `ToyDemoTest`
+cases: `testGateIsRedOnPlantedViolations` · `testLintAutofixThenGreen` ·
+`testAllFixedThenClean`) discharging **P-GATE-RED** and completing **R-32
+(demonstration half) · R-43 (demo half) · R-44** · the self-hosted gate regression
+leg exit 0 with **12 registrations unchanged** (E14 adds nothing to the
+framework's artifact; the leg now proves the D-46 nested-gate termination in
+earnest — the outer gate sweeps `ToyDemoTest`, which drives inner toy-gates incl.
+the fix arm) · D-67 precheck discipline with `E14-C##:` prefixes · CI leg **step 1
+only** (smalltalkci; the two-step upgrade is E15's scheduled edit — D-82
+carry-forward 1) — at which point E14 closes with **no new frozen exports** (the
+frozen roadmap: the demo contract itself freezes — the three named tests, the
+exact-six-verdict assertion designed to break when the toy's registry grows, the
+D-43 protection pair; helper spellings and fixed-source texts stay internal) and
+**E15's entry check can pass** (E15 closes M4). **Amended accepted surface:
+none** — every chunk's manifest is exactly the one NEW file
+`src/Phi-Guardrails-Tests-Toy/ToyDemoTest.class.st`; zero accepted files appear
+in any manifest. Count law: every count is membership + floor **except the demo's
+own six-verdict accounting (6 red / green+5 blocking / clean), exact by ruled
+design** (§8.3's exact-count law; owner carve-out). Four agent-judged calls
+recorded veto-open in the chunk index (D-16 precedent): the `ToyDemoTest` name
+(§8.3/roadmap spelling over D-43's older prose), the source-level `setUp` guard
+with body-distinguishing markers (round-1 validation caught the naive-marker /
+plant-comment collision; re-probed, P8), the fix-arm-under-nesting composition
+(D-42 with D-46), and source-level restoration assertions. No `[P]`: all three chunks extend the single `ToyDemoTest.class.st`
+file — strictly serial picks C01 → C02 → C03 (verify floors stated against that
+order).
 
 **E11 rows (E11-C01–E11-C05) added by the ninth committed Prompt-4 run
 (2026-07-27; Gate 4 pending; epic-qualified IDs per D-73 — the counter is local

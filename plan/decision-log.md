@@ -2825,3 +2825,22 @@ the next free number with substance unchanged — flagged to the owner at apply 
   environment-form completeness note (D-81 / B-28 stage 1, prose only) · ch. 2
   §2.3 erratum extended (B-18a, the D-72 residue) · B-29's erratum blessed:
   `includesSelector:` is the canonical no-generic-lookup guard shape.
+
+## D-83 · E14 Gate 4: the demo's fix arm under D-46 nesting is §3.3's one composed exception; the demo's name confirmed (owner word 2026-07-28)
+
+- **From:** the E14 cut's veto-open call 3 and both validators' advisory — §3.3's
+  letter ("do not run a fix from inside a gate run") is breached under the
+  self-hosted leg once `behavioral/Phi-Guardrails-Tests-Toy` runs `ToyDemoTest`'s
+  fix arm, a composition PRESCRIBED by ruled ground (§8.3's fix arm × D-46's
+  swept home).
+- **Ruling — the composition is CONFIRMED:** the letter's purpose (never
+  recompile currently executing code) is not implicated — the fix targets
+  exempt-role `Toy-Core` (code neither gate checks and nothing executing), the
+  in-image run is single-threaded (D-42's own argument), and restoration is
+  `ensure:`-safe with the `setUp` planted-state guard (D-43). §3.3 gains the
+  scope-note erratum under this entry. A hang or nonzero on the nested
+  self-hosted leg stays **stop-and-report**, never retry (the E14 VERIFY law).
+- **The demo's class name is CONFIRMED `ToyDemoTest`** — spec §8.3 and the
+  frozen roadmap's letter; D-43's `PGRToyDemoTest` was an incidental spelling in
+  an older entry, superseded prose. The `PGRToy*` sibling-prefix mix is
+  cosmetic, on the record.

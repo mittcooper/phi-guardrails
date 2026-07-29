@@ -124,7 +124,13 @@ fix changes.                   "the pending/applied change objects, inspectable"
 `Phi-Guardrails-*` production packages — that is self-hosting taken seriously: we apply
 the autofix we ship. Caution, stated because silence made the default "it works until it
 doesn't": **do not run a fix from inside a gate run.** Pharo permits recompiling a method
-that is currently executing, and a half-rewritten gate is a bad place to be. No runtime
+that is currently executing, and a half-rewritten gate is a bad place to be.
+*Erratum (D-83, E14 gate): one composed exception, ruled — the toy demo's fix arm
+(§8.3) runs inside the framework's own gate run whenever the self-hosted leg sweeps
+`Phi-Guardrails-Tests-Toy` (D-46's nesting). Compatible because the caution's purpose
+is not implicated: the fix targets exempt-role `Toy-Core` — code neither gate checks
+and nothing executing — single-threaded, `ensure:`-restored (D-43). A hang there is a
+stop-and-report.* No runtime
 machinery enforces this and none is wanted — a "gate in progress" flag would be exactly
 the global state R-35 forbids. The condition holds structurally instead: the framework's
 own layer map forbids `Phi-Guardrails-Gate` → `Phi-Coding-Kit-Rules` (P-FIX-GATE-WALL), so the
