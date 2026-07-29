@@ -699,9 +699,15 @@ spelling probed live against the work image at HEAD `1f7c80f` (src byte-identica
 to E12's src head `3333062`) or digest-checked — including full round-trip probes
 of the fix arm and the source-mutation/restoration idioms (the roadmap's risk
 row) — transcripts in `plan/04-epics/E14-demonstration-test/probes.md` (part of
-the epic's validation record). E14 `accepted` when all three rows are `accepted`
-and the exit checkpoint in `plan/04-epics/E14-demonstration-test/chunks.md` is
-filled in — four legs: the ≥266 named-suite sweep (263 at cut + the 3 `ToyDemoTest`
+the epic's validation record). **E14 OWNER-ACCEPTED (2026-07-28, word to the
+advisor): all three rows accepted, the exit checkpoint GREEN on `2f4cccb`, the
+demo contract frozen (the three named tests, the exact-six law red-test-enforced,
+the D-43 pair as standing behavior), veto-opens closed on the D-16 precedent (the
+two gate confirmations already ruled as D-83). The C01 resume-in-place wrinkle is
+queued for the M4 mining (implementer-resume vs validator-resume seat
+distinction).** The acceptance criterion, as released: E14 `accepted` when all
+three rows are `accepted` and the exit checkpoint in
+`plan/04-epics/E14-demonstration-test/chunks.md` is filled in — four legs: the ≥266 named-suite sweep (263 at cut + the 3 `ToyDemoTest`
 cases: `testGateIsRedOnPlantedViolations` · `testLintAutofixThenGreen` ·
 `testAllFixedThenClean`) discharging **P-GATE-RED** and completing **R-32
 (demonstration half) · R-43 (demo half) · R-44** · the self-hosted gate regression
