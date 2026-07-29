@@ -148,4 +148,22 @@ Internal/unfrozen: the helper spellings (`plantedShapes`, `runToyGate`,
 `expectedRegistrationNames`, `restoringSourcesOf:during:`, `fixedPlantSources`)
 and the six fixed-source texts.
 
-Checkpoint result (filled at epic close): —
+Checkpoint result (filled at epic close, 2026-07-28): **GREEN on head `2f4cccb`**
+(src-defining chunk head `e09cd6b`; the two commits differ only in `plan/ledger.md`
+bookkeeping) — leg 1: verify 266/266, 0 failures / 0 errors, all three `ToyDemoTest`
+cases by name with every previously accepted suite green (263 at cut + 3 net new;
+P-GATE-RED discharged — the exact-six red arm, the fix arm, and the
+all-fixed-then-clean arm all ran live in the sweep, and the sweep's neighboring toy
+tests re-proved the committed red state after each mutation — both D-43 protections
+standing); leg 2: `./guardrails.sh guardrails.ston` exit 0, **12 registrations
+unchanged**, `GATE: GREEN 0 blocking of 12` — the D-46 nested-gate termination proven
+in earnest (behavioral/Phi-Guardrails-Tests-Toy 0ms pre-E14 → ~200ms at close,
+driving inner toy-gates including the fix arm, terminating green on every pick);
+leg 3: precheck green at every pick, `E14-C##:` prefixes throughout (C01's spawn
+died once to a transient API connection error and was resumed in place — no fix
+round-trips consumed anywhere in the epic); leg 4: CI run 30418311955 success on the
+same head `2f4cccb` (step 1 only — smalltalkCI; the two-step upgrade stays E15's
+scheduled edit, D-82 carry-forward 1). Interface digest above **frozen** (the demo
+contract: the three named tests, the exact-six law red-test-enforced, the D-43 pair
+as standing behavior; no new frozen exports). E14 closed — **NOT a milestone
+boundary** (M4 closes at E15); reported to the owner for epic acceptance.
