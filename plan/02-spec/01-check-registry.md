@@ -202,7 +202,13 @@ runs only because the project's own file names it. **Registry construction**
    block parameter keys, §1.5); a named class it does not own via the **promised
    constructor** `packages:` (D-60), handing the role list its block key implies
    (`#architectureChecks` → production-role, `#metaRules` → tests-role); a named
-   class answering neither path is a configuration error the kit raises. It answers
+   class answering neither path is a configuration error the kit raises.
+   *(Erratum, B-33/D-85: the failure SITE for a loaded-but-nonconforming rule
+   name is the registry build — `PGRGate forConfiguration:` / the kit's resolve
+   pass — never `PGRConfiguration fromString:`: kit-block names are opaque to
+   config parsing by D-51, so parsing succeeds and the error raises eagerly at
+   build. Probed live at E15-C02; work orders and probes cite the
+   registry-build boundary.)* It answers
    one **`PGRRegistrationSpec`** per entry (D-54): carrying a live check bound to its
    targets, or a missing-reason string; never fewer specs than its block names.
    **The engine then validates every resolved spec's check instance** — protocol

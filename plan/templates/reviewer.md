@@ -18,7 +18,10 @@ Checklist:
    ceiling; deviations justified.
 2. **Tests:** the work order's test skeletons are implemented faithfully, are real assertions
    (would fail if behavior broke — not tautologies), and the verify output shows green
-   including the regression guard.
+   including the regression guard. **Falsifiability (Q-42/D-85):** for each
+   assertion, state what false condition would redden it — green must entail the
+   sentence above it; a `should:raise:` block contains exactly one send that can
+   raise; a filtered-count assertion pairs with its total-count assertion.
 3. **Spec fidelity:** behavior matches the TRACE'd spec sections; names and vocabularies
    exactly as the spec spells them (never coarsened or renamed).
 4. **Principles:** no violation of the constitution's binding principles (purity, layering,

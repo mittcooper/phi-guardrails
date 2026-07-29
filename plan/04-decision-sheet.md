@@ -584,6 +584,10 @@ in-image warm number is a **proxy** — v1 has no incremental gate mode (every
 `run` rebuilds the full registry; cold ≈ warm confirms it), so "in-image
 incremental" is measured as a full in-image run, the closest honest analogue.
 
+**Status:** **RULED — D-85** (owner word 2026-07-29): the budget is
+BINDING at §7.6's stated values (enforcement < 60 s · in-image < 10 s, the
+proxy caveat on the record); re-measured at every milestone gate.
+
 **Both targets are met with wide headroom** (~30× under for CI, ~11× under for
 in-image) — but on a **narrow catalog** (one kit, 12 registrations, one toy
 gate). Gate time scales with catalog width (M5 widens it).
@@ -660,5 +664,6 @@ integrator's machine legs; only adversarial review caught them.
 - Not recommended: blocking machinery this side of M5 — two instances in ~11 chunks,
   both caught, is a template-line problem, not a gate problem.
 
-**Status:** awaiting the owner's M4 milestone gate (rule on (a)/(b), either, both,
-or neither).
+**Status:** **RULED — D-85, both halves** (owner word 2026-07-29): (a) the
+reviewer-template falsifiability line landed in all three homes; (b) B-35 filed
+as the M5 catalog candidate.

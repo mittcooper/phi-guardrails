@@ -2865,3 +2865,39 @@ the next free number with substance unchanged — flagged to the owner at apply 
   probe-confirmed missing-VM arm and is unaffected). The ch. 9
   "unloadable image exits 3" wording erratum stays queued for the M4 gate's
   doc pass.
+
+## D-85 · M4 GATE: milestone closed — THE WALKING SKELETON COMPLETE; the budget and mining rulings (owner word 2026-07-29)
+
+- **M4 CLOSED** on head `cc59181` (close `c7adf81`): the roadmap M4 exit met and
+  machine-witnessed — the committed two-step CI green in one real run
+  (30423314427: smalltalkCI · gate-image assembly · enforcement `GATE: GREEN`
+  12 registrations · the P-WRAPPER-GUARD self-test) · the accumulated suite
+  267/267 with the demo and all three guide-sample tests by name · guide 1 at
+  zero ⟨verify⟩ markers · Q-41 filed. M4 cycle record: 11 chunks, 2 revises
+  (one shape — Q-42), 0 escalations.
+- **Q-41 RULED — the D-13 budget is BINDING at §7.6's stated values:** the CI
+  enforcement step **< 60 s** (measured 2 s) and the in-image run **< 10 s**
+  (measured 0.911 s; recorded as an honest proxy — v1 has no incremental mode).
+  A breach is a loud budget failure at the gate that observes it, never a shrug;
+  re-measurement rides every milestone gate from here. §7.6's "non-binding"
+  wording is superseded by this entry (erratum deferred to the next spec pass —
+  the sentence itself announced this ruling).
+- **Q-42 RULED — both halves:** (a) the reviewer-template falsifiability line
+  lands now, all three homes (project template + v0.1 + v0.2 twins): for each
+  assertion the reviewer states what false condition would redden it; a
+  `should:raise:` block contains exactly one send that can raise; a
+  filtered-count assertion pairs with a total-count assertion. (b) the
+  `should:raise:`-shape lint rule joins M5's catalog candidates (B-35).
+- **B-17 CLOSED as executed** (gate sweep correction): the `*.fuel` gitignore
+  landed at `cc79cbc` as the M2 opening act; the sweep's "unconsumed" flag was
+  a row-hygiene miss, not a real gap.
+- **DOC PASS AUTHORIZED and executed under this entry:** ch. 9's
+  P-WRAPPER-GUARD row gains the inline erratum (an image-shaped input does not
+  reliably reach the ∉{0,1,2} branch — D-84/D-75; the committed self-test uses
+  the missing-VM arm, 127 → 3) · ch. 1 gains the B-33 erratum (a
+  loaded-but-nonconforming rule name fails at REGISTRY BUILD, never at
+  `fromString:` — kit-block names are opaque to config parsing, D-51). B-33
+  closed.
+- **NOT ruled at this gate (open owner options, on the record):** the M5
+  roadmap re-entry (the epic cut of §6's scheduled scope) and the post-v1
+  study launch — the loop rests at closed-M4 until the owner's word.
