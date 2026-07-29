@@ -33,7 +33,31 @@ ToyOrder >> itemCount [
 ]
 
 { #category : 'accessing' }
+ToyOrder >> itemCountOrZero [
+	"PLANTED VIOLATION (R-37/D-26, sanctioned Toy-* exception): the `isNil ifFalse:`
+	the toy's own ToyNoIsNilIfFalseRule fires on - real, current, caught code."
+	items isNil ifFalse: [ ^ items size ].
+	^ 0
+]
+
+{ #category : 'accessing' }
+ToyOrder >> logTotal [
+	"PLANTED VIOLATION (R-37/D-26, sanctioned Toy-* exception): the `Transcript show:`
+	ReCodeCruftLeftInMethodsRule fires on - real, current, caught code."
+	Transcript show: self total printString.
+	^ self total
+]
+
+{ #category : 'accessing' }
 ToyOrder >> total [
 	"Sum of the item prices; 0 for an empty order."
 	^ items inject: 0 into: [ :sum :each | sum + each ]
+]
+
+{ #category : 'accessing' }
+ToyOrder >> totalOrZero [
+	"PLANTED VIOLATION (R-37/D-26, sanctioned Toy-* exception): the `isNil ifTrue:`
+	PCKNoIsNilIfTrueRule fires on - real, current, caught code."
+	items isNil ifTrue: [ ^ 0 ].
+	^ self total
 ]

@@ -24,6 +24,14 @@ ToyOrderView >> render [
 	^ 'Order: ' , order itemCount printString , ' items, total ' , order total printString
 ]
 
+{ #category : 'persistence' }
+ToyOrderView >> storeSnapshot [
+	"PLANTED VIOLATION (R-37/D-26, sanctioned Toy-* exception): a direct ui -> persistence
+	reach (ToyOrderStore is in Toy-Persistence, no allowed ui->persistence edge) that
+	PCKLayerMapCheck fires on - real, current, caught code."
+	^ ToyOrderStore empty
+]
+
 { #category : 'initialization' }
 ToyOrderView >> setOrder: aToyOrder [
 	order := aToyOrder
