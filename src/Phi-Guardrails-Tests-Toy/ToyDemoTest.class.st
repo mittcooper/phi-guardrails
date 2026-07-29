@@ -113,3 +113,47 @@ ToyDemoTest >> testGateIsRedOnPlantedViolations [
 			description: 'verdict ', index printString, ' (', verdict registrationName,
 				') is missing planted target ', expectedTarget ]
 ]
+
+{ #category : 'running' }
+ToyDemoTest >> restoringSourcesOf: classSelectorPairs during: aBlock [
+	"D-43 item 1: each source mutation snapshots its original method - source text and
+	protocol - before the block runs, then recompiles every snapshot in an ensure: so
+	restoration runs whether the block returned, failed, or errored, never left to
+	tearDown alone. Probed (P3): sourceCode answers a ByteString, protocolName a
+	ByteSymbol (protocolName, not protocol, which answers a Protocol object);
+	compile:classified: recompiles preserving package (Toy-Core) and protocol, and the
+	restored sourceCode is byte-identical."
+	| snapshots |
+	snapshots := classSelectorPairs collect: [ :pair |
+		| method |
+		method := pair first >> pair second.
+		{ pair first. method sourceCode. method protocolName } ].
+	^ aBlock ensure: [
+		snapshots do: [ :snapshot |
+			snapshot first compile: snapshot second classified: snapshot third ] ]
+]
+
+{ #category : 'tests' }
+ToyDemoTest >> testLintAutofixThenGreen [
+	"R-32 demonstration half / spec 8.3 test-2: E08's preview-first fix command (D-06)
+	drives the one fixable plant, then a fresh gate run shows that registration alone
+	turned green - five still blocking - and the source is restored byte-identically on
+	the block's return (D-43 item 1). The plant comment (kept by the fix) still carries
+	the naive 'isNil ifTrue:' string, so the post-fix assertion uses the
+	body-distinguishing marker 'items isNil ifTrue:' (probed P8)."
+	| before |
+	before := (ToyOrder >> #totalOrZero) sourceCode.
+	self restoringSourcesOf: { { ToyOrder. #totalOrZero } } during: [
+		| command greenVerdict report |
+		command := PCKFixCommand rule: PCKNoIsNilIfTrueRule packages: #('Toy-Core').
+		self assert: (command previewOn: (WriteStream on: String new)) equals: 1.
+		self assert: command apply size equals: 1.
+		self deny: ((ToyOrder >> #totalOrZero) sourceCode includesSubstring: 'items isNil ifTrue:').
+		report := self runToyGate.
+		self assert: report verdicts size equals: 6.
+		greenVerdict := report verdicts
+			detect: [ :verdict | verdict registrationName = 'lint/PCKNoIsNilIfTrueRule' ].
+		self assert: greenVerdict isGreen.
+		self assert: report blockingVerdicts size equals: 5 ].
+	self assert: (ToyOrder >> #totalOrZero) sourceCode equals: before
+]
