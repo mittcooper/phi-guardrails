@@ -170,4 +170,25 @@ its §7.4 final form. Internal/unfrozen: the Acme scratch-world helper
 spellings, the measurement record's layout. **The epic ends at the owner's
 milestone gate** — M4 closes at this checkpoint's acceptance.
 
-Checkpoint result (filled at epic close): —
+Checkpoint result (filled at epic close, 2026-07-28): **GREEN on head `cc59181`**
+(src/docs/infra-defining head `59599a4`; `cc59181` adds only `plan/ledger.md`
+bookkeeping) — leg 1 (the criterion's core): CI run **30423314427** completed
+success on the head, all six workflow steps green in one run; the enforcement-step
+log shows `PGR gate PhiGuardrails 12 registrations` + `GATE: GREEN 0 blocking of 12
+exit 0` (P-SELF-HOSTED, CI form) and the self-test step shows the wrapper's one
+stderr line with the mapped exit 3 (P-WRAPPER-GUARD; D-60.a discharged on the C01
+record); leg 2: verify 267/267, 0 failures / 0 errors — all three
+`PGRQuickstartSamplesTest` methods by name (`testAdoptAndRunSamples` the M4 anchor;
+P-GUIDE-EXEC complete across all three guides, guide 1 at zero ⟨verify⟩ markers) and
+all three `ToyDemoTest` cases by name (the red → fixed → green demonstration
+standing from E14), every previously accepted suite green; leg 3: self-hosted gate
+exit 0, **12 registrations unchanged**, `GATE: GREEN`; leg 4: `measurements.md`
+complete and **Q-41 filed** (D-13 timings: CI step-2 2 s vs < 60 s, in-image warm
+0.911 s vs < 10 s, recommendation (a) awaiting the gate); leg 5: precheck green at
+every pick, `E15-C##:` prefixes throughout (C02 carried one reviewer fix
+round-trip, follow-up commit `8ca0549`). Interface digest above **frozen** (the
+two-step CI contract with the D-66 pins; guide 1's executable 4-sample form;
+`.smalltalk.ston` at its §7.4 final form). **E15 closed — this checkpoint's
+acceptance IS the M4 milestone boundary**; the milestone duties (full-suite run ·
+mining sweep · cleanups sweep) are executed in the epic-close commit; reported to
+the owner for the M4 milestone gate.

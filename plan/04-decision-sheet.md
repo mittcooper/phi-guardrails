@@ -619,3 +619,46 @@ gate mode (widening candidate, not v1).
 
 **Status:** awaiting the owner's **M4 milestone gate** (D-13 names that gate as
 the ruling point); no chunk waits on it.
+
+## Q-42 · M4 mining repeat: assertions that pass for the wrong reason — the falsifiability gap recurred across two epics
+
+**Filed:** 2026-07-28, the integrator's M4 milestone mining pass (operating rule 9:
+sweep the milestone's completion-report deviations and review findings for repeats;
+propose each repeat as a decision-sheet entry recommending a machine-enforced rule).
+
+**The repeat (two instances, both caught only by the reviewer seat, both the
+milestone's only revise verdicts):**
+1. **E12-C03** (`PGRToyPlantWitnessTest>>testToyRulePlantIsCaught`): asserted
+   "exactly one finding *matching the plant's target*" — which stayed green even if
+   the production-scoped lint run leaked into `Toy-Tests`, because a leaked finding
+   carries a *different* target. The work order's scoping clause was prose until the
+   revise added `verdict findings size = 1`.
+2. **E15-C02** (`PGRQuickstartSamplesTest>>testAdoptAndRunSamples` arm 8):
+   `should: [ PGRGate forConfiguration: (PGRConfiguration fromString: …) ] raise:
+   PGRConfigurationError` — passed whichever of the two calls raised, so it neither
+   pinned the claimed raise site nor witnessed D-51 opacity; the revise hoisted the
+   parse out of the block. (Same cycle also committed a stale comment asserting the
+   disproven site — the B-33 erratum.)
+
+Common shape: **an assertion whose green does not entail the sentence written above
+it** — the P1 family ("a claim nothing checks is a hope") applied to test bodies
+rather than checks. Both instances survived the implementer's green run and the
+integrator's machine legs; only adversarial review caught them.
+
+**Recommendation (recommend, never rule):**
+- **(a) — recommended now, deterministic-first:** add one line to the reviewer
+  template's checklist ("for each assertion, state what false condition would redden
+  it; a `should:raise:` block must contain exactly one send that can raise; a
+  filtered-count assertion must be paired with a total-count assertion when the
+  claim is exclusive"). Cost ≈ zero; catches both observed shapes at the seat that
+  already caught them, but makes it a named obligation instead of reviewer instinct.
+- **(b) — M5 catalog candidate:** a lint rule flagging `should:raise:`/
+  `shouldnt:raise:` whose block contains more than one message send capable of
+  signaling (AST-decidable to a useful approximation: >1 non-accessor send in the
+  block). Fires on instance 2's shape mechanically; instance 1's shape (filtered
+  count without total count) is judgment-tier and stays with (a).
+- Not recommended: blocking machinery this side of M5 — two instances in ~11 chunks,
+  both caught, is a template-line problem, not a gate problem.
+
+**Status:** awaiting the owner's M4 milestone gate (rule on (a)/(b), either, both,
+or neither).
